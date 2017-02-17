@@ -1,0 +1,412 @@
+#include "usuarioop.h"
+#include "ui_usuarioop.h"
+
+UsuarioOp::UsuarioOp(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::UsuarioOp)
+{
+    ui->setupUi(this);
+
+    widget_previous = NULL;
+
+    // OTHER SETS
+
+    // INSTALLING EVENT FILTERS
+
+    this->installEventFilter(this);
+    ui->lineEdit_dni->installEventFilter(this);
+    ui->lineEdit_nombre->installEventFilter(this);
+    ui->comboBox_tipo->installEventFilter(this);
+    ui->lineEdit_usuario->installEventFilter(this);
+    ui->lineEdit_pass->installEventFilter(this);
+
+    ui->pushButton_guardar->installEventFilter(this);
+    ui->pushButton_eliminar->installEventFilter(this);
+    ui->pushButton_salir->installEventFilter(this);
+}
+
+UsuarioOp::~UsuarioOp()
+{
+    qDebug()<<"delete usuario op"<<endl;
+    delete ui;
+}
+QString UsuarioOp::get_ID()
+{
+    return id;
+}
+QString UsuarioOp::get_DNI()
+{
+    return ui->lineEdit_dni->text();
+}
+QString UsuarioOp::get_nombre()
+{
+    return ui->lineEdit_nombre->text();
+}
+QString UsuarioOp::get_ID_rol()
+{
+    return ui->comboBox_tipo->currentIndex();
+}
+QString UsuarioOp::get_rol()
+{
+    return ui->comboBox_tipo->currentText();
+}
+QString UsuarioOp::get_usuario()
+{
+    return ui->lineEdit_usuario->text();
+}
+void UsuarioOp::set_widget_previous(QWidget *widget_previous)
+{
+    this->widget_previous = widget_previous;
+}
+bool UsuarioOp::select(const QString& id)
+{
+    this->id = id;
+    QString str_query;
+    QSqlQuery query;
+
+    str_query = "SELECT rol.rol, usuario.usuario, naturales.dni, naturales.nombre FROM usuario";
+    str_query += " JOIN rol ON rol.id = usuario.rol_id";
+    str_query += " JOIN naturales ON naturales.persona_id = usuario.naturales_persona_id";
+    str_query += " JOIN persona ON persona.id = usuario.naturales_persona_id";
+    str_query += " WHERE usuario.naturales_persona_id = "+id;
+
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)) {
+        query.next();
+        ui->comboBox_tipo->setCurrentText(query.value(0).toString());
+        ui->lineEdit_usuario->setText(query.value(1).toString());
+        ui->lineEdit_dni->setText(query.value(2).toString());
+        ui->lineEdit_nombre->setText(query.value(3).toString());
+        return true;
+    }else{
+        return false;
+    }
+}
+bool UsuarioOp::guardar()
+{
+    QString str_query;
+
+    SYSTEM->fixString(ui->lineEdit_dni);
+    QString dni = ui->lineEdit_dni->text();
+    dni = SYSTEM->replace_quotes(dni);
+
+    SYSTEM->fixString(ui->lineEdit_nombre);
+    QString nombre = ui->lineEdit_nombre->text();
+    nombre = SYSTEM->replace_quotes(nombre);
+
+    SYSTEM->fixString(ui->lineEdit_usuario);
+    QString usuario = ui->lineEdit_usuario->text();
+    usuario = SYSTEM->replace_quotes(usuario);
+
+    SYSTEM->fixString(ui->lineEdit_pass);
+    QString pass = ui->lineEdit_pass->text();
+    pass = SYSTEM->replace_quotes(pass);
+
+    if (id.compare("") == 0) {
+        QString id = "NULL";
+        str_query = "INSERT INTO persona(id, tipo_persona_id, habilitado)VALUES";
+        str_query += "("+id;
+        str_query += ", "+QString().setNum(tipo_persona::USUARIO);
+        str_query += ", 1)";
+        str_query += "&&END_QUERY&&";
+
+        str_query += "INSERT INTO naturales(persona_id, dni, nombre)VALUES(";
+        str_query += "(SELECT MAX(persona.id) FROM persona)";
+        str_query += ", '"+dni+"'";
+        str_query += ", '"+nombre+"')";
+        str_query += "&&END_QUERY&&";
+
+        str_query += "INSERT INTO usuario(naturales_persona_id";
+        str_query += ", rol_id";
+        str_query += ", usuario";
+        str_query += ", pass)VALUES(";
+        str_query += "(SELECT MAX(persona.id) FROM persona)";
+        str_query += ", "+QString().setNum(ui->comboBox_tipo->currentIndex()+1);
+        str_query += ", '"+usuario+"'";
+        str_query += ", '"+pass+"')";
+        str_query += "&&END_QUERY&&";
+    }else{
+        str_query = "UPDATE naturales";
+        str_query += " SET dni = '"+dni+"'";
+        str_query += ", nombre = '"+nombre+"'";
+        str_query += " WHERE persona_id = "+id;
+        str_query += "&&END_QUERY&&";
+
+        str_query += "UPDATE usuario";
+        str_query += " SET rol_id = "+QString().setNum(ui->comboBox_tipo->currentIndex()+1)+"";
+        str_query += ", usuario = '"+nombre+"'";
+        str_query += ", pass = '"+pass+"'";
+        str_query += " WHERE naturales_persona_id = "+id;
+        str_query += "&&END_QUERY&&";
+    }
+
+    QSqlQuery query;
+
+    SYSTEM->multiple_query(str_query);
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        return true;
+    }else{
+        return false;
+    }
+}
+bool UsuarioOp::remove()
+{
+    QString str_query = "DELETE FROM persona WHERE id = "+id;
+    str_query += "&&END_QUERY&&";
+
+    QSqlQuery query;
+
+    SYSTEM->multiple_query(str_query);
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        id = "";
+        return true;
+    }else{
+        return false;
+    }
+}
+void UsuarioOp::on_pushButton_guardar_clicked()
+{
+    int ret = QMessageBox::warning(this, "Advertencia", "¿Desea guardar los datos?", "Si", "No");
+    switch(ret){
+    case 0:{
+        if(guardar()){
+            QMessageBox::information(this, "Información", "Se guardaron los datos con éxito.");
+            setAttribute(Qt::WA_DeleteOnClose);
+            SYSTEM->change_center_w(this, widget_previous);
+        }else{
+            QMessageBox::critical(this, "Error", "No se pudieron guardar los datos.");
+        }
+        return;
+    }break;
+    case 1:{
+
+    }
+    }
+}
+
+void UsuarioOp::on_pushButton_eliminar_clicked()
+{
+    if(id.compare("") == 0) {
+        QMessageBox::warning(this, "Advertencia", "No se puede eliminar aún.", "Ok");
+        return;
+    }
+
+    int ret = QMessageBox::warning(this, "Advertencia", "Esta apunto de eliminar los datos. ¿Desea de todas formas eliminar los datos?", "Si", "No");
+    switch(ret){
+    case 0:{
+        if(remove()){
+            QMessageBox::information(this, "Información", "Se eliminaron los datos con éxito.");
+            id = "";
+            setAttribute(Qt::WA_DeleteOnClose);
+            SYSTEM->change_center_w(this, widget_previous);
+        }else{
+            QMessageBox::critical(this, "Error", "No se pudieron eliminar los datos.");
+        }
+        return;
+    }break;
+    case 1:{
+
+    }
+    }
+}
+
+void UsuarioOp::on_pushButton_salir_clicked()
+{
+    int ret = QMessageBox::warning(this, "Advertencia", "¿Desea salir del formulario?", "Si", "No");
+    switch(ret){
+    case 0:{
+        if(widget_previous){
+            id = "";
+            setAttribute(Qt::WA_DeleteOnClose);
+            SYSTEM->change_center_w(this, widget_previous);
+        }else{
+            SYSTEM->clear_center_w(this);
+        }
+        return;
+    }break;
+    case 1:{
+
+    }
+    }
+}
+void UsuarioOp::showEvent(QShowEvent *event)
+{
+    event->accept();
+
+    if(focusWidget()){
+        focusWidget()->setFocus();
+    }else{
+        ui->lineEdit_dni->setFocus(Qt::TabFocusReason);
+    }
+}
+void UsuarioOp::closeEvent(QCloseEvent *event)
+{
+    event->accept();
+    emit closing();
+}
+
+bool UsuarioOp::eventFilter(QObject *obj, QEvent *e)
+{
+    QWidget* w_temp;
+    w_temp = this;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Escape:
+                ui->pushButton_salir->click();
+                return true;
+            }
+
+        }else{
+
+        }
+        return false;
+    }    
+    w_temp = ui->lineEdit_dni;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->lineEdit_nombre->setFocus(Qt::TabFocusReason);
+                return true;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->lineEdit_nombre;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->comboBox_tipo->setFocus(Qt::TabFocusReason);
+                return true;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->comboBox_tipo;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->lineEdit_usuario->setFocus(Qt::TabFocusReason);
+                return true;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->lineEdit_usuario;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->lineEdit_pass->setFocus(Qt::TabFocusReason);
+                return true;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->lineEdit_pass;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->pushButton_guardar->click();
+                return true;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_guardar;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->pushButton_guardar->click();
+                return true;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+
+    w_temp = ui->pushButton_eliminar;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->pushButton_eliminar->click();
+                return true;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_salir;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Tab:{
+                this->setFocus();
+            }break;
+            case Qt::Key_Return:{
+                ui->pushButton_salir->click();
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    return eventFilter(obj, e);
+}

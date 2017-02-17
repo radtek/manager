@@ -1,0 +1,322 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{77E12459-BA63-33F7-B7AC-3DC89F06CAC1}</ProjectGuid>
+    <RootNamespace>SMTPEmail</RootNamespace>
+    <Keyword>Qt4VSv1.0</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <PlatformToolSet>v140</PlatformToolSet>
+    <OutputDirectory>release\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <IntermediateDirectory>release\</IntermediateDirectory>
+    <PrimaryOutput>SMTPEmail</PrimaryOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <PlatformToolSet>v140</PlatformToolSet>
+    <OutputDirectory>debug\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <IntermediateDirectory>debug\</IntermediateDirectory>
+    <PrimaryOutput>SMTPEmail</PrimaryOutput>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SMTPEmail</TargetName>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <PostBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</PostBuildEventUseInBuild>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SMTPEmail</TargetName>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</IgnoreImportLibrary>
+    <PostBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</PostBuildEventUseInBuild>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.;C:\Qt\Qt5.7.0\5.7\msvc2015_64\include;C:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui;C:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE;C:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork;C:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore;release;C:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:strictStrings -Zc:throwingNew -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>release\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <DisableSpecificWarnings>4577;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;WIN64;SMTP_BUILD;QT_NO_DEBUG;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(QTDIR)\lib\Qt5Gui.lib;$(QTDIR)\lib\Qt5Network.lib;$(QTDIR)\lib\Qt5Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;C:\Qt\Qt5.7.0\5.7\msvc2015_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+      <LinkDLL>true</LinkDLL>
+      <LinkIncremental>false</LinkIncremental>
+      <OutputFile>$(OutDir)\SMTPEmail.dll</OutputFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;WIN64;SMTP_BUILD;QT_NO_DEBUG;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy "$(TargetPath)" ..\build-MyLibrary-Desktop_Qt_5_7_0_MSVC2015_64bit-Debug\debug &amp;&amp; copy "$(TargetPath)" C:\Users\lorda\Desktop\programa\build-ManagerSystem-Desktop_Qt_5_7_0_MSVC2015_64bit-Debug\debug</Command>
+      <Message>Copy SMTPEmail.dll to ..\build-MyLibrary-Desktop_Qt_5_7_0_MSVC2015_64bit-Debug\debug, C:\Users\lorda\Desktop\programa\build-ManagerSystem-Desktop_Qt_5_7_0_MSVC2015_64bit-Debug\debug</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.;C:\Qt\Qt5.7.0\5.7\msvc2015_64\include;C:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui;C:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE;C:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork;C:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore;debug;C:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:strictStrings -Zc:throwingNew -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>debug\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4577;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;WIN64;SMTP_BUILD;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(QTDIR)\lib\Qt5Guid.lib;$(QTDIR)\lib\Qt5Networkd.lib;$(QTDIR)\lib\Qt5Cored.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;C:\Qt\Qt5.7.0\5.7\msvc2015_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+      <LinkDLL>true</LinkDLL>
+      <OutputFile>$(OutDir)\SMTPEmail.dll</OutputFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;WIN64;SMTP_BUILD;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy "$(TargetPath)" ..\build-MyLibrary-Desktop_Qt_5_7_0_MSVC2015_64bit-Debug\debug &amp;&amp; copy "$(TargetPath)" C:\Users\lorda\Desktop\programa\build-ManagerSystem-Desktop_Qt_5_7_0_MSVC2015_64bit-Debug\debug</Command>
+      <Message>Copy SMTPEmail.dll to ..\build-MyLibrary-Desktop_Qt_5_7_0_MSVC2015_64bit-Debug\debug, C:\Users\lorda\Desktop\programa\build-ManagerSystem-Desktop_Qt_5_7_0_MSVC2015_64bit-Debug\debug</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Debug\moc_emailaddress.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_mimeattachment.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_mimecontentformatter.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_mimefile.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_mimehtml.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_mimemultipart.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_mimepart.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_quotedprintable.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_smtpclient.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Release\moc_emailaddress.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Release\moc_mimeattachment.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Release\moc_mimecontentformatter.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Release\moc_mimefile.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Release\moc_mimehtml.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Release\moc_mimemultipart.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Release\moc_mimepart.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Release\moc_quotedprintable.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Release\moc_smtpclient.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="src\emailaddress.cpp" />
+    <ClCompile Include="src\mimeattachment.cpp" />
+    <ClCompile Include="src\mimecontentformatter.cpp" />
+    <ClCompile Include="src\mimefile.cpp" />
+    <ClCompile Include="src\mimehtml.cpp" />
+    <ClCompile Include="src\mimeinlinefile.cpp" />
+    <ClCompile Include="src\mimemessage.cpp" />
+    <ClCompile Include="src\mimemultipart.cpp" />
+    <ClCompile Include="src\mimepart.cpp" />
+    <ClCompile Include="src\mimetext.cpp" />
+    <ClCompile Include="src\quotedprintable.cpp" />
+    <ClCompile Include="src\smtpclient.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\SmtpMime" />
+    <CustomBuild Include="src\emailaddress.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\release" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing emailaddress.h...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\debug" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing emailaddress.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="src\mimeattachment.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\release" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing mimeattachment.h...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\debug" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing mimeattachment.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="src\mimecontentformatter.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\release" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing mimecontentformatter.h...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\debug" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing mimecontentformatter.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="src\mimefile.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\release" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing mimefile.h...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\debug" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing mimefile.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="src\mimehtml.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\release" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing mimehtml.h...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\debug" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing mimehtml.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <ClInclude Include="src\mimeinlinefile.h" />
+    <ClInclude Include="src\mimemessage.h" />
+    <CustomBuild Include="src\mimemultipart.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\release" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing mimemultipart.h...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\debug" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing mimemultipart.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="src\mimepart.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\release" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing mimepart.h...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\debug" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing mimepart.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <ClInclude Include="src\mimetext.h" />
+    <CustomBuild Include="src\quotedprintable.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\release" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing quotedprintable.h...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\debug" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing quotedprintable.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="src\smtpclient.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DNDEBUG -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\release" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing smtpclient.h...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp"  -D_WINDOWS -DUNICODE -DWIN32 -DWIN64 -DSMTP_BUILD -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -D_WINDLL "-I." "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtGui" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtANGLE" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtNetwork" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\include\QtCore" "-I.\debug" "-IC:\Qt\Qt5.7.0\5.7\msvc2015_64\mkspecs\win32-msvc2015"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing smtpclient.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    </CustomBuild>
+    <ClInclude Include="src\smtpexports.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" Qt5Version_x0020_x64="Qt5.7.0_64" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
