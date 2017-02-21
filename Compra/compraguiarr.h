@@ -74,6 +74,8 @@ private slots:
 
     void on_pushButton_borrar_clicked();
 
+    void on_pushButton_amarres_clicked();
+
 signals:
     void closing();
 

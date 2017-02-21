@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CompraChartCosto</class>
- <widget class="QWidget" name="CompraChartCosto">
+ <class>VentaChartPrecio</class>
+ <widget class="QWidget" name="VentaChartPrecio">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -9,18 +9,6 @@
     <width>883</width>
     <height>414</height>
    </rect>
-  </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>0</width>
-    <height>0</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -38,10 +26,10 @@
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(0, 255, 255);</string>
+        <string notr="true">color: rgb(0, 255, 0);</string>
        </property>
        <property name="text">
-        <string>Lista de Compras</string>
+        <string>Lista de Ventas</string>
        </property>
       </widget>
      </item>
@@ -215,11 +203,6 @@
      </column>
      <column>
       <property name="text">
-       <string>Flete</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
        <string>Desc. NCrédito</string>
       </property>
      </column>
@@ -235,11 +218,6 @@
      </column>
      <column>
       <property name="text">
-       <string>persona_id</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
        <string>SERIE</string>
       </property>
      </column>
@@ -250,12 +228,22 @@
      </column>
      <column>
       <property name="text">
-       <string>RUC</string>
+       <string>persona_id</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>RAZON_SOCIAL</string>
+       <string>CODIGO</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>NOMBRE</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>DIRECCION</string>
       </property>
      </column>
     </widget>
@@ -575,6 +563,40 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="label_13">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 0, 0);</string>
+       </property>
+       <property name="text">
+        <string>Precio + 25%</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_precio_ganancia">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>100000000000000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer_5">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -607,16 +629,6 @@
    </item>
   </layout>
  </widget>
- <tabstops>
-  <tabstop>dateEdit</tabstop>
-  <tabstop>tableWidget</tabstop>
-  <tabstop>pushButton_ok</tabstop>
-  <tabstop>pushButton_salir</tabstop>
-  <tabstop>doubleSpinBox_cantidad_compra</tabstop>
-  <tabstop>doubleSpinBox_cantidad_venta</tabstop>
-  <tabstop>doubleSpinBox_cantidad_v_rsn_np</tabstop>
-  <tabstop>doubleSpinBox_cantidad_total</tabstop>
- </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -621,14 +621,11 @@ void CompraNotaCredito::on_pushButton_ing_prod_clicked()
 
 void CompraNotaCredito::on_pushButton_amarres_clicked()
 {
-    /*
-    if(!w_compra_amarres){
-        w_compra_amarres = new CompraAmarres;
-        ((CompraAmarres*)w_compra_amarres)->set_widget_previous(this);
-        ((CompraAmarres*)w_compra_amarres)->set_documento_id(this->id);
-    }
+    CompraAmarres* w_compra_amarres = new CompraAmarres;
+    w_compra_amarres->set_widget_previous(this);
+    w_compra_amarres->set_documento(this->id, tipo_documento::NOTA_CREDITO);
+
     SYSTEM->change_center_w(this, w_compra_amarres);
-    */
 }
 
 void CompraNotaCredito::on_pushButton_guardar_clicked()

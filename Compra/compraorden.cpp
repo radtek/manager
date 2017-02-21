@@ -600,14 +600,11 @@ void CompraOrden::on_tableWidget_itemChanged(QTableWidgetItem *item)
 }
 void CompraOrden::on_pushButton_amarres_clicked()
 {
-    /*
-    if(!w_compra_amarres){
-        w_compra_amarres = new CompraAmarres;
-        ((CompraAmarres*)w_compra_amarres)->set_widget_previous(this);
-        ((CompraAmarres*)w_compra_amarres)->set_documento_id(this->id);
-    }
+    CompraAmarres* w_compra_amarres = new CompraAmarres;
+    w_compra_amarres->set_widget_previous(this);
+    w_compra_amarres->set_documento(this->id, tipo_documento::ORDEN);
+
     SYSTEM->change_center_w(this, w_compra_amarres);
-    */
 }
 
 void CompraOrden::on_pushButton_guardar_clicked()

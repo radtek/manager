@@ -26,18 +26,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 win32:contains(QMAKE_HOST.arch, x86_64) {
     CONFIG(debug, debug|release) {
         DLLDESTDIR += "../build-ManagerSystem-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug"
+        DLLDESTDIR += "../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/debug"
     }
 
     CONFIG(release, debug|release) {
         DLLDESTDIR += "../build-ManagerSystem-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release"
+        DLLDESTDIR += "../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release"
     }
 }else{
     CONFIG(debug, debug|release) {
         DLLDESTDIR += "../build-ManagerSystem-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug"
+        DLLDESTDIR += "../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug"
     }
 
     CONFIG(release, debug|release) {
         DLLDESTDIR += "../build-ManagerSystem-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release"
+        DLLDESTDIR += "../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release"
     }
 }
 

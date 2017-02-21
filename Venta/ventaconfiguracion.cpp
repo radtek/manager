@@ -30,206 +30,17 @@ QVector<QLabel*> VentaConfiguracion::get_labels()
     return labels;
 }
 
-void VentaConfiguracion::set_tipo(int tipo, QString serie, QString series_id)
+void VentaConfiguracion::set_tipo(int tipo, QString serie, QString series_id
+                                  , QVector<QString>& object_name, QVector<QString>& data)
 {
     QSqlQuery query;
     QString str_query;
+
+    str_query = "SELECT config_hoja.nombre, X(config_hoja.point), Y(config_hoja.point), config_hoja.stylesheet FROM config_hoja";
+    str_query += " WHERE config_hoja.series_id = "+series_id;
+
     QVector<QString> nombres;
-
-    switch(tipo){
-    case tipo_documento::REGISTRO_SIN_DOCUMENTO:{
-        str_query = "SELECT config_hoja.nombre, X(config_hoja.point), Y(config_hoja.point), config_hoja.stylesheet FROM config_hoja";
-        str_query += " WHERE config_hoja.series_id = "+series_id;
-
-        VentaRegistroSinDoc* w = new VentaRegistroSinDoc;
-        w->setAttribute(Qt::WA_DeleteOnClose);
-        foreach(QObject* w, w->children()){
-            if(w->isWidgetType()){
-                if(typeid(*w) == typeid(QDateTimeEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QDateEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QLineEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QTableWidget)){
-                    nombres.push_back(w->objectName());
-                }
-            }
-        }
-        w->close();
-    }break;
-    case tipo_documento::BOLETA:{
-        str_query = "SELECT config_hoja.nombre, X(config_hoja.point), Y(config_hoja.point), config_hoja.stylesheet FROM config_hoja";
-        str_query += " WHERE config_hoja.series_id = "+series_id;
-
-        VentaBoleta* w = new VentaBoleta;
-        w->setAttribute(Qt::WA_DeleteOnClose);
-        foreach(QObject* w, w->children()){
-            if(w->isWidgetType()){
-                if(typeid(*w) == typeid(QDateTimeEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QDateEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QLineEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QTableWidget)){
-                    nombres.push_back(w->objectName());
-                }
-            }
-        }
-        w->close();
-    }break;
-    case tipo_documento::FACTURA:{
-        str_query = "SELECT config_hoja.nombre, X(config_hoja.point), Y(config_hoja.point), config_hoja.stylesheet FROM config_hoja";
-        str_query += " WHERE config_hoja.series_id = "+series_id;
-
-        VentaFactura* w = new VentaFactura;
-        w->setAttribute(Qt::WA_DeleteOnClose);
-        foreach(QObject* w, w->children()){
-            if(w->isWidgetType()){
-                if(typeid(*w) == typeid(QDateTimeEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QDateEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QLineEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QTableWidget)){
-                    nombres.push_back(w->objectName());
-                }
-            }
-        }
-        w->close();
-    }break;
-    case tipo_documento::NOTA_PEDIDO:{
-        str_query = "SELECT config_hoja.nombre, X(config_hoja.point), Y(config_hoja.point), config_hoja.stylesheet FROM config_hoja";
-        str_query += " WHERE config_hoja.series_id = "+series_id;
-
-        VentaNotaPedido* w = new VentaNotaPedido;
-        w->setAttribute(Qt::WA_DeleteOnClose);
-        foreach(QObject* w, w->children()){
-            if(w->isWidgetType()){
-                if(typeid(*w) == typeid(QDateTimeEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QDateEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QLineEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QTableWidget)){
-                    nombres.push_back(w->objectName());
-                }
-            }
-        }
-        w->close();
-    }break;
-    case tipo_documento::GUIA_REMISION_REMITENTE:{
-        str_query = "SELECT config_hoja.nombre, X(config_hoja.point), Y(config_hoja.point), config_hoja.stylesheet FROM config_hoja";
-        str_query += " WHERE config_hoja.series_id = "+series_id;
-
-        VentaGuiaRR* w = new VentaGuiaRR;
-        w->setAttribute(Qt::WA_DeleteOnClose);
-        foreach(QObject* w, w->children()){
-            if(w->isWidgetType()){
-                if(typeid(*w) == typeid(QDateTimeEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QDateEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QLineEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QTableWidget)){
-                    nombres.push_back(w->objectName());
-                }
-            }
-        }
-        w->close();
-    }break;
-    case tipo_documento::COTIZACION:{
-        str_query = "SELECT config_hoja.nombre, X(config_hoja.point), Y(config_hoja.point), config_hoja.stylesheet FROM config_hoja";
-        str_query += " WHERE config_hoja.series_id = "+series_id;
-
-        VentaCotizacion* w = new VentaCotizacion;
-        w->setAttribute(Qt::WA_DeleteOnClose);
-        foreach(QObject* w, w->children()){
-            if(w->isWidgetType()){
-                if(typeid(*w) == typeid(QDateTimeEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QDateEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QLineEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QTableWidget)){
-                    nombres.push_back(w->objectName());
-                }
-            }
-        }
-        w->close();
-    }break;
-    case tipo_documento::NOTA_CREDITO:{
-        str_query = "SELECT config_hoja.nombre, X(config_hoja.point), Y(config_hoja.point), config_hoja.stylesheet FROM config_hoja";
-        str_query += " WHERE config_hoja.series_id = "+series_id;
-
-        VentaNotaCredito* w = new VentaNotaCredito;
-        w->setAttribute(Qt::WA_DeleteOnClose);
-        foreach(QObject* w, w->children()){
-            if(w->isWidgetType()){
-                if(typeid(*w) == typeid(QDateTimeEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QDateEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QLineEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QTableWidget)){
-                    nombres.push_back(w->objectName());
-                }
-            }
-        }
-        w->close();
-    }break;
-    case tipo_documento::NOTA_DEBITO:{
-        str_query = "SELECT config_hoja.nombre, X(config_hoja.point), Y(config_hoja.point), config_hoja.stylesheet FROM config_hoja";
-        str_query += " WHERE config_hoja.series_id = "+series_id;
-
-        VentaNotaDebito* w = new VentaNotaDebito;
-        w->setAttribute(Qt::WA_DeleteOnClose);
-        foreach(QObject* w, w->children()){
-            if(w->isWidgetType()){
-                if(typeid(*w) == typeid(QDateTimeEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QDateEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QLineEdit)){
-                    nombres.push_back(w->objectName());
-                }
-                if(typeid(*w) == typeid(QTableWidget)){
-                    nombres.push_back(w->objectName());
-                }
-            }
-        }
-        w->close();
-    }break;
-    }
+    nombres = data;
 
     QWidget* widget = new QWidget(this);
     widget->setMinimumSize(width, height);
@@ -242,9 +53,10 @@ void VentaConfiguracion::set_tipo(int tipo, QString serie, QString series_id)
         int y = 0;
 
         QLabel *wordLabel = createDragLabel(nombres[i], this);
+        wordLabel->setObjectName(object_name[i]);
         QFont font;
         font.setBold(true);
-        font.setPointSize(10);
+        font.setPointSize(8);
         wordLabel->setFont(font);
         wordLabel->move(x, y);
         wordLabel->show();

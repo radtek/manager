@@ -59,7 +59,8 @@ SOURCES += venta.cpp \
     ventathreadsetproducto.cpp \
     ventaguiarr.cpp \
     ventaconfighoja.cpp \
-    ventasnselector.cpp
+    ventasnselector.cpp \
+    ventachartprecio.cpp
 
 HEADERS += venta.h\
         venta_global.h \
@@ -80,7 +81,8 @@ HEADERS += venta.h\
     ventathreadsetproducto.h \
     ventaguiarr.h \
     ventaconfighoja.h \
-    ventasnselector.h
+    ventasnselector.h \
+    ventachartprecio.h
 
 unix {
     target.path = /usr/lib
@@ -102,7 +104,8 @@ FORMS += \
     ventaregistrosindoc.ui \
     ventaguiarr.ui \
     ventaconfighoja.ui \
-    ventasnselector.ui
+    ventasnselector.ui \
+    ventachartprecio.ui
 
 RESOURCES += \
     ../ManagerSystem/Iconos.qrc
@@ -275,3 +278,10 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     DEPENDPATH += $$PWD/../Persona
     INCLUDEPATH += $$PWD/../Persona
     DEPENDPATH += $$PWD/../Persona
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/release/ -lCompra
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lCompra
+else:unix: LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lCompra
+
+INCLUDEPATH += $$PWD/../Compra
+DEPENDPATH += $$PWD/../Compra

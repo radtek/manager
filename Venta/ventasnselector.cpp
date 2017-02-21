@@ -43,6 +43,8 @@ void VentaSNSelector::set_tipo(int tipo)
     case venta_items::REGISTRO_SIN_DOCUMENTO:{
         str_query = "SELECT anexo.serie, anexo.numero+1 FROM registro_sin_documento";
         str_query += " JOIN anexo ON anexo.documento_id = registro_sin_documento.comprobante_documento_id";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::VENTA);
+        str_query += " AND comprobante.documento_id = registro_sin_documento.comprobante_documento_id)";
         str_query += " GROUP BY anexo.serie";
         str_query += " ORDER BY registro_sin_documento.comprobante_documento_id DESC, anexo.numero DESC";
         str_query += " LIMIT "+QString().setNum(pos)+", "+QString().setNum(size_query);
@@ -51,6 +53,8 @@ void VentaSNSelector::set_tipo(int tipo)
     case venta_items::BOLETA:{
         str_query = "SELECT anexo.serie, anexo.numero+1 FROM boleta";
         str_query += " JOIN anexo ON anexo.documento_id = boleta.comprobante_documento_id";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::VENTA);
+        str_query += " AND comprobante.documento_id = boleta.comprobante_documento_id)";
         str_query += " GROUP BY anexo.serie";
         str_query += " ORDER BY boleta.comprobante_documento_id DESC, anexo.numero DESC";
         str_query += " LIMIT "+QString().setNum(pos)+", "+QString().setNum(size_query);
@@ -58,6 +62,8 @@ void VentaSNSelector::set_tipo(int tipo)
     case venta_items::FACTURA:{
         str_query = "SELECT anexo.serie, anexo.numero+1 FROM factura";
         str_query += " JOIN anexo ON anexo.documento_id = factura.comprobante_documento_id";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::VENTA);
+        str_query += " AND comprobante.documento_id = factura.comprobante_documento_id)";
         str_query += " GROUP BY anexo.serie";
         str_query += " ORDER BY factura.comprobante_documento_id DESC, anexo.numero DESC";
         str_query += " LIMIT "+QString().setNum(pos)+", "+QString().setNum(size_query);
@@ -65,6 +71,8 @@ void VentaSNSelector::set_tipo(int tipo)
     case venta_items::NOTA_PEDIDO:{
         str_query = "SELECT anexo.serie, anexo.numero+1 FROM nota_pedido";
         str_query += " JOIN anexo ON anexo.documento_id = nota_pedido.comprobante_documento_id";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::VENTA);
+        str_query += " AND comprobante.documento_id = nota_pedido.comprobante_documento_id)";
         str_query += " GROUP BY anexo.serie";
         str_query += " ORDER BY nota_pedido.comprobante_documento_id DESC, anexo.numero DESC";
         str_query += " LIMIT "+QString().setNum(pos)+", "+QString().setNum(size_query);
@@ -72,6 +80,8 @@ void VentaSNSelector::set_tipo(int tipo)
     case venta_items::GUIA_REMISION_REMITENTE:{
         str_query = "SELECT anexo.serie, anexo.numero+1 FROM guia_remision_remitente";
         str_query += " JOIN anexo ON anexo.documento_id = guia_remision_remitente.comprobante_documento_id";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::VENTA);
+        str_query += " AND comprobante.documento_id = guia_remision_remitente.comprobante_documento_id)";
         str_query += " GROUP BY anexo.serie";
         str_query += " ORDER BY guia_remision_remitente.comprobante_documento_id DESC, anexo.numero DESC";
         str_query += " LIMIT "+QString().setNum(pos)+", "+QString().setNum(size_query);
@@ -79,6 +89,8 @@ void VentaSNSelector::set_tipo(int tipo)
     case venta_items::COTIZACION:{
         str_query = "SELECT anexo.serie, anexo.numero+1 FROM cotizacion";
         str_query += " JOIN anexo ON anexo.documento_id = cotizacion.comprobante_documento_id";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::VENTA);
+        str_query += " AND comprobante.documento_id = cotizacion.comprobante_documento_id)";
         str_query += " GROUP BY anexo.serie";
         str_query += " ORDER BY cotizacion.comprobante_documento_id DESC, anexo.numero DESC";
         str_query += " LIMIT "+QString().setNum(pos)+", "+QString().setNum(size_query);
@@ -86,6 +98,8 @@ void VentaSNSelector::set_tipo(int tipo)
     case venta_items::NOTA_CREDITO:{
         str_query = "SELECT anexo.serie, anexo.numero+1 FROM nota_credito";
         str_query += " JOIN anexo ON anexo.documento_id = nota_credito.comprobante_documento_id";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::VENTA);
+        str_query += " AND comprobante.documento_id = nota_credito.comprobante_documento_id)";
         str_query += " GROUP BY anexo.serie";
         str_query += " ORDER BY nota_credito.comprobante_documento_id DESC, anexo.numero DESC";
         str_query += " LIMIT "+QString().setNum(pos)+", "+QString().setNum(size_query);
@@ -93,6 +107,8 @@ void VentaSNSelector::set_tipo(int tipo)
     case venta_items::NOTA_DEBITO:{
         str_query = "SELECT anexo.serie, anexo.numero+1 FROM nota_debito";
         str_query += " JOIN anexo ON anexo.documento_id = nota_debito.comprobante_documento_id";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::VENTA);
+        str_query += " AND comprobante.documento_id = nota_debito.comprobante_documento_id)";
         str_query += " GROUP BY anexo.serie";
         str_query += " ORDER BY nota_debito.comprobante_documento_id DESC, anexo.numero DESC";
         str_query += " LIMIT "+QString().setNum(pos)+", "+QString().setNum(size_query);

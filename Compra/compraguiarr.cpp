@@ -858,3 +858,12 @@ void CompraGuiaRR::on_pushButton_borrar_clicked()
 
     }
 }
+
+void CompraGuiaRR::on_pushButton_amarres_clicked()
+{
+    CompraAmarres* w_compra_amarres = new CompraAmarres;
+    w_compra_amarres->set_widget_previous(this);
+    w_compra_amarres->set_documento(this->id, tipo_documento::GUIA_REMISION_REMITENTE);
+
+    SYSTEM->change_center_w(this, w_compra_amarres);
+}

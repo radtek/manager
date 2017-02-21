@@ -17,7 +17,8 @@ public:
 
     void set_widget_previous(QWidget* widget_previous);
 
-    void set_tipo_documento(int tipo, QString serie, QString series_id);
+    void set_tipo_documento(int tipo, QString serie, QString series_id
+                            , QVector<QString>& object_name, QVector<QString>& data);
 
     void set_data(QVector<QVector<QString> > data);
 

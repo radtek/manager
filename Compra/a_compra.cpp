@@ -4,7 +4,7 @@
 A_Compra::A_Compra(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::A_Compra)
-{
+{    
     ui->setupUi(this);    
 
     widget_previous = 0;

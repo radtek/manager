@@ -675,6 +675,8 @@ void VentaGuiaRR::on_pushButton_guardar_clicked()
     if(!(ui->lineEdit_serie->text().compare(serie) == 0 && ui->lineEdit_numero->text().compare(numero) == 0)){
         QString str_query = "(SELECT IF(EXISTS(SELECT 1 FROM guia_remision_remitente";
         str_query += " JOIN anexo ON anexo.documento_id = guia_remision_remitente.comprobante_documento_id";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::VENTA);
+        str_query += " AND comprobante.documento_id = guia_remision_remitente.comprobante_documento_id)";
         str_query += " WHERE anexo.serie = '"+ui->lineEdit_serie->text()+"'";
         str_query += " AND anexo.numero = '"+ui->lineEdit_numero->text()+"'";
         str_query += " ORDER BY anexo.serie, anexo.numero), 1 , 0), '')";
@@ -771,6 +773,7 @@ void VentaGuiaRR::on_pushButton_imprimir_clicked()
         qDebug()<<"is series"<<endl;
         QString str_query = "SELECT series.id FROM series";
         str_query += " WHERE series.serie = '"+ui->lineEdit_serie->text()+"'";
+        str_query += " AND series.operacion_id = "+QString().setNum(operacion_items::VENTA);
         str_query += " AND series.tipo_documento_id = "+QString().setNum(tipo_documento::GUIA_REMISION_REMITENTE);
 
         QSqlQuery query;
@@ -779,8 +782,9 @@ void VentaGuiaRR::on_pushButton_imprimir_clicked()
             if(query.next()){
                 id_series = query.value(0).toString();
             }else{
-                str_query = "INSERT INTO series(tipo_documento_id, serie)VALUES(";
-                str_query += QString().setNum(tipo_documento::GUIA_REMISION_REMITENTE);
+                str_query = "INSERT INTO series(operacion_id, tipo_documento_id, serie)VALUES(";
+                str_query += QString().setNum(operacion_items::VENTA);
+                str_query += ", "+QString().setNum(tipo_documento::GUIA_REMISION_REMITENTE);
                 str_query += ", '"+ui->lineEdit_serie->text()+"')";
                 str_query += "&&END_QUERY&&";
                 str_query += "SELECT MAX(series.id) FROM series";
@@ -803,7 +807,47 @@ void VentaGuiaRR::on_pushButton_imprimir_clicked()
     }
     VentaConfigHoja* w = new VentaConfigHoja;
     w->set_widget_previous(this);
-    w->set_tipo_documento(tipo_documento::GUIA_REMISION_REMITENTE, ui->lineEdit_serie->text(), id_series);
+
+    QVector<QString> object_name;
+    QVector<QString> data;
+
+    object_name.push_back(ui->dateTimeEdit_emision->objectName());
+    data.push_back(ui->dateTimeEdit_emision->date().toString("dd-MM-yyyy"));
+
+    object_name.push_back(ui->dateTimeEdit_sistema->objectName());
+    data.push_back(ui->dateTimeEdit_sistema->dateTime().toString("dd-MM-yyyy hh:mm:ss"));
+
+    object_name.push_back(ui->lineEdit_serie->objectName());
+    data.push_back(ui->lineEdit_serie->text());
+
+    object_name.push_back(ui->lineEdit_numero->objectName());
+    data.push_back(ui->lineEdit_numero->text());
+
+    object_name.push_back(ui->lineEdit_codigo->objectName());
+    data.push_back(ui->lineEdit_codigo->text());
+
+    object_name.push_back(ui->lineEdit_nombre->objectName());
+    data.push_back(ui->lineEdit_nombre->text());
+
+    object_name.push_back(ui->lineEdit_direccion->objectName());
+    data.push_back(ui->lineEdit_direccion->text());
+
+    QString str_table = "";
+    QString row_sep = "   ";
+    QString col_sep = "\n";
+    for(int i=0; i<ui->tableWidget->rowCount(); i++){
+        for(int j=0; j<ui->tableWidget->columnCount(); j++){
+            str_table += ui->tableWidget->item(i, j)->text();
+            str_table += row_sep;
+        }
+        str_table += col_sep;
+    }
+
+    object_name.push_back(ui->tableWidget->objectName());
+    data.push_back(str_table);
+
+    w->set_tipo_documento(tipo_documento::GUIA_REMISION_REMITENTE, ui->lineEdit_serie->text(), id_series
+                          , object_name, data);
 
     SYSTEM->change_center_w(this, w);
 }
@@ -1105,6 +1149,34 @@ bool VentaGuiaRR::eventFilter(QObject *obj, QEvent *e)
                     return true;
                 }
             }break;
+                /*
+            case Qt::Key_F3:{
+                QTableWidgetItem* item = ui->tableWidget->currentItem();
+                if(item) {
+                    CompraChartCosto* w = new CompraChartCosto();
+                    QString producto_id = ui->tableWidget->item(item->row(), INDEX_ID)->text();
+                    QString unidad = ui->tableWidget->item(item->row(), INDEX_UNIDAD)->text();
+                    QString descripcion = ui->tableWidget->item(item->row(), INDEX_DESCRIPCION)->text();
+                    w->set_producto(producto_id, unidad, descripcion);
+                    w->set_widget_previous(this);
+                    SYSTEM->change_center_w(this, w);
+                    return true;
+                }
+            }break;
+            case Qt::Key_F4:{
+                QTableWidgetItem* item = ui->tableWidget->currentItem();
+                if(item) {
+                    VentaChartPrecio* w = new VentaChartPrecio();
+                    QString producto_id = ui->tableWidget->item(item->row(), INDEX_ID)->text();
+                    QString unidad = ui->tableWidget->item(item->row(), INDEX_UNIDAD)->text();
+                    QString descripcion = ui->tableWidget->item(item->row(), INDEX_DESCRIPCION)->text();
+                    w->set_producto(producto_id, unidad, descripcion);
+                    w->set_widget_previous(this);
+                    SYSTEM->change_center_w(this, w);
+                    return true;
+                }
+            }break;
+            */
             }
         }
         return false;

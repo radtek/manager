@@ -1,23 +1,19 @@
-#ifndef COMPRACHARTCOSTO_H
-#define COMPRACHARTCOSTO_H
+#ifndef VENTACHARTPRECIO_H
+#define VENTACHARTPRECIO_H
 
-#include <QWidget>
-#include <QtCharts>
-#include <QLineSeries>
-using namespace QtCharts;
-#include "compra_global.h"
+#include "venta_global.h"
 
 namespace Ui {
-class CompraChartCosto;
+class VentaChartPrecio;
 }
 
-class COMPRASHARED_EXPORT CompraChartCosto : public QWidget
+class VentaChartPrecio : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit CompraChartCosto(QWidget *parent = 0);
-    ~CompraChartCosto();
+    explicit VentaChartPrecio(QWidget *parent = 0);
+    ~VentaChartPrecio();
 
     void set_widget_previous(QWidget* widget_previous);
 
@@ -59,7 +55,7 @@ protected:
     bool eventFilter(QObject *watched, QEvent *event);
 
 private:
-    Ui::CompraChartCosto *ui;
+    Ui::VentaChartPrecio *ui;
 
     QWidget* widget_previous;
 
@@ -75,4 +71,4 @@ private:
     QVector<qreal> values_max;
 };
 
-#endif // COMPRACHARTCOSTO_H
+#endif // VENTACHARTPRECIO_H

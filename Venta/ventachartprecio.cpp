@@ -1,11 +1,11 @@
-#include "comprachartcosto.h"
-#include "ui_comprachartcosto.h"
+#include "ventachartprecio.h"
+#include "ui_ventachartprecio.h"
 
-CompraChartCosto::CompraChartCosto(QWidget *parent) :
+VentaChartPrecio::VentaChartPrecio(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::CompraChartCosto)
+    ui(new Ui::VentaChartPrecio)
 {
-    ui->setupUi(this);    
+    ui->setupUi(this);
 
     pos = 0;
     size_query = 10;
@@ -35,9 +35,9 @@ CompraChartCosto::CompraChartCosto(QWidget *parent) :
 */
     ui->tableWidget->hideColumn(0);
     ui->tableWidget->hideColumn(1);
+    ui->tableWidget->hideColumn(10);
     ui->tableWidget->hideColumn(11);
     ui->tableWidget->hideColumn(12);
-    ui->tableWidget->hideColumn(13);
 
     this->installEventFilter(this);
     ui->tableWidget->installEventFilter(this);
@@ -45,16 +45,16 @@ CompraChartCosto::CompraChartCosto(QWidget *parent) :
     ui->pushButton_salir->installEventFilter(this);
 }
 
-CompraChartCosto::~CompraChartCosto()
+VentaChartPrecio::~VentaChartPrecio()
 {
     qDebug()<<"delete compra chart costo"<<endl;
     delete ui;
 }
-void CompraChartCosto::set_widget_previous(QWidget *widget_previous)
+void VentaChartPrecio::set_widget_previous(QWidget *widget_previous)
 {
     this->widget_previous = widget_previous;
 }
-void CompraChartCosto::set_producto(QString producto_id
+void VentaChartPrecio::set_producto(QString producto_id
                                     , QString unidad, QString descripcion)
 {
     ui->label_unidad->setText(unidad);
@@ -62,15 +62,15 @@ void CompraChartCosto::set_producto(QString producto_id
 
     llenar_datos(producto_id);
 }
-void CompraChartCosto::set_value_min(QVector<qreal> v)
+void VentaChartPrecio::set_value_min(QVector<qreal> v)
 {
     this->values_min = v;
 }
-void CompraChartCosto::set_value_max(QVector<qreal> v)
+void VentaChartPrecio::set_value_max(QVector<qreal> v)
 {
     this->values_max = v;
 }
-void CompraChartCosto::set_tw()
+void VentaChartPrecio::set_tw()
 {
     if(!(values_min.length() == 5 && values_max.length() == 5))
         return;
@@ -111,7 +111,7 @@ void CompraChartCosto::set_tw()
 
     ui->horizontalLayout->addWidget(tw);
 }
-void CompraChartCosto::set_chart()
+void VentaChartPrecio::set_chart()
 {
     if(!(values_min.length() == 5 && values_max.length() == 5))
         return;
@@ -160,7 +160,7 @@ void CompraChartCosto::set_chart()
 
     ui->horizontalLayout->addWidget(chartView);
 }
-void CompraChartCosto::llenar_datos(QString producto_id)
+void VentaChartPrecio::llenar_datos(QString producto_id)
 {
     this->producto_id = producto_id;
 
@@ -175,18 +175,16 @@ void CompraChartCosto::llenar_datos(QString producto_id)
     //set_chart();
 
 }
-void CompraChartCosto::llenar_tabla()
+void VentaChartPrecio::llenar_tabla()
 {
     QString str_query;
-    str_query += "SELECT t.id, t.tipo_documento_id, t.fecha_emision";
-    str_query += ", t.cantidad_bruto";
+    str_query += "SELECT t.id, t.tipo_documento_id, t.fecha_emision, t.cantidad_bruto";
     str_query += ", t.cantidad_bruto - t.cantidad_nc";
     str_query += ", t.precio / t.cantidad_bruto AS precio_bruto";
-    str_query += ", t.precio_flete / t.cantidad_bruto AS flete_unit";
     str_query += ", IF((t.cantidad_bruto - t.cantidad_nc) <> 0, t.desc_nc / (t.cantidad_bruto - t.cantidad_nc), 0) AS desc_nc_unit";
     str_query += ", IF((t.cantidad_bruto - t.cantidad_nc) <> 0, IF(t.total <> 0, (t.precio / t.total), 0) * t.nc_monto / (t.cantidad_bruto - t.cantidad_nc), 0) AS desc_nc_monto_unit";
-    str_query += ", t.serie AS serie, t.numero AS numero";
-    str_query += ", t.persona_id AS persona_id, t.ruc AS ruc, t.razon_social AS razon_social FROM";
+    str_query += ", t.serie, t.numero";
+    str_query += ", t.persona_id, t.codigo AS codigo, t.nombre AS nombre, t.direccion AS direccion FROM";
     str_query += " (SELECT";
     str_query += " documento.id AS id";
     str_query += ", documento.tipo_documento_id AS tipo_documento_id";
@@ -200,11 +198,6 @@ void CompraChartCosto::llenar_tabla()
     str_query += ", SUM(documento_h_producto.precio) AS precio";
     str_query += ", (SELECT SUM(documento_h_producto.precio) FROM documento_h_producto";
     str_query += " WHERE documento.id = documento_h_producto.documento_id) AS total";
-    str_query += ", IFNULL((SELECT SUM(d_h_prod_flete.precio_aux) FROM documento d";
-    str_query += " JOIN documento_h_documento d_h_d_flete ON d.id = d_h_d_flete.documento_id1";
-    str_query += " JOIN documento d_flete ON (d_h_d_flete.documento_id = d_flete.id AND d_flete.tipo_documento_id = "+QString().setNum(tipo_documento::FLETE)+")";
-    str_query += " JOIN documento_h_producto d_h_prod_flete ON (d_h_prod_flete.producto_id = "+producto_id+" AND d_h_prod_flete.documento_id = d_flete.id)";
-    str_query += " WHERE d.id = documento.id), 0) AS precio_flete";
     str_query += ", IFNULL((SELECT SUM(d_h_prod_nc_desc.precio_aux) FROM documento d";
     str_query += " JOIN documento_h_documento d_h_d_nc ON d.id = d_h_d_nc.documento_id1";
     str_query += " JOIN documento d_nc ON (d_h_d_nc.documento_id = d_nc.id AND d_nc.tipo_documento_id = "+QString().setNum(tipo_documento::NOTA_CREDITO)+")";
@@ -217,27 +210,27 @@ void CompraChartCosto::llenar_tabla()
     str_query += " WHERE d.id = documento.id), 0) AS nc_monto";
     str_query += ", anexo.serie AS serie";
     str_query += ", anexo.numero AS numero";
-    str_query += ", persona.id AS persona_id";
-    str_query += ", juridica.ruc AS ruc";
-    str_query += ", juridica.razon_social AS razon_social";
+    str_query += ", cliente.id AS persona_id";
+    str_query += ", cliente.codigo AS codigo";
+    str_query += ", cliente.nombre AS nombre";
+    str_query += ", cliente.direccion AS direccion";
     str_query += " FROM producto";
     str_query += " JOIN documento_h_producto ON producto.id = documento_h_producto.producto_id";
 
-    str_query += " JOIN documento ON ((documento.tipo_documento_id = "+QString().setNum(tipo_documento::SALDO);
-    str_query += " OR documento.tipo_documento_id = "+QString().setNum(tipo_documento::BOLETA);
+    str_query += " JOIN documento ON ((documento.tipo_documento_id = "+QString().setNum(tipo_documento::BOLETA);
     str_query += " OR documento.tipo_documento_id = "+QString().setNum(tipo_documento::FACTURA)+")";
     str_query += " AND documento.id = documento_h_producto.documento_id)";
-    str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::COMPRA)+" AND documento.id = comprobante.documento_id)";
+    str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::VENTA)+" AND documento.id = comprobante.documento_id)";
 
-    str_query += " LEFT JOIN saldo ON saldo.comprobante_documento_id = documento.id";
     str_query += " LEFT JOIN boleta ON boleta.comprobante_documento_id = documento.id";
     str_query += " LEFT JOIN factura ON factura.comprobante_documento_id = documento.id";
 
     str_query += " JOIN anexo ON documento.id = anexo.documento_id";
     str_query += " LEFT JOIN documento_h_persona ON documento.id = documento_h_persona.documento_id";
     str_query += " LEFT JOIN persona ON persona.id = documento_h_persona.persona_id";
-    str_query += " LEFT JOIN juridica ON persona.id = juridica.persona_id";
-    str_query += " LEFT JOIN proveedor ON persona.id = proveedor.juridica_persona_id";
+    str_query += " LEFT JOIN ((SELECT naturales.persona_id AS id, naturales.dni AS codigo, naturales.nombre AS nombre, naturales.direccion AS direccion FROM naturales)";
+    str_query += " UNION ALL (SELECT juridica.persona_id, juridica.ruc, juridica.razon_social, juridica.domicilio_fiscal FROM juridica))";
+    str_query += " AS cliente ON cliente.id = persona.id";
     str_query += " WHERE producto.id = "+producto_id+" AND YEAR(anexo.fecha_emision) = "+QString().setNum(ui->dateEdit->date().year());
     str_query += " GROUP BY documento.id";
     str_query += " ORDER BY anexo.fecha_emision DESC, documento.id DESC";
@@ -253,9 +246,6 @@ void CompraChartCosto::llenar_tabla()
             QString id = query.value(0).toString();
             int tipo_documento_id = query.value(1).toInt();
             QString documento;
-            if(tipo_documento_id == tipo_documento::SALDO){
-                documento = "SALDO";
-            }
             if(tipo_documento_id == tipo_documento::BOLETA){
                 documento = "BOLETA";
             }
@@ -272,23 +262,21 @@ void CompraChartCosto::llenar_tabla()
             double precio = query.value(5).toDouble();
             QString precio_bruto = QString().setNum(precio, ' ', 3);
 
-            double flete = query.value(6).toDouble();
-            QString precio_flete = QString().setNum(flete, ' ', 3);
-
-            double desc_nc = query.value(7).toDouble();
+            double desc_nc = query.value(6).toDouble();
             QString descuento_nc = QString().setNum(desc_nc, ' ', 3);
 
-            double desc_nc_monto = query.value(8).toDouble();
+            double desc_nc_monto = query.value(7).toDouble();
             QString descuento_nc_monto = QString().setNum(desc_nc_monto, ' ', 3);
 
-            double precio_neto_val = precio + flete - desc_nc - desc_nc_monto;
+            double precio_neto_val = precio - desc_nc - desc_nc_monto;
             QString precio_neto = QString().setNum(precio_neto_val, ' ', 3);
 
-            QString serie = query.value(9).toString();
-            QString numero = query.value(10).toString();
-            QString persona_id = query.value(11).toString();
-            QString ruc = query.value(12).toString();
-            QString razon_social = query.value(13).toString();
+            QString serie = query.value(8).toString();
+            QString numero = query.value(9).toString();
+            QString persona_id = query.value(10).toString();
+            QString codigo = query.value(11).toString();
+            QString nombre = query.value(12).toString();
+            QString direccion = query.value(13).toString();
 
             ui->tableWidget->setItem(rowCount, 0, new QTableWidgetItem(id));
             ui->tableWidget->setItem(rowCount, 1, new QTableWidgetItem(QString().setNum(tipo_documento_id)));
@@ -297,15 +285,15 @@ void CompraChartCosto::llenar_tabla()
             ui->tableWidget->setItem(rowCount, 4, new QTableWidgetItem(cantidad));
             ui->tableWidget->setItem(rowCount, 5, new QTableWidgetItem(cantidad_final));
             ui->tableWidget->setItem(rowCount, 6, new QTableWidgetItem(precio_bruto));
-            ui->tableWidget->setItem(rowCount, 7, new QTableWidgetItem(precio_flete));
-            ui->tableWidget->setItem(rowCount, 8, new QTableWidgetItem(descuento_nc));
-            ui->tableWidget->setItem(rowCount, 9, new QTableWidgetItem(descuento_nc_monto));
-            ui->tableWidget->setItem(rowCount, 10, new QTableWidgetItem(precio_neto));
-            ui->tableWidget->setItem(rowCount, 11, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(rowCount, 12, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(rowCount, 13, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(rowCount, 14, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(rowCount, 15, new QTableWidgetItem(razon_social));
+            ui->tableWidget->setItem(rowCount, 7, new QTableWidgetItem(descuento_nc));
+            ui->tableWidget->setItem(rowCount, 8, new QTableWidgetItem(descuento_nc_monto));
+            ui->tableWidget->setItem(rowCount, 9, new QTableWidgetItem(precio_neto));
+            ui->tableWidget->setItem(rowCount, 10, new QTableWidgetItem(serie));
+            ui->tableWidget->setItem(rowCount, 11, new QTableWidgetItem(numero));
+            ui->tableWidget->setItem(rowCount, 12, new QTableWidgetItem(persona_id));
+            ui->tableWidget->setItem(rowCount, 13, new QTableWidgetItem(codigo));
+            ui->tableWidget->setItem(rowCount, 14, new QTableWidgetItem(nombre));
+            ui->tableWidget->setItem(rowCount, 15, new QTableWidgetItem(direccion));
 
             ui->tableWidget->item(rowCount, 0)->setFlags(Qt::ItemIsEnabled
                                                          | Qt::ItemIsSelectable);
@@ -362,7 +350,7 @@ void CompraChartCosto::llenar_tabla()
 
     }
 }
-void CompraChartCosto::llenar_cantidad_precio()
+void VentaChartPrecio::llenar_cantidad_precio()
 {
     QString str_query;
     str_query += "(SELECT t.cantidad_bruto";
@@ -534,10 +522,13 @@ void CompraChartCosto::llenar_cantidad_precio()
 
         double precio_neto_val = precio_compra + flete_compra - desc_c_nc - desc_c_nc_monto;
         QString precio_neto = QString().setNum(precio_neto_val, ' ', 3);
+        double prec_ganancia = precio_neto_val*1.25;
+        QString precio_ganancia = QString().setNum(prec_ganancia, ' ', 3);
 
         ui->doubleSpinBox_cantidad_compra->setValue(cantidad_compra.toDouble());
         ui->doubleSpinBox_cantidad_c_nc->setValue(cantidad_c_nc.toDouble());
         ui->doubleSpinBox_precio_neto->setValue(precio_neto.toDouble());
+        ui->doubleSpinBox_precio_ganancia->setValue(precio_ganancia.toDouble());
 
         query.next();
         double cant_venta = query.value(0).toDouble();
@@ -573,7 +564,7 @@ void CompraChartCosto::llenar_cantidad_precio()
     }
 }
 
-void CompraChartCosto::llenar_grafica()
+void VentaChartPrecio::llenar_grafica()
 {
     QString str_query;
     str_query += "SELECT t.cantidad_bruto";
@@ -655,7 +646,7 @@ void CompraChartCosto::llenar_grafica()
     }
 }
 
-void CompraChartCosto::on_year_up()
+void VentaChartPrecio::on_year_up()
 {
     ui->dateEdit->setDate(QDate(ui->dateEdit->date().year()+1, 1, 1));
     int rowCount = ui->tableWidget->rowCount();
@@ -664,7 +655,7 @@ void CompraChartCosto::on_year_up()
     pos = 0;
     llenar_tabla();
 }
-void CompraChartCosto::on_year_down()
+void VentaChartPrecio::on_year_down()
 {
     ui->dateEdit->setDate(QDate(ui->dateEdit->date().year()-1, 1, 1));
     int rowCount = ui->tableWidget->rowCount();
@@ -673,13 +664,13 @@ void CompraChartCosto::on_year_down()
     pos = 0;
     llenar_tabla();
 }
-void CompraChartCosto::showEvent(QShowEvent *se)
+void VentaChartPrecio::showEvent(QShowEvent *se)
 {
     se->accept();
     ui->dateEdit->setFocus(Qt::TabFocusReason);
 }
 
-bool CompraChartCosto::eventFilter(QObject *watched, QEvent *event)
+bool VentaChartPrecio::eventFilter(QObject *watched, QEvent *event)
 {
     QWidget* w_temp;
     w_temp = this;
@@ -778,7 +769,7 @@ bool CompraChartCosto::eventFilter(QObject *watched, QEvent *event)
     return eventFilter(watched, event);
 }
 
-void CompraChartCosto::on_pushButton_ok_clicked()
+void VentaChartPrecio::on_pushButton_ok_clicked()
 {
     QTableWidget* tb = ui->tableWidget;
     QTableWidgetItem* item = tb->currentItem();
@@ -806,7 +797,7 @@ void CompraChartCosto::on_pushButton_ok_clicked()
     }
 }
 
-void CompraChartCosto::on_pushButton_salir_clicked()
+void VentaChartPrecio::on_pushButton_salir_clicked()
 {
     if(widget_previous){
         this->setAttribute(Qt::WA_DeleteOnClose);
@@ -816,7 +807,7 @@ void CompraChartCosto::on_pushButton_salir_clicked()
     }
 }
 
-void CompraChartCosto::on_dateEdit_dateChanged(const QDate &date)
+void VentaChartPrecio::on_dateEdit_dateChanged(const QDate &date)
 {    
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(0);
@@ -825,7 +816,7 @@ void CompraChartCosto::on_dateEdit_dateChanged(const QDate &date)
     llenar_tabla();
 }
 
-void CompraChartCosto::on_pushButton_modificar_clicked()
+void VentaChartPrecio::on_pushButton_modificar_clicked()
 {
     QTableWidget* tb = ui->tableWidget;
     QTableWidgetItem* item = tb->currentItem();
@@ -841,43 +832,35 @@ void CompraChartCosto::on_pushButton_modificar_clicked()
         switch(tipo)
         {
         case tipo_documento::FACTURA:{
-            CompraFactura* w = new CompraFactura;
+            VentaFactura* w = new VentaFactura;
             w->set_widget_previous(this);
             QString id = tb->item(item->row(), 0)->text();
-            QString persona_id = tb->item(item->row(), 13)->text();
+            QString persona_id = tb->item(item->row(), 12)->text();
             QString fecha_emision = tb->item(item->row(), 3)->text();
-            QString serie = tb->item(item->row(), 11)->text();
-            QString numero = tb->item(item->row(), 12)->text();
-            QString ruc = tb->item(item->row(), 14)->text();
-            QString razon_social = tb->item(item->row(), 15)->text();
+            QString serie = tb->item(item->row(), 10)->text();
+            QString numero = tb->item(item->row(), 11)->text();
+            QString codigo = tb->item(item->row(), 13)->text();
+            QString nombre = tb->item(item->row(), 14)->text();
+            QString direccion = tb->item(item->row(), 15)->text();
 
             //connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
-            w->select(id, persona_id, fecha_emision, serie, numero, ruc, razon_social);
+            w->select(id, QString().setNum(tipo), persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
             SYSTEM->change_center_w(this, w);
         }break;
         case tipo_documento::BOLETA:{
-            CompraBoleta* w = new CompraBoleta;
+            VentaBoleta* w = new VentaBoleta;
             w->set_widget_previous(this);
             QString id = tb->item(item->row(), 0)->text();
-            QString persona_id = tb->item(item->row(), 13)->text();
+            QString persona_id = tb->item(item->row(), 12)->text();
             QString fecha_emision = tb->item(item->row(), 3)->text();
-            QString serie = tb->item(item->row(), 11)->text();
-            QString numero = tb->item(item->row(), 12)->text();
-            QString ruc = tb->item(item->row(), 14)->text();
-            QString razon_social = tb->item(item->row(), 15)->text();
+            QString serie = tb->item(item->row(), 10)->text();
+            QString numero = tb->item(item->row(), 11)->text();
+            QString codigo = tb->item(item->row(), 13)->text();
+            QString nombre = tb->item(item->row(), 14)->text();
+            QString direccion = tb->item(item->row(), 15)->text();
 
             //connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
-            w->select(id, persona_id, fecha_emision, serie, numero, ruc, razon_social);
-            SYSTEM->change_center_w(this, w);
-        }break;
-        case tipo_documento::SALDO:{
-            CompraSaldo* w = new CompraSaldo;
-            w->set_widget_previous(this);
-            QString id = tb->item(item->row(), 0)->text();
-            QString fecha_emision = tb->item(item->row(), 3)->text();
-
-            //connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
-            w->select(id, fecha_emision);
+            w->select(id, QString().setNum(tipo), persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
             SYSTEM->change_center_w(this, w);
         }break;
         }

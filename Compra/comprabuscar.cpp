@@ -810,14 +810,16 @@ bool CompraBuscar::eventFilter(QObject *obj, QEvent *e)
                         ui->tableWidget->currentItem()->setSelected(true);
                 }
             }break;
-            case Qt::Key_F3:
+            case Qt::Key_F3: {
                 ui->pushButton_agregar->setFocus(Qt::TabFocusReason);
                 ui->pushButton_agregar->click();
                 return true;
-            case Qt::Key_F4:
+            }break;
+            case Qt::Key_F4: {
                 ui->pushButton_modificar->setFocus(Qt::TabFocusReason);
                 ui->pushButton_modificar->click();
                 return true;
+            }break;
             }
 
         }else{

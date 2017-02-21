@@ -30,7 +30,8 @@ public:
 
     static QString hotSpotMimeDataKey() { return QStringLiteral("application/x-hotspot"); }
 
-    void set_tipo(int tipo, QString serie, QString series_id);
+    void set_tipo(int tipo, QString serie, QString series_id
+                  , QVector<QString>& object_name, QVector<QString>& data);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

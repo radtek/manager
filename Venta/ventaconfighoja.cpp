@@ -22,13 +22,14 @@ void VentaConfigHoja::set_widget_previous(QWidget *widget_previous)
     this->widget_previous = widget_previous;
 }
 
-void VentaConfigHoja::set_tipo_documento(int tipo, QString serie, QString series_id)
+void VentaConfigHoja::set_tipo_documento(int tipo, QString serie, QString series_id
+                                         , QVector<QString>& object_name, QVector<QString>& data)
 {
     this->tipo = tipo;
     this->series_id = series_id;
 
     ui->widget->setMinimumSize(width, height);
-    ui->widget->set_tipo(tipo, serie, series_id);
+    ui->widget->set_tipo(tipo, serie, series_id, object_name, data);
 
     ui->label_serie->setText(serie);
 }
@@ -56,7 +57,7 @@ bool VentaConfigHoja::guardar()
 
                 for(int i = 0; i < labels.length(); i++){
                     str_query_2 += ",("+series_id;
-                    str_query_2 += ", '"+labels[i]->text()+"'";
+                    str_query_2 += ", '"+labels[i]->objectName()+"'";
                     str_query_2 += ", point("+QString().setNum(labels[i]->x())+", "+QString().setNum(labels[i]->y())+")";
                     str_query_2 += ", '"+labels[i]->styleSheet()+"')";
                 }
@@ -73,7 +74,7 @@ bool VentaConfigHoja::guardar()
 
                 for(int i = 0; i < labels.length(); i++){
                     str_query_2 += ",("+series_id;
-                    str_query_2 += ", '"+labels[i]->text()+"'";
+                    str_query_2 += ", '"+labels[i]->objectName()+"'";
                     str_query_2 += ", point("+QString().setNum(labels[i]->x())+", "+QString().setNum(labels[i]->y())+")";
                     str_query_2 += ", '"+labels[i]->styleSheet()+"')";
                 }
