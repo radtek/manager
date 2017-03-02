@@ -31,9 +31,11 @@ public:
     static QString hotSpotMimeDataKey() { return QStringLiteral("application/x-hotspot"); }
 
     void set_tipo(int tipo, QString serie, QString series_id
-                  , QVector<QString>& object_name, QVector<QString>& data);
+                  , QVector<QLabel*>& labels
+                  , int margen_fila, int margen_columna);
 
 protected:
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -47,6 +49,7 @@ private:
     int tipo;
 
     QVector<QLabel*> labels;
+    QVector<bool> selected_labels;
 
     bool isPress;
     bool isRelease;

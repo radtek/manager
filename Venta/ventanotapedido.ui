@@ -164,19 +164,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QDateTimeEdit" name="dateTimeEdit_emision">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>130</width>
-         <height>0</height>
-        </size>
-       </property>
+      <widget class="QDateEdit" name="dateEdit_emision">
        <property name="displayFormat">
         <string>dd-MM-yyyy</string>
        </property>
@@ -968,7 +956,6 @@
  <tabstops>
   <tabstop>comboBox_transformar</tabstop>
   <tabstop>pushButton_transformar</tabstop>
-  <tabstop>dateTimeEdit_emision</tabstop>
   <tabstop>dateTimeEdit_sistema</tabstop>
   <tabstop>lineEdit_serie</tabstop>
   <tabstop>lineEdit_numero</tabstop>

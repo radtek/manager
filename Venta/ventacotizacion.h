@@ -69,7 +69,7 @@ private slots:
 
     void on_pushButton_transformar_clicked();
 
-    void on_dateTimeEdit_emision_dateChanged(const QDate &date);
+    void on_dateEdit_emision_dateChanged(const QDate &date);
 
     void on_cliente_closing();
 

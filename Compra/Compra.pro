@@ -285,4 +285,3 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     DEPENDPATH += $$PWD/../Persona
 
 
-

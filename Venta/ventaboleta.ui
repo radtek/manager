@@ -49,7 +49,7 @@
         <string notr="true">color: rgb(0, 175, 175);</string>
        </property>
        <property name="text">
-        <string>BOLETA DE VENTA</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;BOLETA DE VENTA&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -209,25 +209,10 @@
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
-       <property name="buddy">
-        <cstring>dateTimeEdit_emision</cstring>
-       </property>
       </widget>
      </item>
      <item>
-      <widget class="QDateTimeEdit" name="dateTimeEdit_emision">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>130</width>
-         <height>0</height>
-        </size>
-       </property>
+      <widget class="QDateEdit" name="dateEdit_emision">
        <property name="displayFormat">
         <string>dd-MM-yyyy</string>
        </property>
@@ -475,6 +460,9 @@
          <pointsize>10</pointsize>
         </font>
        </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
        <property name="text">
         <string>Dirección</string>
        </property>
@@ -504,7 +492,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Registro Sin Doc.</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Registro Sin Doc.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -598,6 +586,8 @@
        <property name="font">
         <font>
          <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="text">
@@ -996,11 +986,26 @@
    </item>
    <item>
     <widget class="QTableWidget" name="tableWidget">
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <attribute name="horizontalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
      <attribute name="horizontalHeaderDefaultSectionSize">
       <number>100</number>
      </attribute>
      <attribute name="horizontalHeaderMinimumSectionSize">
       <number>37</number>
+     </attribute>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="verticalHeaderDefaultSectionSize">
+      <number>30</number>
+     </attribute>
+     <attribute name="verticalHeaderMinimumSectionSize">
+      <number>23</number>
      </attribute>
      <column>
       <property name="text">
@@ -1318,7 +1323,6 @@
   <tabstop>comboBox_transformar</tabstop>
   <tabstop>pushButton_transformar</tabstop>
   <tabstop>dateEdit_declaracion</tabstop>
-  <tabstop>dateTimeEdit_emision</tabstop>
   <tabstop>dateTimeEdit_sistema</tabstop>
   <tabstop>lineEdit_serie</tabstop>
   <tabstop>lineEdit_numero</tabstop>

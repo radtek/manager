@@ -20,13 +20,13 @@ VentaNotaDebito::VentaNotaDebito(QWidget *parent) :
 
     // SET DATA
     disconnect(ui->dateEdit_declaracion, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_declaracion_dateChanged(QDate)));
-    disconnect(ui->dateTimeEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateTimeEdit_emision_dateChanged(QDate)));
+    disconnect(ui->dateEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_emision_dateChanged(QDate)));
     ui->dateEdit_declaracion->setDate(QDate::currentDate());
     mes_declaracion = QDate::currentDate().month();
-    ui->dateTimeEdit_emision->setDateTime(QDateTime::currentDateTime());
+    ui->dateEdit_emision->setDate(QDate::currentDate());
     mes_emision = QDate::currentDate().month();
     connect(ui->dateEdit_declaracion, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_declaracion_dateChanged(QDate)));
-    connect(ui->dateTimeEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateTimeEdit_emision_dateChanged(QDate)));
+    connect(ui->dateEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_emision_dateChanged(QDate)));
     ui->dateTimeEdit_sistema->setDateTime(QDateTime::currentDateTime());
 
     QTimer *timer = new QTimer(this);
@@ -48,13 +48,13 @@ VentaNotaDebito::VentaNotaDebito(QWidget *parent) :
     ui->tableWidget->hideColumn(INDEX_ID);
 
     // SET CUSTOMS
-    ui->label_igv->setText("IGV "+QString().setNum(igv, ' ', 3));
+    ui->label_igv_value->setText("IGV "+QString().setNum(igv, ' ', 3));
 
     this->installEventFilter(this);
     ui->comboBox_transformar->installEventFilter(this);
     ui->pushButton_transformar->installEventFilter(this);
     ui->dateEdit_declaracion->installEventFilter(this);
-    ui->dateTimeEdit_emision->installEventFilter(this);
+    ui->dateEdit_emision->installEventFilter(this);
     ui->dateTimeEdit_sistema->installEventFilter(this);
     ui->lineEdit_serie->installEventFilter(this);
     ui->lineEdit_numero->installEventFilter(this);
@@ -193,12 +193,9 @@ bool VentaNotaDebito::select(QString id
             ui->comboBox_id_boleta->addItem(id);
             ui->comboBox_serie_numero_boleta->addItem(sn);
         }
-
-        QDateTime dt;
         QDate date = QDate::fromString(fecha_emision, "dd-MMM-yyyy");
-        dt.setDate(date);
 
-        ui->dateTimeEdit_emision->setDateTime(dt);
+        ui->dateEdit_emision->setDate(date);
 
         ui->lineEdit_serie->setText(serie);
         ui->lineEdit_numero->setText(numero);
@@ -393,7 +390,7 @@ bool VentaNotaDebito::guardar()
 
     QString str_query;
 
-    ui->dateTimeEdit_emision->setDisplayFormat("yyyy-MM-dd hh:mm:ss");
+    ui->dateEdit_emision->setDisplayFormat("yyyy-MM-dd hh:mm:ss");
     ui->dateTimeEdit_sistema->setDisplayFormat("yyyy-MM-dd hh:mm:ss");
 
     if (id.compare("") == 0) {
@@ -414,7 +411,7 @@ bool VentaNotaDebito::guardar()
         str_query +=  "INSERT INTO anexo(documento_id";
         str_query += ", fecha_emision, fecha_sistema, serie, numero)VALUES(";
         str_query += "(SELECT MAX(documento.id) FROM documento)";
-        str_query += ", '"+ui->dateTimeEdit_emision->date().toString("yyyy-MM-dd")+"'";
+        str_query += ", '"+ui->dateEdit_emision->date().toString("yyyy-MM-dd")+"'";
         str_query += ", '"+ui->dateTimeEdit_sistema->dateTime().toString("yyyy-MM-dd hh:mm:ss")+"'";
         str_query += ", '"+ui->lineEdit_serie->text()+"'";
         str_query += ", '"+ui->lineEdit_numero->text()+"')";
@@ -489,7 +486,7 @@ bool VentaNotaDebito::guardar()
 
         // ANEXO
         str_query +=  "UPDATE anexo SET";
-        str_query += " fecha_emision = '"+ui->dateTimeEdit_emision->date().toString("yyyy-MM-dd")+"'";
+        str_query += " fecha_emision = '"+ui->dateEdit_emision->date().toString("yyyy-MM-dd")+"'";
         str_query += ", fecha_sistema = '"+ui->dateTimeEdit_sistema->dateTime().toString("yyyy-MM-dd hh:mm:ss")+"'";
         str_query += ", serie = '"+ui->lineEdit_serie->text()+"'";
         str_query += ", numero = '"+ui->lineEdit_numero->text()+"'";
@@ -567,7 +564,7 @@ bool VentaNotaDebito::guardar()
         }
     }
 
-    ui->dateTimeEdit_emision->setDisplayFormat("dd-MM-yyyy");
+    ui->dateEdit_emision->setDisplayFormat("dd-MM-yyyy");
     ui->dateTimeEdit_sistema->setDisplayFormat("dd-MM-yyyy hh:mm:ss");
 
     QSqlQuery query;
@@ -630,7 +627,7 @@ void VentaNotaDebito::on_pushButton_transformar_clicked()
                 productos[i].push_back(p_total);
             }
             w->set_data(persona_id, tipo_persona_id
-            , ui->dateTimeEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
+            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
             , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
             , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
             , ui->lineEdit_direccion->text(), productos);
@@ -681,7 +678,7 @@ void VentaNotaDebito::on_pushButton_transformar_clicked()
                 productos[i].push_back(p_total);
             }
             w->set_data(persona_id, tipo_persona_id
-            , ui->dateTimeEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
+            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
             , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
             , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
             , ui->lineEdit_direccion->text(), productos);
@@ -904,9 +901,10 @@ void VentaNotaDebito::on_pushButton_imprimir_clicked()
         qDebug()<<"is id"<<endl;
         return;
     }
+    int width = 595, height = 842, margen_fila = 0, margen_columna = 0;
     if(ui->lineEdit_serie->text().length() == 4){
         qDebug()<<"is series"<<endl;
-        QString str_query = "SELECT series.id FROM series";
+        QString str_query = "SELECT series.id, series.width, series.height, series.margen_fila, series.margen_columna FROM series";
         str_query += " WHERE series.serie = '"+ui->lineEdit_serie->text()+"'";
         str_query += " AND series.operacion_id = "+QString().setNum(operacion_items::VENTA);
         str_query += " AND series.tipo_documento_id = "+QString().setNum(tipo_documento::NOTA_DEBITO);
@@ -916,11 +914,19 @@ void VentaNotaDebito::on_pushButton_imprimir_clicked()
         if(query.exec(str_query)){
             if(query.next()){
                 id_series = query.value(0).toString();
+                width = query.value(1).toInt();
+                height = query.value(2).toInt();
+                margen_fila = query.value(3).toInt();
+                margen_columna = query.value(4).toInt();
             }else{
-                str_query = "INSERT INTO series(operacion_id, tipo_documento_id, serie)VALUES(";
+                str_query = "INSERT INTO series(operacion_id, tipo_documento_id, serie, width, height, margen_fila, margen_columna)VALUES(";
                 str_query += QString().setNum(operacion_items::VENTA);
                 str_query += ", "+QString().setNum(tipo_documento::NOTA_DEBITO);
-                str_query += ", '"+ui->lineEdit_serie->text()+"')";
+                str_query += ", '"+ui->lineEdit_serie->text()+"'";
+                str_query += ", '"+QString().setNum(width)+"'";
+                str_query += ", '"+QString().setNum(height)+"'";
+                str_query += ", '"+QString().setNum(margen_fila)+"'";
+                str_query += ", '"+QString().setNum(margen_columna)+"')";
                 str_query += "&&END_QUERY&&";
                 str_query += "SELECT MAX(series.id) FROM series";
                 str_query += "&&END_QUERY&&";
@@ -943,59 +949,64 @@ void VentaNotaDebito::on_pushButton_imprimir_clicked()
     VentaConfigHoja* w = new VentaConfigHoja;
     w->set_widget_previous(this);
 
-    QVector<QString> object_name;
-    QVector<QString> data;
+    QVector<QLabel*> labels;
 
-    object_name.push_back(ui->dateTimeEdit_emision->objectName());
-    data.push_back(ui->dateTimeEdit_emision->date().toString("dd-MM-yyyy"));
+    QLabel* label = new QLabel(ui->dateEdit_emision->date().toString("dd-MM-yyyy"), 0);
+    label->setObjectName(ui->dateEdit_emision->objectName());
+    labels.push_back(label);
+    label = new QLabel(ui->dateTimeEdit_sistema->dateTime().toString("dd-MM-yyyy hh:mm:ss"), 0);
+    label->setObjectName(ui->dateTimeEdit_sistema->objectName());
+    labels.push_back(label);
+    label = new QLabel(ui->lineEdit_serie->text(), 0);
+    label->setObjectName(ui->lineEdit_serie->objectName());
+    labels.push_back(label);
+    label = new QLabel(ui->lineEdit_numero->text(), 0);
+    label->setObjectName(ui->lineEdit_numero->objectName());
+    labels.push_back(label);
+    label = new QLabel(ui->lineEdit_codigo->text(), 0);
+    label->setObjectName(ui->lineEdit_codigo->objectName());
+    labels.push_back(label);
+    label = new QLabel(ui->lineEdit_nombre->text(), 0);
+    label->setObjectName(ui->lineEdit_nombre->objectName());
+    labels.push_back(label);
+    label = new QLabel(ui->lineEdit_direccion->text(), 0);
+    label->setObjectName(ui->lineEdit_direccion->objectName());
+    labels.push_back(label);
 
-    object_name.push_back(ui->dateTimeEdit_sistema->objectName());
-    data.push_back(ui->dateTimeEdit_sistema->dateTime().toString("dd-MM-yyyy hh:mm:ss"));
+    QTextCursor cursor(new QTextDocument(this));
+    cursor.movePosition(QTextCursor::Start);
 
-    object_name.push_back(ui->lineEdit_serie->objectName());
-    data.push_back(ui->lineEdit_serie->text());
-
-    object_name.push_back(ui->lineEdit_numero->objectName());
-    data.push_back(ui->lineEdit_numero->text());
-
-    object_name.push_back(ui->lineEdit_codigo->objectName());
-    data.push_back(ui->lineEdit_codigo->text());
-
-    object_name.push_back(ui->lineEdit_nombre->objectName());
-    data.push_back(ui->lineEdit_nombre->text());
-
-    object_name.push_back(ui->lineEdit_direccion->objectName());
-    data.push_back(ui->lineEdit_direccion->text());
-
-    QString str_table = "";
-    QString row_sep = "   ";
-    QString col_sep = "\n";
-    for(int i=0; i<ui->tableWidget->rowCount(); i++){
-        for(int j=0; j<ui->tableWidget->columnCount(); j++){
-            str_table += ui->tableWidget->item(i, j)->text();
-            str_table += row_sep;
+    QTextTable *table = cursor.insertTable(ui->tableWidget->rowCount(), ui->tableWidget->columnCount()-1);
+    QTextTableFormat format;
+    format.setBorder(0);
+    table->setFormat(format);
+    for(int i=0; i<ui->tableWidget->rowCount(); i++) {
+        for(int j=1; j<ui->tableWidget->columnCount(); j++) {
+            QString str = ui->tableWidget->item(i, j)->text();
+            table->cellAt(i, j-1).firstCursorPosition().insertText(str);
         }
-        str_table += col_sep;
     }
-    object_name.push_back(ui->tableWidget->objectName());
-    data.push_back(str_table);
+    //qDebug()<<table->document()->toHtml()<<endl;
+    label = new QLabel(table->document()->toHtml(), 0);
+    label->setObjectName(ui->tableWidget->objectName());
+    labels.push_back(label);
 
-    object_name.push_back(ui->lineEdit_subtotal->objectName());
-    data.push_back(ui->lineEdit_subtotal->text());
+    label = new QLabel(ui->lineEdit_subtotal->text(), 0);
+    label->setObjectName(ui->lineEdit_subtotal->objectName());
+    labels.push_back(label);
+    label = new QLabel(ui->label_igv_value->text(), 0);
+    label->setObjectName(ui->label_igv_value->objectName());
+    labels.push_back(label);
+    label = new QLabel(ui->lineEdit_igv->text(), 0);
+    label->setObjectName(ui->lineEdit_igv->objectName());
+    labels.push_back(label);
+    label = new QLabel(ui->lineEdit_total->text(), 0);
+    label->setObjectName(ui->lineEdit_total->objectName());
+    labels.push_back(label);
 
-    object_name.push_back(ui->label_igv->objectName());
-    data.push_back(ui->label_igv->text());
-
-    object_name.push_back(ui->lineEdit_igv->objectName());
-    QString str_igv = ui->label_igv->text();
-    str_igv.remove(0, 4);
-    data.push_back(ui->lineEdit_igv->text());
-
-    object_name.push_back(ui->lineEdit_total->objectName());
-    data.push_back(ui->lineEdit_total->text());
 
     w->set_tipo_documento(tipo_documento::NOTA_DEBITO, ui->lineEdit_serie->text(), id_series
-                          , object_name, data);
+                          , labels, width, height, margen_fila, margen_columna);
 
     SYSTEM->change_center_w(this, w);
 }
@@ -1096,7 +1107,7 @@ bool VentaNotaDebito::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Return:{
-                ui->dateTimeEdit_emision->setFocus(Qt::TabFocusReason);
+                ui->dateEdit_emision->setFocus(Qt::TabFocusReason);
                 return true;
             }break;
             }
@@ -1104,7 +1115,7 @@ bool VentaNotaDebito::eventFilter(QObject *obj, QEvent *e)
         return false;
     }
 
-    w_temp = ui->dateTimeEdit_emision;
+    w_temp = ui->dateEdit_emision;
     if(obj == w_temp){
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
@@ -2013,7 +2024,7 @@ void VentaNotaDebito::on_pushButton_anular_clicked()
 }
 void VentaNotaDebito::on_dateEdit_declaracion_dateChanged(const QDate &date)
 {
-    if(date.month() > ui->dateTimeEdit_emision->date().month()){
+    if(date.month() > ui->dateEdit_emision->date().month()){
         QMessageBox::warning(this, "Advertencia", "El mes de declaración no puede ser mayor\nque la fecha de emisión.", "Ok");
 
         disconnect(ui->dateEdit_declaracion, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_declaracion_dateChanged(QDate)));
@@ -2026,16 +2037,16 @@ void VentaNotaDebito::on_dateEdit_declaracion_dateChanged(const QDate &date)
     }
 }
 
-void VentaNotaDebito::on_dateTimeEdit_emision_dateChanged(const QDate &date)
+void VentaNotaDebito::on_dateEdit_emision_dateChanged(const QDate &date)
 {
     if(date.month() < ui->dateEdit_declaracion->date().month()){
         QMessageBox::warning(this, "Advertencia", "El mes de declaración no puede ser mayor\nque la fecha de emisión.", "Ok");
 
-        disconnect(ui->dateTimeEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateTimeEdit_emision_dateChanged(QDate)));
+        disconnect(ui->dateEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_emision_dateChanged(QDate)));
         QDate date_temp;
         date_temp.setDate(date.year(), mes_emision, date.day());
-        ui->dateTimeEdit_emision->setDate(date_temp);
-        connect(ui->dateTimeEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateTimeEdit_emision_dateChanged(QDate)));
+        ui->dateEdit_emision->setDate(date_temp);
+        connect(ui->dateEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_emision_dateChanged(QDate)));
     }else{
         mes_emision = date.month();
     }

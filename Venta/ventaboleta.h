@@ -104,7 +104,7 @@ private slots:
 
     void on_dateEdit_declaracion_dateChanged(const QDate &date);
 
-    void on_dateTimeEdit_emision_dateChanged(const QDate &date);
+    void on_dateEdit_emision_dateChanged(const QDate &date);
 
     void on_registroSinDoc_buscar_closing();
 

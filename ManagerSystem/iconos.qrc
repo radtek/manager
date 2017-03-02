@@ -130,5 +130,6 @@
         <file>Iconos/imprimir.png</file>
         <file>Iconos/salir.png</file>
         <file>Iconos/amarres.png</file>
+        <file>Iconos/border.png</file>
     </qresource>
 </RCC>
