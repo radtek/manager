@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>472</width>
-    <height>328</height>
+    <height>334</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <widget class="QLabel" name="label_titulo">
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>12</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -45,6 +45,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_agregar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Agregar</string>
        </property>
@@ -52,6 +57,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_modificar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Modificar</string>
        </property>
@@ -76,6 +86,11 @@
      </item>
      <item>
       <widget class="QDateEdit" name="dateEdit_inicio">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="displayFormat">
         <string>dd-MM-yyyy</string>
        </property>
@@ -83,6 +98,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>al</string>
        </property>
@@ -93,6 +113,11 @@
      </item>
      <item>
       <widget class="QDateEdit" name="dateEdit_fin">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="displayFormat">
         <string>dd-MM-yyyy</string>
        </property>
@@ -120,6 +145,11 @@
        <width>450</width>
        <height>0</height>
       </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
      </property>
      <column>
       <property name="text">
@@ -174,8 +204,13 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string>Buscar:</string>
+        <string>Buscar</string>
        </property>
       </widget>
      </item>
@@ -186,6 +221,11 @@
          <width>350</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
@@ -221,6 +261,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_ok">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Ok</string>
        </property>
@@ -228,6 +273,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_salir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Salir</string>
        </property>

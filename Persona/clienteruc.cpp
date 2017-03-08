@@ -277,6 +277,8 @@ bool ClienteRUC::guardar()
         str_query += " WHERE juridica_persona_id = "+id;
         str_query += "&&END_QUERY&&";
     }
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
 
     SYSTEM->multiple_query(str_query);
     qDebug()<<str_query<<endl;
@@ -289,6 +291,8 @@ bool ClienteRUC::guardar()
 bool ClienteRUC::remove()
 {
     QString str_query = "DELETE FROM persona WHERE id = "+id;
+    str_query += "&&END_QUERY&&";
+    str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
 
     QSqlQuery query;

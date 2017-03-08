@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>362</width>
-    <height>304</height>
+    <width>398</width>
+    <height>320</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -51,7 +51,17 @@
         </font>
        </property>
        <property name="text">
-        <string>Nuevo</string>
+        <string>Agregar</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../ManagerSystem/iconos.qrc">
+         <normaloff>:/new/Iconos/agregar_32.png</normaloff>:/new/Iconos/agregar_32.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -64,6 +74,16 @@
        </property>
        <property name="text">
         <string>Modificar</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../ManagerSystem/iconos.qrc">
+         <normaloff>:/new/Iconos/modificar_32.png</normaloff>:/new/Iconos/modificar_32.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -98,7 +118,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Marca: </string>
+        <string>Marca </string>
        </property>
       </widget>
      </item>
@@ -170,6 +190,8 @@
   <tabstop>pushButton_ok</tabstop>
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../ManagerSystem/iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

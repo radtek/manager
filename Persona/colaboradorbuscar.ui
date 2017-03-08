@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>380</width>
-    <height>300</height>
+    <width>416</width>
+    <height>320</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,15 +45,45 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_agregar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Agregar</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../ManagerSystem/iconos.qrc">
+         <normaloff>:/new/Iconos/agregar-user.png</normaloff>:/new/Iconos/agregar-user.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_modificar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Modificar</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../ManagerSystem/iconos.qrc">
+         <normaloff>:/new/Iconos/colaborador_32.png</normaloff>:/new/Iconos/colaborador_32.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -61,6 +91,11 @@
    </item>
    <item>
     <widget class="QTableWidget" name="tableWidget">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <column>
       <property name="text">
        <string>Código</string>
@@ -86,7 +121,13 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QLineEdit" name="lineEdit_buscar"/>
+      <widget class="QLineEdit" name="lineEdit_buscar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_3">
@@ -123,6 +164,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_ok">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Ok</string>
        </property>
@@ -130,6 +176,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_salir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Cancelar</string>
        </property>
@@ -147,6 +198,8 @@
   <tabstop>pushButton_ok</tabstop>
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../ManagerSystem/iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

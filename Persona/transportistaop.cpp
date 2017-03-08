@@ -315,6 +315,8 @@ bool TransportistaOp::guardar()
         str_query += " WHERE juridica_persona_id = "+id;
         str_query += "&&END_QUERY&&";
     }
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
 
     SYSTEM->multiple_query(str_query);
     qDebug()<<str_query<<endl;
@@ -328,6 +330,8 @@ bool TransportistaOp::guardar()
 bool TransportistaOp::remove()
 {
     QString str_query = "DELETE FROM persona WHERE id = "+id;
+    str_query += "&&END_QUERY&&";
+    str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
 
     QSqlQuery query;

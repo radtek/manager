@@ -367,6 +367,8 @@ bool CompraOrden::guardar()
         str_query += " WHERE comprobante_documento_id = "+id;
         str_query += "&&END_QUERY&&";
     }
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
 
     ui->dateTimeEdit_emision->setDisplayFormat("dd-MM-yyyy");
     ui->dateTimeEdit_sistema->setDisplayFormat("dd-MM-yyyy hh:mm:ss");
@@ -385,6 +387,8 @@ bool CompraOrden::remove()
     QString str_query;
 
     str_query = "DELETE FROM documento WHERE id = "+id;
+    str_query += "&&END_QUERY&&";
+    str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
 
     QSqlQuery query;
@@ -431,6 +435,103 @@ void CompraOrden::on_producto_closing()
     QString marca = w->getMarca();
     QString descripcion = w->getDescripcion()+" "+marca;
     QString p_total = w->getPrecio();
+
+    QString str_query;
+    str_query += "SELECT t.id, t.tipo_documento_id, t.fecha_emision";
+    str_query += ", t.cantidad_bruto";
+    str_query += ", t.cantidad_bruto - t.cantidad_nc";
+    str_query += ", t.precio / t.cantidad_bruto AS precio_bruto";
+    str_query += ", t.precio_flete / t.cantidad_bruto AS flete_unit";
+    str_query += ", IF((t.cantidad_bruto - t.cantidad_nc) <> 0, t.desc_nc / (t.cantidad_bruto - t.cantidad_nc), 0) AS desc_nc_unit";
+    str_query += ", IF((t.cantidad_bruto - t.cantidad_nc) <> 0, IF(t.total <> 0, (t.precio / t.total), 0) * t.nc_monto / (t.cantidad_bruto - t.cantidad_nc), 0) AS desc_nc_monto_unit";
+    str_query += ", t.serie AS serie, t.numero AS numero";
+    str_query += ", t.persona_id AS persona_id, t.ruc AS ruc, t.razon_social AS razon_social FROM";
+    str_query += " (SELECT";
+    str_query += " documento.id AS id";
+    str_query += ", documento.tipo_documento_id AS tipo_documento_id";
+    str_query += ", anexo.fecha_emision AS fecha_emision";
+    str_query += ", SUM(documento_h_producto.cantidad) AS cantidad_bruto";
+    str_query += ", IFNULL((SELECT SUM(d_h_prod_nc_cantidad.cantidad_aux) FROM documento d";
+    str_query += " JOIN documento_h_documento d_h_d_nc ON d.id = d_h_d_nc.documento_id1";
+    str_query += " JOIN documento d_nc ON (d_h_d_nc.documento_id = d_nc.id AND d_nc.tipo_documento_id = "+QString().setNum(tipo_documento::NOTA_CREDITO)+")";
+    str_query += " JOIN documento_h_producto d_h_prod_nc_cantidad ON (d_h_prod_nc_cantidad.producto_id = "+producto_id+" AND d_h_prod_nc_cantidad.documento_id = d_nc.id)";
+    str_query += " WHERE d.id = documento.id), 0) AS cantidad_nc";
+    str_query += ", SUM(documento_h_producto.precio) AS precio";
+    str_query += ", (SELECT SUM(documento_h_producto.precio) FROM documento_h_producto";
+    str_query += " WHERE documento.id = documento_h_producto.documento_id) AS total";
+    str_query += ", IFNULL((SELECT SUM(d_h_prod_flete.precio_aux) FROM documento d";
+    str_query += " JOIN documento_h_documento d_h_d_flete ON d.id = d_h_d_flete.documento_id1";
+    str_query += " JOIN documento d_flete ON (d_h_d_flete.documento_id = d_flete.id AND d_flete.tipo_documento_id = "+QString().setNum(tipo_documento::FLETE)+")";
+    str_query += " JOIN documento_h_producto d_h_prod_flete ON (d_h_prod_flete.producto_id = "+producto_id+" AND d_h_prod_flete.documento_id = d_flete.id)";
+    str_query += " WHERE d.id = documento.id), 0) AS precio_flete";
+    str_query += ", IFNULL((SELECT SUM(d_h_prod_nc_desc.precio_aux) FROM documento d";
+    str_query += " JOIN documento_h_documento d_h_d_nc ON d.id = d_h_d_nc.documento_id1";
+    str_query += " JOIN documento d_nc ON (d_h_d_nc.documento_id = d_nc.id AND d_nc.tipo_documento_id = "+QString().setNum(tipo_documento::NOTA_CREDITO)+")";
+    str_query += " JOIN documento_h_producto d_h_prod_nc_desc ON (d_h_prod_nc_desc.producto_id = "+producto_id+" AND d_h_prod_nc_desc.documento_id = d_nc.id)";
+    str_query += " WHERE d.id = documento.id), 0) AS desc_nc";
+    str_query += ", IFNULL((SELECT SUM(nc.monto) FROM documento d";
+    str_query += " JOIN documento_h_documento d_h_d_nc ON d.id = d_h_d_nc.documento_id1";
+    str_query += " JOIN documento d_nc ON (d_h_d_nc.documento_id = d_nc.id AND d_nc.tipo_documento_id = "+QString().setNum(tipo_documento::NOTA_CREDITO)+")";
+    str_query += " JOIN nota_credito nc ON d_nc.id = nc.comprobante_documento_id";
+    str_query += " WHERE d.id = documento.id), 0) AS nc_monto";
+    str_query += ", anexo.serie AS serie";
+    str_query += ", anexo.numero AS numero";
+    str_query += ", persona.id AS persona_id";
+    str_query += ", juridica.ruc AS ruc";
+    str_query += ", juridica.razon_social AS razon_social";
+    str_query += " FROM producto";
+    str_query += " JOIN documento_h_producto ON producto.id = documento_h_producto.producto_id";
+
+    str_query += " JOIN documento ON ((documento.tipo_documento_id = "+QString().setNum(tipo_documento::SALDO);
+    str_query += " OR documento.tipo_documento_id = "+QString().setNum(tipo_documento::BOLETA);
+    str_query += " OR documento.tipo_documento_id = "+QString().setNum(tipo_documento::FACTURA)+")";
+    str_query += " AND documento.id = documento_h_producto.documento_id)";
+    str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::COMPRA)+" AND documento.id = comprobante.documento_id)";
+
+    str_query += " LEFT JOIN saldo ON saldo.comprobante_documento_id = documento.id";
+    str_query += " LEFT JOIN boleta ON boleta.comprobante_documento_id = documento.id";
+    str_query += " LEFT JOIN factura ON factura.comprobante_documento_id = documento.id";
+
+    str_query += " JOIN anexo ON documento.id = anexo.documento_id";
+    str_query += " LEFT JOIN documento_h_persona ON documento.id = documento_h_persona.documento_id";
+    str_query += " LEFT JOIN persona ON persona.id = documento_h_persona.persona_id";
+    str_query += " LEFT JOIN juridica ON persona.id = juridica.persona_id";
+    str_query += " LEFT JOIN proveedor ON persona.id = proveedor.juridica_persona_id";
+    str_query += " WHERE producto.id = "+producto_id+" AND YEAR(anexo.fecha_emision) = "+QString().setNum(QDate::currentDate().year());
+    str_query += " GROUP BY documento.id";
+    str_query += " ORDER BY anexo.fecha_emision DESC, documento.id DESC";
+    str_query += " LIMIT 1) AS t";
+
+    qDebug()<<str_query<<endl;
+    QSqlQuery query;
+    if(query.exec(str_query)){
+        if(query.next()){
+            double cant = query.value(3).toDouble();
+            QString cantidad = QString().setNum(cant, ' ', 4);
+
+            double cant_final = query.value(4).toDouble();
+            QString cantidad_final = QString().setNum(cant_final, ' ', 4);
+
+            double precio = query.value(5).toDouble();
+            QString precio_bruto = QString().setNum(precio, ' ', 3);
+
+            double flete = query.value(6).toDouble();
+            QString precio_flete = QString().setNum(flete, ' ', 3);
+
+            double desc_nc = query.value(7).toDouble();
+            QString descuento_nc = QString().setNum(desc_nc, ' ', 3);
+
+            double desc_nc_monto = query.value(8).toDouble();
+            QString descuento_nc_monto = QString().setNum(desc_nc_monto, ' ', 3);
+
+            double precio_neto_val = precio + flete - desc_nc - desc_nc_monto;
+            QString precio_neto = QString().setNum(precio_neto_val, ' ', 3);
+
+            p_total = precio_neto;
+        }
+    }else{
+
+    }
 
     set_producto(producto_id, cantidad, unidad, descripcion, p_total);
 }

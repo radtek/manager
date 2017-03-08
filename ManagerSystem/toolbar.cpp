@@ -9,6 +9,9 @@ ToolBar::ToolBar(QWidget *parent) :
 
     cur_label = NULL;
 
+    ui->pushButton_rollback->hide();
+    ui->pushButton_commit->hide();
+
     ui->toolButton_colaboradores->installEventFilter(this);
     ui->toolButton_compras->installEventFilter(this);
     ui->toolButton_home->installEventFilter(this);
@@ -207,7 +210,7 @@ void ToolBar::on_pushButton_backup_clicked()
         << "--no-create-info"
         << "--no-set-names"
         << "--no-tablespaces"
-        //<< "--skip-add-locks"
+        << "--skip-add-locks"
         << "--skip-disable-keys"
         << "--databases" << "managersystem"
 		<< QString()+"--result-file="+""+fileName+"";
@@ -326,7 +329,7 @@ void ToolBar::on_pushButton_restore_clicked()
 
 	QProcess *myProcess = new QProcess(this);
 	QString command = "\"C:/Program Files/MySQL/MySQL Server 5.7/bin/mysql.exe\"";
-	QStringList arguments = QStringList()            
+    QStringList arguments = QStringList()
             << "--host=127.0.0.1" << "--user=root" << "--password=1234"
             << "--database=managersystem";
 

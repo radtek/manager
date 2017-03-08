@@ -6,14 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>268</width>
-    <height>99</height>
+    <width>298</width>
+    <height>243</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Login</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <property name="windowIcon">
+   <iconset resource="iconos.qrc">
+    <normaloff>:/new/Iconos/electronic_billing_machine_256.png</normaloff>:/new/Iconos/electronic_billing_machine_256.png</iconset>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
@@ -33,6 +37,7 @@
        <property name="font">
         <font>
          <family>Segoe UI</family>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -57,6 +62,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
     </layout>
@@ -80,6 +90,7 @@
        <property name="font">
         <font>
          <family>Segoe UI</family>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -103,6 +114,11 @@
          <width>150</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="echoMode">
         <enum>QLineEdit::Password</enum>
@@ -131,6 +147,7 @@
        <property name="font">
         <font>
          <family>Segoe UI</family>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -155,6 +172,7 @@
        <property name="font">
         <font>
          <family>Segoe UI</family>
+         <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
@@ -180,8 +198,93 @@
      </item>
     </layout>
    </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="iconos.qrc">:/new/Iconos/programmer.png</pixmap>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Programador:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>	Alexander Luna</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Celular:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>	Mov. 953627684</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

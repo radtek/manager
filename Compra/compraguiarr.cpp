@@ -294,6 +294,8 @@ bool CompraGuiaRR::guardar()
         str_query += ", precio=VALUES(precio_id)";*/
         str_query += "&&END_QUERY&&";
     }
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
 
     ui->dateTimeEdit_emision->setDisplayFormat("dd-MM-yyyy");
     ui->dateTimeEdit_sistema->setDisplayFormat("dd-MM-yyyy hh:mm:ss");

@@ -139,6 +139,8 @@ bool UsuarioOp::guardar()
         str_query += " WHERE naturales_persona_id = "+id;
         str_query += "&&END_QUERY&&";
     }
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
 
     QSqlQuery query;
 
@@ -153,6 +155,8 @@ bool UsuarioOp::guardar()
 bool UsuarioOp::remove()
 {
     QString str_query = "DELETE FROM persona WHERE id = "+id;
+    str_query += "&&END_QUERY&&";
+    str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
 
     QSqlQuery query;

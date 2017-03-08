@@ -232,3 +232,6 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     INCLUDEPATH += $$PWD/../MyLibrary
     DEPENDPATH += $$PWD/../MyLibrary
 
+RESOURCES += \
+    ../ManagerSystem/iconos.qrc
+

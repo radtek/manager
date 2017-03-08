@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>456</width>
-    <height>288</height>
+    <width>486</width>
+    <height>304</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -68,13 +68,13 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>16777215</height>
         </size>
        </property>
@@ -136,13 +136,13 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>16777215</height>
         </size>
        </property>
@@ -232,13 +232,13 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>16777215</height>
         </size>
        </property>
@@ -328,13 +328,13 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>16777215</height>
         </size>
        </property>
@@ -424,13 +424,13 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>16777215</height>
         </size>
        </property>
@@ -482,8 +482,14 @@
       <widget class="QLabel" name="label_precio">
        <property name="minimumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="text">
@@ -537,8 +543,14 @@
       <widget class="QLabel" name="label_cantidad">
        <property name="minimumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="text">
@@ -611,6 +623,16 @@
        <property name="text">
         <string>Eliminar</string>
        </property>
+       <property name="icon">
+        <iconset resource="../ManagerSystem/iconos.qrc">
+         <normaloff>:/new/Iconos/delete_32.png</normaloff>:/new/Iconos/delete_32.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
       </widget>
      </item>
      <item>
@@ -639,6 +661,16 @@
        <property name="text">
         <string>Guardar</string>
        </property>
+       <property name="icon">
+        <iconset resource="../ManagerSystem/iconos.qrc">
+         <normaloff>:/new/Iconos/save.png</normaloff>:/new/Iconos/save.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
       </widget>
      </item>
      <item>
@@ -653,6 +685,16 @@
        </property>
        <property name="text">
         <string>Salir</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../ManagerSystem/iconos.qrc">
+         <normaloff>:/new/Iconos/salir_32.png</normaloff>:/new/Iconos/salir_32.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
        </property>
       </widget>
      </item>

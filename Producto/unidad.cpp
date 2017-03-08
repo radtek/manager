@@ -66,6 +66,8 @@ bool Unidad::guardar()
         str_query += " WHERE id = "+id;
         str_query += "&&END_QUERY&&";
     }
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
 
 	SYSTEM->multiple_query(str_query);
 	qDebug() << str_query << endl;
@@ -84,6 +86,9 @@ bool Unidad::remove()
 
     QString str_query = "DELETE FROM unidad WHERE id = " + id;
     str_query += "&&END_QUERY&&";
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
+
 	SYSTEM->multiple_query(str_query);
 	qDebug() << str_query << endl;
 	if (query.exec(str_query)) {

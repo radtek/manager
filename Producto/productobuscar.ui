@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>499</width>
-    <height>391</height>
+    <width>571</width>
+    <height>410</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -51,7 +51,17 @@
         </font>
        </property>
        <property name="text">
-        <string>Nuevo</string>
+        <string>Agregar</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../ManagerSystem/iconos.qrc">
+         <normaloff>:/new/Iconos/agregar_32.png</normaloff>:/new/Iconos/agregar_32.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -64,6 +74,16 @@
        </property>
        <property name="text">
         <string>Modificar</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../ManagerSystem/iconos.qrc">
+         <normaloff>:/new/Iconos/modificar_32.png</normaloff>:/new/Iconos/modificar_32.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -134,8 +154,14 @@
       <widget class="QLabel" name="label_codigo">
        <property name="minimumSize">
         <size>
-         <width>74</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -144,7 +170,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Codigo:</string>
+        <string>Codigo</string>
        </property>
       </widget>
      </item>
@@ -155,6 +181,11 @@
          <width>150</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
@@ -179,13 +210,13 @@
       <widget class="QLabel" name="label_tipo">
        <property name="minimumSize">
         <size>
-         <width>74</width>
+         <width>110</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>74</width>
+         <width>110</width>
          <height>16777215</height>
         </size>
        </property>
@@ -195,7 +226,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Tipo: </string>
+        <string>Tipo</string>
        </property>
       </widget>
      </item>
@@ -241,8 +272,14 @@
       <widget class="QLabel" name="label_descripcion">
        <property name="minimumSize">
         <size>
-         <width>74</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -251,7 +288,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Descripcion: </string>
+        <string>Descripcion</string>
        </property>
       </widget>
      </item>
@@ -284,8 +321,14 @@
       <widget class="QLabel" name="label_marca">
        <property name="minimumSize">
         <size>
-         <width>74</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -294,7 +337,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Marca: </string>
+        <string>Marca</string>
        </property>
       </widget>
      </item>
@@ -317,8 +360,14 @@
       <widget class="QLabel" name="label_unidad">
        <property name="minimumSize">
         <size>
-         <width>74</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -327,7 +376,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Unidad: </string>
+        <string>Unidad</string>
        </property>
       </widget>
      </item>
@@ -359,6 +408,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_ok">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Ok</string>
        </property>
@@ -366,6 +420,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_salir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Salir</string>
        </property>
@@ -387,6 +446,8 @@
   <tabstop>pushButton_ok</tabstop>
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../ManagerSystem/iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

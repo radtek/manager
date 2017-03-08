@@ -287,3 +287,10 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     DEPENDPATH += $$PWD/../Persona
     INCLUDEPATH += $$PWD/../Compra
     DEPENDPATH += $$PWD/../Compra
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/release/ -lQtXlsxWriter
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lQtXlsxWriter
+else:unix: LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lQtXlsxWriter
+
+INCLUDEPATH += $$PWD/../QtXlsxWriter
+DEPENDPATH += $$PWD/../QtXlsxWriter

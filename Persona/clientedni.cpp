@@ -128,6 +128,8 @@ bool ClienteDNI::guardar()
         str_query += " WHERE persona_id = "+id;
         str_query += "&&END_QUERY&&";
     }
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
 
     QSqlQuery query;
 
@@ -144,6 +146,8 @@ bool ClienteDNI::remove()
     QString str_query;
 
     str_query = "DELETE FROM persona WHERE id = "+id;
+    str_query += "&&END_QUERY&&";
+    str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
 
     QSqlQuery query;

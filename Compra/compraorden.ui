@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>666</width>
-    <height>501</height>
+    <width>676</width>
+    <height>510</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -74,8 +74,14 @@
       <widget class="QLabel" name="label_fecha_emision">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -93,6 +99,11 @@
      </item>
      <item>
       <widget class="QDateTimeEdit" name="dateTimeEdit_emision">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="readOnly">
         <bool>false</bool>
        </property>
@@ -140,6 +151,11 @@
      </item>
      <item>
       <widget class="QDateTimeEdit" name="dateTimeEdit_sistema">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -185,8 +201,14 @@
       <widget class="QLabel" name="label_serie_numero">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -215,6 +237,11 @@
          <width>50</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="inputMask">
         <string/>
@@ -253,6 +280,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="inputMask">
         <string/>
        </property>
@@ -279,8 +311,14 @@
       <widget class="QLabel" name="label_pro">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -313,6 +351,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="readOnly">
         <bool>false</bool>
        </property>
@@ -340,6 +383,11 @@
          <height>0</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
     </layout>
@@ -350,8 +398,14 @@
       <widget class="QLabel" name="label_2">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -436,6 +490,7 @@
       <widget class="QLabel" name="label_cambio_dolar">
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -450,6 +505,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_cambio_dolar_value">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>0.000</string>
        </property>
@@ -551,6 +611,11 @@
    </item>
    <item>
     <widget class="QTableWidget" name="tableWidget">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="alternatingRowColors">
       <bool>true</bool>
      </property>
@@ -605,6 +670,11 @@
       <layout class="QGridLayout" name="gridLayout">
        <item row="1" column="2">
         <widget class="QLineEdit" name="lineEdit_total">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>0</string>
          </property>
@@ -617,6 +687,7 @@
         <widget class="QLabel" name="label_subtotal">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -630,6 +701,7 @@
         <widget class="QLabel" name="label_total">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -641,6 +713,11 @@
        </item>
        <item row="1" column="0">
         <widget class="QLineEdit" name="lineEdit_subtotal">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>0</string>
          </property>
@@ -653,6 +730,7 @@
         <widget class="QLabel" name="label_igv">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -664,6 +742,11 @@
        </item>
        <item row="1" column="1">
         <widget class="QLineEdit" name="lineEdit_igv">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>0</string>
          </property>

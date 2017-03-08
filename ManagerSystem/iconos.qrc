@@ -2,8 +2,6 @@
     <qresource prefix="/new">
         <file>Iconos/16.png</file>
         <file>Iconos/2403.png</file>
-        <file>Iconos/40406.png</file>
-        <file>Iconos/322901_tekstura_kvadraty_cveta_2560x1600_(www.GdeFon.ru).jpg</file>
         <file>Iconos/1361145253_Pin.png</file>
         <file>Iconos/Account and Control.png</file>
         <file>Iconos/Administrative_Tools.png</file>
@@ -119,7 +117,6 @@
         <file>Iconos/rollback.jpg</file>
         <file>Iconos/backup.png</file>
         <file>Iconos/restore_2.jpg</file>
-        <file>Iconos/check.jpg</file>
         <file>Iconos/uncheck.png</file>
         <file>Iconos/edit_find.png</file>
         <file>Iconos/registro_venta.jpg</file>
@@ -131,5 +128,14 @@
         <file>Iconos/salir.png</file>
         <file>Iconos/amarres.png</file>
         <file>Iconos/border.png</file>
+        <file>Iconos/electronic_billing_machine_256.png</file>
+        <file>Iconos/salir_32.png</file>
+        <file>Iconos/delete_32.png</file>
+        <file>Iconos/agregar_32.png</file>
+        <file>Iconos/modificar_32.png</file>
+        <file>Iconos/colaborador_32.png</file>
+        <file>Iconos/agregar-user.png</file>
+        <file>Iconos/programmer.png</file>
+        <file>Iconos/check.jpg</file>
     </qresource>
 </RCC>

@@ -1,11 +1,26 @@
 #include "login.h"
 #include "ui_login.h"
 
+#include <QHostInfo>
+#include <QNetworkInterface>
+
 Login::Login(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Login)
 {
     ui->setupUi(this);
+
+    QString text;
+    foreach(QNetworkInterface interfac, QNetworkInterface::allInterfaces())
+    {
+        text = interfac.hardwareAddress();
+        qDebug()<<text<<endl;
+    }
+
+    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
+             qDebug() << address.toString();
+    }
 
     online = false;
 
@@ -30,7 +45,8 @@ void Login::on_pushButton_aceptar_clicked()
     QString user = ui->lineEdit_usuario->text();
     QString pass = ui->lineEdit_contrasenia->text();
 
-	QString str_query = "SELECT rol_id, usuario, pass FROM usuario"
+    QString str_query;
+    str_query += "SELECT rol_id, usuario, pass FROM usuario"
 		" WHERE rol_id = 1 AND usuario = '"+user+"' AND pass = '" + pass+"'"
 		"&&END_QUERY&&";
 

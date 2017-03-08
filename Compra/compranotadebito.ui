@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>930</width>
-    <height>563</height>
+    <height>574</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -93,6 +93,11 @@
      </item>
      <item>
       <widget class="QDateEdit" name="dateEdit_declaracion">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="displayFormat">
         <string>MMMM</string>
        </property>
@@ -133,6 +138,11 @@
          <height>0</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="displayFormat">
         <string>dd-MM-yyyy</string>
        </property>
@@ -169,6 +179,11 @@
          <width>130</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -236,6 +251,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="inputMask">
         <string/>
        </property>
@@ -260,6 +280,11 @@
          <width>120</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="inputMask">
         <string/>
@@ -327,6 +352,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="readOnly">
         <bool>false</bool>
        </property>
@@ -353,6 +383,11 @@
          <width>400</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
@@ -403,6 +438,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
      <item>
@@ -412,6 +452,11 @@
          <width>550</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
@@ -514,6 +559,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
      <item>
@@ -523,6 +573,11 @@
          <width>550</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
@@ -611,6 +666,11 @@
      </item>
      <item>
       <widget class="QComboBox" name="comboBox_moneda">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <item>
         <property name="text">
          <string>Soles</string>
@@ -646,6 +706,11 @@
      </item>
      <item>
       <widget class="QComboBox" name="comboBox_modalidad">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <item>
         <property name="text">
          <string>CON IGV</string>
@@ -662,6 +727,7 @@
       <widget class="QLabel" name="label_cambio_dolar">
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -676,6 +742,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_cambio_dolar_value">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Value</string>
        </property>
@@ -707,6 +778,11 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="doubleSpinBox_monto">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="prefix">
         <string/>
        </property>
@@ -816,6 +892,11 @@
    </item>
    <item>
     <widget class="QTableWidget" name="tableWidget">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <column>
       <property name="text">
        <string>ID</string>
@@ -872,6 +953,11 @@
       <layout class="QGridLayout" name="gridLayout">
        <item row="1" column="2">
         <widget class="QLineEdit" name="lineEdit_total">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>0</string>
          </property>
@@ -884,6 +970,7 @@
         <widget class="QLabel" name="label_subtotal">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -897,6 +984,7 @@
         <widget class="QLabel" name="label_total">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -908,6 +996,11 @@
        </item>
        <item row="1" column="0">
         <widget class="QLineEdit" name="lineEdit_subtotal">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>0</string>
          </property>
@@ -920,6 +1013,7 @@
         <widget class="QLabel" name="label_igv">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -931,6 +1025,11 @@
        </item>
        <item row="1" column="1">
         <widget class="QLineEdit" name="lineEdit_igv">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>0</string>
          </property>

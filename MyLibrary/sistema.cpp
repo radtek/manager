@@ -558,7 +558,7 @@ QString Sistema::build_argument(const QString& cmp_column, const QString &arg)
     return r;
 }
 QString Sistema::multiple_query(QString& query)
-{
+{    
     QString r = QString("CALL multiple_query(")+'"'+query+'"'+QString(")");
     //cout<<r.toStdString()<<endl;
     query = QString("CALL multiple_query(")+'"'+query+'"'+QString(")");

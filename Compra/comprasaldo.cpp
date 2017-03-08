@@ -266,6 +266,8 @@ bool CompraSaldo::guardar()
         str_query += str_query_2;
         str_query += "&&END_QUERY&&";
     }
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
 
     ui->dateTimeEdit_emision->setDisplayFormat("dd-MM-yyyy");
     ui->dateTimeEdit_sistema->setDisplayFormat("dd-MM-yyyy hh:mm:ss");
@@ -284,6 +286,8 @@ bool CompraSaldo::remove()
     QString str_query;
 
     str_query = "DELETE FROM documento WHERE id = "+id;
+    str_query += "&&END_QUERY&&";
+    str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
 
     QSqlQuery query;

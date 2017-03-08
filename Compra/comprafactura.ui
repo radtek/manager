@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1040</width>
-    <height>559</height>
+    <width>1050</width>
+    <height>570</height>
    </rect>
   </property>
   <property name="cursor">
@@ -71,8 +71,14 @@
       <widget class="QLabel" name="label">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -90,6 +96,11 @@
      </item>
      <item>
       <widget class="QDateEdit" name="dateEdit_declaracion">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="displayFormat">
         <string>MMMM</string>
        </property>
@@ -99,8 +110,14 @@
       <widget class="QLabel" name="label_fecha_emision">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -130,6 +147,11 @@
          <height>0</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="displayFormat">
         <string>dd-MM-yyyy</string>
        </property>
@@ -142,8 +164,14 @@
       <widget class="QLabel" name="label_fecha_sistema">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -172,6 +200,11 @@
          <width>130</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -208,8 +241,14 @@
       <widget class="QLabel" name="label_serie_numero">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -238,6 +277,11 @@
          <width>50</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="inputMask">
         <string/>
@@ -270,6 +314,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="inputMask">
         <string/>
        </property>
@@ -296,8 +345,14 @@
       <widget class="QLabel" name="label_pro">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -330,6 +385,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="readOnly">
         <bool>false</bool>
        </property>
@@ -350,7 +410,13 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_nombre"/>
+      <widget class="QLineEdit" name="lineEdit_nombre">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -360,8 +426,14 @@
       <widget class="QLabel" name="label_title_orden">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -399,6 +471,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
      <item>
@@ -408,6 +485,11 @@
          <width>180</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
@@ -493,6 +575,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
      <item>
@@ -502,6 +589,11 @@
          <width>180</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
@@ -565,8 +657,14 @@
       <widget class="QLabel" name="label_modalidad">
        <property name="minimumSize">
         <size>
-         <width>100</width>
+         <width>110</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -584,6 +682,11 @@
      </item>
      <item>
       <widget class="QComboBox" name="comboBox_modalidad">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <item>
         <property name="text">
          <string>CON IGV</string>
@@ -619,6 +722,11 @@
      </item>
      <item>
       <widget class="QComboBox" name="comboBox_moneda">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <item>
         <property name="text">
          <string>Soles</string>
@@ -635,8 +743,9 @@
       <widget class="QLabel" name="label_cambio_dolar">
        <property name="font">
         <font>
-         <weight>75</weight>
-         <bold>true</bold>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -649,6 +758,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_cambio_dolar_value">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>0.000</string>
        </property>
@@ -677,6 +791,11 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="doubleSpinBox_percepcion">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="suffix">
         <string>%</string>
        </property>
@@ -783,6 +902,11 @@
    </item>
    <item>
     <widget class="QTableWidget" name="tableWidget">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="alternatingRowColors">
       <bool>true</bool>
      </property>
@@ -845,6 +969,11 @@
     <layout class="QHBoxLayout" name="horizontalLayout_10">
      <item>
       <widget class="QLabel" name="label_descuento">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Desc. S/.</string>
        </property>
@@ -852,6 +981,11 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="doubleSpinBox_descuento">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="maximum">
         <double>10000000.000000000000000</double>
        </property>
@@ -859,6 +993,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_embalaje">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Embalaje S/.</string>
        </property>
@@ -866,6 +1005,11 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="doubleSpinBox_embalaje">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="maximum">
         <double>10000000.000000000000000</double>
        </property>
@@ -888,6 +1032,11 @@
       <layout class="QGridLayout" name="gridLayout">
        <item row="1" column="2">
         <widget class="QLineEdit" name="lineEdit_total">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>0</string>
          </property>
@@ -900,6 +1049,7 @@
         <widget class="QLabel" name="label_subtotal">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -913,6 +1063,7 @@
         <widget class="QLabel" name="label_total">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -924,6 +1075,11 @@
        </item>
        <item row="1" column="0">
         <widget class="QLineEdit" name="lineEdit_subtotal">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>0</string>
          </property>
@@ -936,6 +1092,7 @@
         <widget class="QLabel" name="label_igv">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -947,6 +1104,11 @@
        </item>
        <item row="1" column="1">
         <widget class="QLineEdit" name="lineEdit_igv">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>0</string>
          </property>
@@ -1079,7 +1241,6 @@
   </layout>
   <zorder>tableWidget</zorder>
   <zorder></zorder>
-  <zorder>layoutWidget</zorder>
  </widget>
  <tabstops>
   <tabstop>dateEdit_declaracion</tabstop>
