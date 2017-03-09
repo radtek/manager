@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>416</width>
-    <height>320</height>
+    <width>606</width>
+    <height>348</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -51,7 +51,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Agregar</string>
+        <string>Nuevo</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/iconos.qrc">
@@ -65,27 +65,95 @@
        </property>
       </widget>
      </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
-      <widget class="QPushButton" name="pushButton_modificar">
+      <spacer name="horizontalSpacer_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton_proveedor">
        <property name="font">
         <font>
          <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
-        <string>Modificar</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../ManagerSystem/iconos.qrc">
-         <normaloff>:/new/Iconos/colaborador_32.png</normaloff>:/new/Iconos/colaborador_32.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
+        <string>Proveedor</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton_transportista">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Transportista</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton_cliente_ruc">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Cliente con RUC</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton_cliente_dni">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Cliente con DNI</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton_usuario">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Usuario</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>
@@ -96,6 +164,11 @@
        <pointsize>10</pointsize>
       </font>
      </property>
+     <column>
+      <property name="text">
+       <string>ID</string>
+      </property>
+     </column>
      <column>
       <property name="text">
        <string>Código</string>
@@ -111,15 +184,22 @@
        <string>Dirección</string>
       </property>
      </column>
-     <column>
-      <property name="text">
-       <string>ID</string>
-      </property>
-     </column>
     </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Código o nombre</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QLineEdit" name="lineEdit_buscar">
        <property name="font">
@@ -192,7 +272,6 @@
  </widget>
  <tabstops>
   <tabstop>pushButton_agregar</tabstop>
-  <tabstop>pushButton_modificar</tabstop>
   <tabstop>tableWidget</tabstop>
   <tabstop>lineEdit_buscar</tabstop>
   <tabstop>pushButton_ok</tabstop>

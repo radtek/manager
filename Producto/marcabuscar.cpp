@@ -25,7 +25,6 @@ MarcaBuscar::MarcaBuscar(QWidget *parent) :
 	ui->pushButton_ok->installEventFilter(this);
 	ui->pushButton_salir->installEventFilter(this);
 	ui->pushButton_nuevo->installEventFilter(this);
-	ui->pushButton_modificar->installEventFilter(this);
 }
 
 MarcaBuscar::~MarcaBuscar()
@@ -50,8 +49,6 @@ void MarcaBuscar::on_marca_closing()
 	Marca* widget_marca= (Marca*)QObject::sender();
 	id = widget_marca->getID();
 	marca = widget_marca->getMarca();
-
-	on_lineEdit_marca_buscar_textChanged("");
 }
 void MarcaBuscar::on_lineEdit_marca_buscar_textChanged(const QString& arg)
 {
@@ -97,39 +94,11 @@ void MarcaBuscar::on_lineEdit_marca_buscar_returnPressed()
 }
 void MarcaBuscar::on_pushButton_nuevo_clicked()
 {
-	int ret = QMessageBox::warning(this, "Advertencia", "¿Desea agregar un MARCA?", "Si", "No");
+    int ret = QMessageBox::warning(this, "Advertencia", "¿Desea agregar una MARCA?", "Si", "No");
 	switch (ret) {
 	case 0: {
 		Marca* w = new Marca;
 		w->set_widget_previous(this);
-		connect(w, SIGNAL(closing()), this, SLOT(on_marca_closing()));
-		SYSTEM->change_center_w(this, w);
-	}break;
-	case 1: {
-
-	}break;
-	}
-}
-void MarcaBuscar::on_pushButton_modificar_clicked()
-{
-	QTableWidget* table = ui->tableWidget;
-	QTableWidgetItem* item = table->currentItem();
-	if (!item) {
-		int ret = QMessageBox::warning(this, "Advertencia", "Seleccione una marca.", "Ok");
-		return;
-	}
-
-	int ret = QMessageBox::warning(this, "Advertencia", "¿Esta seguro de modificar el item?", "Si", "No");
-	switch (ret) {
-	case 0: {
-		Marca* w = new Marca;
-		w->set_widget_previous(this);
-
-		QString id = table->item(item->row(), 0)->text();
-		QString marca = table->item(item->row(), 1)->text();
-
-		w->set_data(id, marca);
-
 		connect(w, SIGNAL(closing()), this, SLOT(on_marca_closing()));
 		SYSTEM->change_center_w(this, w);
 	}break;
@@ -178,11 +147,29 @@ void MarcaBuscar::on_pushButton_salir_clicked()
 	}
 	}
 }
+void MarcaBuscar::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
+{
+    QTableWidget* table = ui->tableWidget;
+
+    Marca* w = new Marca;
+    w->set_widget_previous(this);
+
+    QString id = table->item(item->row(), 0)->text();
+    QString marca = table->item(item->row(), 1)->text();
+
+    w->set_data(id, marca);
+
+    connect(w, SIGNAL(closing()), this, SLOT(on_marca_closing()));
+    SYSTEM->change_center_w(this, w);
+}
 void MarcaBuscar::showEvent(QShowEvent *se)
 {
 	se->accept();
 
 	ui->lineEdit_marca_buscar->setFocus(Qt::TabFocusReason);
+
+    on_lineEdit_marca_buscar_textChanged(ui->lineEdit_marca_buscar->text());
+    on_lineEdit_marca_buscar_returnPressed();
 }
 void MarcaBuscar::closeEvent(QCloseEvent * ce)
 {
@@ -215,15 +202,7 @@ bool MarcaBuscar::eventFilter(QObject *obj, QEvent *e)
 					if (ui->tableWidget->currentItem())
 						ui->tableWidget->currentItem()->setSelected(true);
 				}
-            }break;
-            case Qt::Key_F3:
-                ui->pushButton_nuevo->setFocus(Qt::TabFocusReason);
-                ui->pushButton_nuevo->click();
-                return true;
-            case Qt::Key_F4:
-                ui->pushButton_modificar->setFocus(Qt::TabFocusReason);
-                ui->pushButton_modificar->click();
-                return true;
+            }break;            
 			}
 
 		}
@@ -259,10 +238,15 @@ bool MarcaBuscar::eventFilter(QObject *obj, QEvent *e)
 			case Qt::Key_Return:
 				ui->pushButton_ok->click();
                 return true;
-			}
-
-		}
-		else {
+            case Qt::Key_Down: {
+                int index = ui->tableWidget->currentRow();
+                if (index == ui->tableWidget->rowCount() - 1) {
+                    on_lineEdit_marca_buscar_returnPressed();
+                    return true;
+                }
+            }break;
+            }
+        } else {
 
 		}
 		return false;
@@ -312,8 +296,7 @@ bool MarcaBuscar::eventFilter(QObject *obj, QEvent *e)
 	}
 	w_temp = ui->pushButton_nuevo;
 	if (obj == w_temp) {
-		if (e->type() == QEvent::
-			KeyPress) {
+		if (e->type() == QEvent::KeyPress) {
 			QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
 			switch (KeyEvent->key())
@@ -330,25 +313,5 @@ bool MarcaBuscar::eventFilter(QObject *obj, QEvent *e)
 		}
 		return false;
 	}
-	w_temp = ui->pushButton_modificar;
-	if (obj == w_temp) {
-		if (e->type() == QEvent::
-			KeyPress) {
-			QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
-			switch (KeyEvent->key())
-			{			
-			case Qt::Key_Return: {
-				ui->pushButton_modificar->click();
-                return true;
-			}break;
-			}
-
-		}
-		else {
-
-		}
-		return false;
-	}	
 	return eventFilter(obj, e);
 }

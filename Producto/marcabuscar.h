@@ -28,11 +28,11 @@ private slots:
 
 	void on_pushButton_nuevo_clicked();
 
-	void on_pushButton_modificar_clicked();
-
 	void on_pushButton_ok_clicked();
 
 	void on_pushButton_salir_clicked();
+
+    void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
 
 private:
 	void showEvent(QShowEvent *se);

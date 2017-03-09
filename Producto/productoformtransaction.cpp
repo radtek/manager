@@ -345,7 +345,7 @@ void ProductoFormTransaction::showEvent(QShowEvent* se)
     if(focusWidget()){
         focusWidget()->setFocus();
     }else{
-        ui->lineEdit_codigo->setFocus(Qt::TabFocusReason);
+        ui->lineEdit_descripcion->setFocus(Qt::TabFocusReason);
 
     }
 }

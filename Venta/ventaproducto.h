@@ -3,6 +3,8 @@
 
 #include "venta_global.h"
 
+#include "productobuscar.h"
+
 class VENTASHARED_EXPORT VentaProducto : public ProductoBuscar
 {
     Q_OBJECT

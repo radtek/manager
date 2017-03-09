@@ -1,13 +1,23 @@
 #ifndef VENTACHARTPRECIO_H
 #define VENTACHARTPRECIO_H
 
-#include "venta_global.h"
+#include <QWidget>
+#include <QtCharts>
+#include <QLineSeries>
+using namespace QtCharts;
+
+#include "mylibrary_global.h"
+
+#include "ventadefines.h"
+
+//#include "ventaboleta.h"
+//#include "ventafactura.h"
 
 namespace Ui {
 class VentaChartPrecio;
 }
 
-class VentaChartPrecio : public QWidget
+class VENTASHARED_EXPORT VentaChartPrecio : public QWidget
 {
     Q_OBJECT
 

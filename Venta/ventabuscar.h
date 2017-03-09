@@ -43,7 +43,23 @@ private slots:
 
     void on_pushButton_agregar_clicked();
 
-    void on_pushButton_modificar_clicked();
+    void on_radioButton_reg_sin_doc_clicked();
+
+    void on_radioButton_boleta_clicked();
+
+    void on_radioButton_factura_clicked();
+
+    void on_radioButton_nota_pedido_clicked();
+
+    void on_radioButton_guia_clicked();
+
+    void on_radioButton_cotizacion_clicked();
+
+    void on_radioButton_nota_credito_clicked();
+
+    void on_radioButton_nota_debito_clicked();
+
+    void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *e);

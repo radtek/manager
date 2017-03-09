@@ -126,8 +126,8 @@ bool VentaCotizacion::select(QString id
     str_query += ", concat(producto.descripcion,' ',marca.marca), d_h_prod.precio FROM documento";
     str_query += " JOIN documento_h_producto d_h_prod ON documento.id = d_h_prod.documento_id";
     str_query += " JOIN producto ON producto.id = d_h_prod.producto_id";
-    str_query += " JOIN marca ON marca.id = producto.marca_id";
-    str_query += " JOIN unidad ON unidad.id = producto.unidad_id";
+    str_query += " LEFT JOIN marca ON marca.id = producto.marca_id";
+    str_query += " LEFT JOIN unidad ON unidad.id = producto.unidad_id";
     str_query += " WHERE documento.id = "+id+" GROUP BY d_h_prod.id";
 
     qDebug()<<str_query<<endl;

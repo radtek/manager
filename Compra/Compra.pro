@@ -46,7 +46,6 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
 }
 
 SOURCES += compra.cpp \
-    a_compra.cpp \
     compraadjacentes.cpp \
     compraamarres.cpp \
     compraboleta.cpp \
@@ -54,7 +53,6 @@ SOURCES += compra.cpp \
     comprafactura.cpp \
     compraflete.cpp \
     compraguiarr.cpp \
-    compramenu.cpp \
     compranotacredito.cpp \
     compranotadebito.cpp \
     compraorden.cpp \
@@ -69,7 +67,6 @@ SOURCES += compra.cpp \
 
 HEADERS += compra.h\
         compra_global.h \
-    a_compra.h \
     compraadjacentes.h \
     compraamarres.h \
     compraboleta.h \
@@ -77,7 +74,6 @@ HEADERS += compra.h\
     comprafactura.h \
     compraflete.h \
     compraguiarr.h \
-    compramenu.h \
     compranotacredito.h \
     compranotadebito.h \
     compraorden.h \
@@ -88,10 +84,10 @@ HEADERS += compra.h\
     comprathreadsetproducto.h \
     compratransportista.h \
     comprachartcosto.h \
-    comprasaldo.h
+    comprasaldo.h \
+    compradefines.h
 
 FORMS += \
-    a_compra.ui \
     compraadjacentes.ui \
     compraamarres.ui \
     compraboleta.ui \
@@ -99,7 +95,6 @@ FORMS += \
     comprafactura.ui \
     compraflete.ui \
     compraguiarr.ui \
-    compramenu.ui \
     compranotacredito.ui \
     compranotadebito.ui \
     compraorden.ui \
@@ -164,6 +159,9 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lPersona
     else:unix: LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lPersona
 
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/release/ -lVenta
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lVenta
+    else:unix: LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lVenta
 } else {
     win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../VS2015_Tesseract-master/release/ -lzlib
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../VS2015_Tesseract-master/debug/ -lzlib
@@ -213,6 +211,9 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lPersona
     else:unix: LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lPersona
 
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/release/ -lVenta
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lVenta
+    else:unix: LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lVenta
 }
     INCLUDEPATH += $$PWD/../../../VS2015_Tesseract-master/zlib/include
     DEPENDPATH += $$PWD/../../../VS2015_Tesseract-master/zlib/include
@@ -283,5 +284,5 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     DEPENDPATH += $$PWD/../Persona
     INCLUDEPATH += $$PWD/../Persona
     DEPENDPATH += $$PWD/../Persona
-
-
+    INCLUDEPATH += $$PWD/../Venta
+    DEPENDPATH += $$PWD/../Venta

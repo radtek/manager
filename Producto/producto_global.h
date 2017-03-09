@@ -9,15 +9,14 @@
 #  define PRODUCTOSHARED_EXPORT Q_DECL_IMPORT
 #endif
 
+class ProductoBuscar;
+
 #include "mylibrary_global.h"
 
-
-#include "a_producto.h"
 #include "marca.h"
 #include "marcabuscar.h"
 #include "productobuscar.h"
 #include "productoformtransaction.h"
-#include "productoitem.h"
 #include "tipo.h"
 #include "tipobuscar.h"
 #include "unidad.h"

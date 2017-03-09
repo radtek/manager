@@ -3,6 +3,9 @@
 
 #include "producto_global.h"
 
+#include "comprachartcosto.h"
+#include "ventachartprecio.h"
+
 namespace Ui {
 class ProductoBuscar;
 }
@@ -38,8 +41,6 @@ public slots:
 
 	void on_pushButton_nuevo_clicked();
 
-	void on_pushButton_modificar_clicked();
-
 	void on_lineEdit_codigo_textChanged(const QString& arg);
 
 	void on_lineEdit_codigo_returnPressed();
@@ -59,6 +60,8 @@ public slots:
 	void on_lineEdit_unidad_buscar_textChanged(const QString& arg);
 
 	void on_lineEdit_unidad_buscar_returnPressed();
+
+    void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
 
 protected:
     void showEvent(QShowEvent *se);

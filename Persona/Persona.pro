@@ -6,7 +6,7 @@
 CONFIG += c++14
 
 QT       += widgets qml quick network opengl sql script scripttools svg webengine webenginecore webenginewidgets xml xmlpatterns multimedia testlib dbus
-QT       += texttospeech
+QT       += charts texttospeech
 greaterThan(QT_MAJOR_VERSION, 4): QT += printsupport
 
 TARGET = Persona
@@ -26,24 +26,28 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 win32:contains(QMAKE_HOST.arch, x86_64) {
     CONFIG(debug, debug|release) {
+        DLLDESTDIR += "../build-Producto-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug"
         DLLDESTDIR += "../build-Compra-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug"
         DLLDESTDIR += "../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug"
         DLLDESTDIR += "../build-ManagerSystem-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug"
     }
 
     CONFIG(release, debug|release) {
+        DLLDESTDIR += "../build-Producto-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release"
         DLLDESTDIR += "../build-Compra-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release"
         DLLDESTDIR += "../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release"
         DLLDESTDIR += "../build-ManagerSystem-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release"
     }
 }else{
     CONFIG(debug, debug|release) {
+        DLLDESTDIR += "../build-Producto-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug"
         DLLDESTDIR += "../build-Compra-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug"
         DLLDESTDIR += "../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug"
         DLLDESTDIR += "../build-ManagerSystem-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug"
     }
 
     CONFIG(release, debug|release) {
+        DLLDESTDIR += "../build-Producto-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release"
         DLLDESTDIR += "../build-Compra-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release"
         DLLDESTDIR += "../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release"
         DLLDESTDIR += "../build-ManagerSystem-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release"
@@ -51,22 +55,18 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
 }
 
 SOURCES += persona.cpp \
-    a_persona.cpp \
     clientedni.cpp \
     clienteruc.cpp \
     colaboradorbuscar.cpp \
-    colabselection.cpp \
     proveedorop.cpp \
     transportistaop.cpp \
     usuarioop.cpp
 
 HEADERS += persona.h\
         persona_global.h \
-    a_persona.h \
     clientedni.h \
     clienteruc.h \
     colaboradorbuscar.h \
-    colabselection.h \
     proveedorop.h \
     transportistaop.h \
     usuarioop.h
@@ -77,11 +77,9 @@ unix {
 }
 
 FORMS += \
-    a_persona.ui \
     clientedni.ui \
     clienteruc.ui \
     colaboradorbuscar.ui \
-    colabselection.ui \
     proveedorop.ui \
     transportistaop.ui \
     usuarioop.ui
@@ -127,6 +125,17 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-MyLibrary-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lMyLibrary
     else:unix: LIBS += -L$$PWD/../build-MyLibrary-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lMyLibrary
 
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/release/ -lCompra
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lCompra
+    else:unix: LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lCompra
+
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/release/ -lVenta
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lVenta
+    else:unix: LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lVenta
+
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Producto-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/release/ -lProducto
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Producto-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lProducto
+    else:unix: LIBS += -L$$PWD/../build-Producto-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lProducto
 } else {
     win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../VS2015_Tesseract-master/release/ -lzlib
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../VS2015_Tesseract-master/debug/ -lzlib
@@ -167,6 +176,18 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-MyLibrary-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release/ -lMyLibrary
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-MyLibrary-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lMyLibrary
     else:unix: LIBS += -L$$PWD/../build-MyLibrary-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lMyLibrary
+
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/release/ -lCompra
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lCompra
+    else:unix: LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lCompra
+
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/release/ -lVenta
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lVenta
+    else:unix: LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lVenta
+
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Producto-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/release/ -lProducto
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Producto-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lProducto
+    else:unix: LIBS += -L$$PWD/../build-Producto-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lProducto
 }
     INCLUDEPATH += $$PWD/../../VS2015_Tesseract-master/zlib/include
     DEPENDPATH += $$PWD/../../VS2015_Tesseract-master/zlib/include
@@ -231,7 +252,12 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
 
     INCLUDEPATH += $$PWD/../MyLibrary
     DEPENDPATH += $$PWD/../MyLibrary
+    INCLUDEPATH += $$PWD/../Compra
+    DEPENDPATH += $$PWD/../Compra
+    INCLUDEPATH += $$PWD/../Venta
+    DEPENDPATH += $$PWD/../Venta
+    INCLUDEPATH += $$PWD/../Producto
+    DEPENDPATH += $$PWD/../Producto
 
 RESOURCES += \
     ../ManagerSystem/iconos.qrc
-

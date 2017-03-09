@@ -17,11 +17,9 @@ namespace persona_items{
 
 #include "mylibrary_global.h"
 
-#include "a_persona.h"
 #include "clientedni.h"
 #include "clienteruc.h"
 #include "colaboradorbuscar.h"
-#include "colabselection.h"
 #include "proveedorop.h"
 #include "transportistaop.h"
 #include "usuarioop.h"

@@ -3,6 +3,8 @@
 
 #include "venta_global.h"
 
+#include "comprachartcosto.h"
+
 namespace Ui {
 class VentaFactura;
 }

@@ -1,6 +1,9 @@
 #include "ventachartprecio.h"
 #include "ui_ventachartprecio.h"
 
+#include "ventaboleta.h"
+#include "ventafactura.h"
+
 VentaChartPrecio::VentaChartPrecio(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::VentaChartPrecio)
@@ -817,7 +820,7 @@ void VentaChartPrecio::on_dateEdit_dateChanged(const QDate &date)
 }
 
 void VentaChartPrecio::on_pushButton_modificar_clicked()
-{
+{    
     QTableWidget* tb = ui->tableWidget;
     QTableWidgetItem* item = tb->currentItem();
 
@@ -825,7 +828,7 @@ void VentaChartPrecio::on_pushButton_modificar_clicked()
         return;
     }
 
-    int ret = QMessageBox::warning(this, "Advertencia", "¿Desea MODIFICAR los datos de esa COMPRA?", "Si", "No");
+    int ret = QMessageBox::warning(this, "Advertencia", "¿Desea MODIFICAR los datos de esa Venta?", "Si", "No");
     switch(ret){
     case 0:{
         int tipo = ui->tableWidget->item(item->row(), 1)->text().toInt();
@@ -868,5 +871,5 @@ void VentaChartPrecio::on_pushButton_modificar_clicked()
     case 1:{
 
     }break;
-    }
+    }    
 }

@@ -19,6 +19,9 @@ VentaBuscar::VentaBuscar(QWidget *parent) :
     ui->dateEdit_inicio->setDate(date);
     ui->dateEdit_fin->setDate(QDate::currentDate());
 
+    ui->radioButton_boleta->setChecked(true);
+    tipo = venta_items::BOLETA;
+
     // INSTALL EVENT FILTERS
     this->installEventFilter(this);
     ui->dateEdit_inicio->installEventFilter(this);
@@ -28,7 +31,6 @@ VentaBuscar::VentaBuscar(QWidget *parent) :
     ui->pushButton_ok->installEventFilter(this);
     ui->pushButton_salir->installEventFilter(this);
     ui->pushButton_agregar->installEventFilter(this);
-    ui->pushButton_modificar->installEventFilter(this);
 }
 
 VentaBuscar::~VentaBuscar()
@@ -53,7 +55,6 @@ void VentaBuscar::set_ruc(QString ruc)
     modo_only_date = true;
 
     ui->pushButton_agregar->hide();
-    ui->pushButton_modificar->hide();
 
     on_lineEdit_buscar_returnPressed();
 }
@@ -171,8 +172,6 @@ void VentaBuscar::on_compra_closing()
         direccion = w->getDireccion();        
     }break;
     }
-
-    //on_lineEdit_buscar_textEdited("");
 }
 void VentaBuscar::on_lineEdit_buscar_textEdited(const QString &arg1)
 {
@@ -835,169 +834,223 @@ void VentaBuscar::on_pushButton_agregar_clicked()
     }
 }
 
-void VentaBuscar::on_pushButton_modificar_clicked()
+void VentaBuscar::on_radioButton_reg_sin_doc_clicked()
+{
+    tipo = venta_items::REGISTRO_SIN_DOCUMENTO;
+
+    on_lineEdit_buscar_textEdited("");
+    on_lineEdit_buscar_returnPressed();
+}
+
+void VentaBuscar::on_radioButton_boleta_clicked()
+{
+    tipo = venta_items::BOLETA;
+
+    on_lineEdit_buscar_textEdited("");
+    on_lineEdit_buscar_returnPressed();
+}
+
+void VentaBuscar::on_radioButton_factura_clicked()
+{
+    tipo = venta_items::FACTURA;
+
+    on_lineEdit_buscar_textEdited("");
+    on_lineEdit_buscar_returnPressed();
+}
+
+void VentaBuscar::on_radioButton_nota_pedido_clicked()
+{
+    tipo = venta_items::NOTA_PEDIDO;
+
+    on_lineEdit_buscar_textEdited("");
+    on_lineEdit_buscar_returnPressed();
+}
+
+void VentaBuscar::on_radioButton_guia_clicked()
+{
+    tipo = venta_items::GUIA_REMISION_REMITENTE;
+
+    on_lineEdit_buscar_textEdited("");
+    on_lineEdit_buscar_returnPressed();
+}
+
+void VentaBuscar::on_radioButton_cotizacion_clicked()
+{
+    tipo = venta_items::COTIZACION;
+
+    on_lineEdit_buscar_textEdited("");
+    on_lineEdit_buscar_returnPressed();
+}
+
+void VentaBuscar::on_radioButton_nota_credito_clicked()
+{
+    tipo = venta_items::NOTA_CREDITO;
+
+    on_lineEdit_buscar_textEdited("");
+    on_lineEdit_buscar_returnPressed();
+}
+
+void VentaBuscar::on_radioButton_nota_debito_clicked()
+{
+    tipo = venta_items::NOTA_DEBITO;
+
+    on_lineEdit_buscar_textEdited("");
+    on_lineEdit_buscar_returnPressed();
+}
+void VentaBuscar::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
 {
     QTableWidget* tb = ui->tableWidget;
-    QTableWidgetItem* item = tb->currentItem();
 
     if(!item){
         return;
     }
 
-    int ret = QMessageBox::warning(this, "Advertencia", "¿Desea MODIFICAR los datos de esa COMPRA?", "Si", "No");
-    switch(ret){
-    case 0:{        
-        switch(tipo)
-        {
-        case venta_items::REGISTRO_SIN_DOCUMENTO:{
-            VentaRegistroSinDoc* w = new VentaRegistroSinDoc;
-            w->set_widget_previous(this);
-            QString id = tb->item(item->row(), 0)->text();
-            QString persona_id = tb->item(item->row(), 1)->text();
-            QString tipo_persona_id = tb->item(item->row(), 2)->text();
-            QString fecha_emision = tb->item(item->row(), 3)->text();
-            QString serie = tb->item(item->row(), 4)->text();
-            QString numero = tb->item(item->row(), 5)->text();
-            QString codigo = tb->item(item->row(), 6)->text();
-            QString nombre = tb->item(item->row(), 7)->text();
-            QString direccion = tb->item(item->row(), 8)->text();
+    switch(tipo)
+    {
+    case venta_items::REGISTRO_SIN_DOCUMENTO:{
+        VentaRegistroSinDoc* w = new VentaRegistroSinDoc;
+        w->set_widget_previous(this);
+        QString id = tb->item(item->row(), 0)->text();
+        QString persona_id = tb->item(item->row(), 1)->text();
+        QString tipo_persona_id = tb->item(item->row(), 2)->text();
+        QString fecha_emision = tb->item(item->row(), 3)->text();
+        QString serie = tb->item(item->row(), 4)->text();
+        QString numero = tb->item(item->row(), 5)->text();
+        QString codigo = tb->item(item->row(), 6)->text();
+        QString nombre = tb->item(item->row(), 7)->text();
+        QString direccion = tb->item(item->row(), 8)->text();
 
-            connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
-            w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
+        connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
+        w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
 
-            SYSTEM->change_center_w(this, w);
+        SYSTEM->change_center_w(this, w);
 
-        }break;
-        case venta_items::BOLETA:{
-            VentaBoleta* w = new VentaBoleta;
-            w->set_widget_previous(this);
-            QString id = tb->item(item->row(), 0)->text();
-            QString persona_id = tb->item(item->row(), 1)->text();
-            QString tipo_persona_id = tb->item(item->row(), 2)->text();
-            QString fecha_emision = tb->item(item->row(), 3)->text();
-            QString serie = tb->item(item->row(), 4)->text();
-            QString numero = tb->item(item->row(), 5)->text();
-            QString codigo = tb->item(item->row(), 6)->text();
-            QString nombre = tb->item(item->row(), 7)->text();
-            QString direccion = tb->item(item->row(), 8)->text();
-
-            connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
-            w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
-
-            SYSTEM->change_center_w(this, w);
-        }break;
-        case venta_items::FACTURA:{
-            VentaFactura* w = new VentaFactura;
-            w->set_widget_previous(this);
-            QString id = tb->item(item->row(), 0)->text();
-            QString persona_id = tb->item(item->row(), 1)->text();
-            QString tipo_persona_id = tb->item(item->row(), 2)->text();
-            QString fecha_emision = tb->item(item->row(), 3)->text();
-            QString serie = tb->item(item->row(), 4)->text();
-            QString numero = tb->item(item->row(), 5)->text();
-            QString codigo = tb->item(item->row(), 6)->text();
-            QString nombre = tb->item(item->row(), 7)->text();
-            QString direccion = tb->item(item->row(), 8)->text();
-
-            connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
-            w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
-
-            SYSTEM->change_center_w(this, w);
-        }break;
-        case venta_items::NOTA_PEDIDO:{
-            VentaNotaPedido* w = new VentaNotaPedido;
-            w->set_widget_previous(this);
-            QString id = tb->item(item->row(), 0)->text();
-            QString persona_id = tb->item(item->row(), 1)->text();
-            QString tipo_persona_id = tb->item(item->row(), 2)->text();
-            QString fecha_emision = tb->item(item->row(), 3)->text();
-            QString serie = tb->item(item->row(), 4)->text();
-            QString numero = tb->item(item->row(), 5)->text();
-            QString codigo = tb->item(item->row(), 6)->text();
-            QString nombre = tb->item(item->row(), 7)->text();
-            QString direccion = tb->item(item->row(), 8)->text();
-
-            connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
-            w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
-
-            SYSTEM->change_center_w(this, w);
-        }break;
-        case venta_items::GUIA_REMISION_REMITENTE:{
-            VentaGuiaRR* w = new VentaGuiaRR;
-            w->set_widget_previous(this);
-            QString id = tb->item(item->row(), 0)->text();
-            QString persona_id = tb->item(item->row(), 1)->text();
-            QString tipo_persona_id = tb->item(item->row(), 2)->text();
-            QString fecha_emision = tb->item(item->row(), 3)->text();
-            QString serie = tb->item(item->row(), 4)->text();
-            QString numero = tb->item(item->row(), 5)->text();
-            QString codigo = tb->item(item->row(), 6)->text();
-            QString nombre = tb->item(item->row(), 7)->text();
-            QString direccion = tb->item(item->row(), 8)->text();
-
-            connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
-            w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
-
-            SYSTEM->change_center_w(this, w);
-        }break;
-        case venta_items::COTIZACION:{
-            VentaCotizacion* w = new VentaCotizacion;
-            w->set_widget_previous(this);
-            QString id = tb->item(item->row(), 0)->text();
-            QString persona_id = tb->item(item->row(), 1)->text();
-            QString tipo_persona_id = tb->item(item->row(), 2)->text();
-            QString fecha_emision = tb->item(item->row(), 3)->text();
-            QString serie = tb->item(item->row(), 4)->text();
-            QString numero = tb->item(item->row(), 5)->text();
-            QString codigo = tb->item(item->row(), 6)->text();
-            QString nombre = tb->item(item->row(), 7)->text();
-            QString direccion = tb->item(item->row(), 8)->text();
-
-            connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
-            w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
-
-            SYSTEM->change_center_w(this, w);
-        }break;
-        case venta_items::NOTA_CREDITO:{
-            VentaNotaCredito* w = new VentaNotaCredito;
-            w->set_widget_previous(this);            
-            QString id = tb->item(item->row(), 0)->text();
-            QString persona_id = tb->item(item->row(), 1)->text();
-            QString tipo_persona_id = tb->item(item->row(), 2)->text();
-            QString fecha_emision = tb->item(item->row(), 3)->text();
-            QString serie = tb->item(item->row(), 4)->text();
-            QString numero = tb->item(item->row(), 5)->text();
-            QString codigo = tb->item(item->row(), 6)->text();
-            QString nombre = tb->item(item->row(), 7)->text();
-            QString direccion = tb->item(item->row(), 8)->text();
-
-            connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
-            w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
-
-            SYSTEM->change_center_w(this, w);
-        }break;
-        case venta_items::NOTA_DEBITO:{
-            VentaNotaDebito* w = new VentaNotaDebito;
-            w->set_widget_previous(this);
-            QString id = tb->item(item->row(), 0)->text();
-            QString persona_id = tb->item(item->row(), 1)->text();
-            QString tipo_persona_id = tb->item(item->row(), 2)->text();
-            QString fecha_emision = tb->item(item->row(), 3)->text();
-            QString serie = tb->item(item->row(), 4)->text();
-            QString numero = tb->item(item->row(), 5)->text();
-            QString codigo = tb->item(item->row(), 6)->text();
-            QString nombre = tb->item(item->row(), 7)->text();
-            QString direccion = tb->item(item->row(), 8)->text();
-
-            connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
-            w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
-
-            SYSTEM->change_center_w(this, w);
-        }break;
-        }
     }break;
-    case 1:{
+    case venta_items::BOLETA:{
+        VentaBoleta* w = new VentaBoleta;
+        w->set_widget_previous(this);
+        QString id = tb->item(item->row(), 0)->text();
+        QString persona_id = tb->item(item->row(), 1)->text();
+        QString tipo_persona_id = tb->item(item->row(), 2)->text();
+        QString fecha_emision = tb->item(item->row(), 3)->text();
+        QString serie = tb->item(item->row(), 4)->text();
+        QString numero = tb->item(item->row(), 5)->text();
+        QString codigo = tb->item(item->row(), 6)->text();
+        QString nombre = tb->item(item->row(), 7)->text();
+        QString direccion = tb->item(item->row(), 8)->text();
 
+        connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
+        w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
+
+        SYSTEM->change_center_w(this, w);
+    }break;
+    case venta_items::FACTURA:{
+        VentaFactura* w = new VentaFactura;
+        w->set_widget_previous(this);
+        QString id = tb->item(item->row(), 0)->text();
+        QString persona_id = tb->item(item->row(), 1)->text();
+        QString tipo_persona_id = tb->item(item->row(), 2)->text();
+        QString fecha_emision = tb->item(item->row(), 3)->text();
+        QString serie = tb->item(item->row(), 4)->text();
+        QString numero = tb->item(item->row(), 5)->text();
+        QString codigo = tb->item(item->row(), 6)->text();
+        QString nombre = tb->item(item->row(), 7)->text();
+        QString direccion = tb->item(item->row(), 8)->text();
+
+        connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
+        w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
+
+        SYSTEM->change_center_w(this, w);
+    }break;
+    case venta_items::NOTA_PEDIDO:{
+        VentaNotaPedido* w = new VentaNotaPedido;
+        w->set_widget_previous(this);
+        QString id = tb->item(item->row(), 0)->text();
+        QString persona_id = tb->item(item->row(), 1)->text();
+        QString tipo_persona_id = tb->item(item->row(), 2)->text();
+        QString fecha_emision = tb->item(item->row(), 3)->text();
+        QString serie = tb->item(item->row(), 4)->text();
+        QString numero = tb->item(item->row(), 5)->text();
+        QString codigo = tb->item(item->row(), 6)->text();
+        QString nombre = tb->item(item->row(), 7)->text();
+        QString direccion = tb->item(item->row(), 8)->text();
+
+        connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
+        w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
+
+        SYSTEM->change_center_w(this, w);
+    }break;
+    case venta_items::GUIA_REMISION_REMITENTE:{
+        VentaGuiaRR* w = new VentaGuiaRR;
+        w->set_widget_previous(this);
+        QString id = tb->item(item->row(), 0)->text();
+        QString persona_id = tb->item(item->row(), 1)->text();
+        QString tipo_persona_id = tb->item(item->row(), 2)->text();
+        QString fecha_emision = tb->item(item->row(), 3)->text();
+        QString serie = tb->item(item->row(), 4)->text();
+        QString numero = tb->item(item->row(), 5)->text();
+        QString codigo = tb->item(item->row(), 6)->text();
+        QString nombre = tb->item(item->row(), 7)->text();
+        QString direccion = tb->item(item->row(), 8)->text();
+
+        connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
+        w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
+
+        SYSTEM->change_center_w(this, w);
+    }break;
+    case venta_items::COTIZACION:{
+        VentaCotizacion* w = new VentaCotizacion;
+        w->set_widget_previous(this);
+        QString id = tb->item(item->row(), 0)->text();
+        QString persona_id = tb->item(item->row(), 1)->text();
+        QString tipo_persona_id = tb->item(item->row(), 2)->text();
+        QString fecha_emision = tb->item(item->row(), 3)->text();
+        QString serie = tb->item(item->row(), 4)->text();
+        QString numero = tb->item(item->row(), 5)->text();
+        QString codigo = tb->item(item->row(), 6)->text();
+        QString nombre = tb->item(item->row(), 7)->text();
+        QString direccion = tb->item(item->row(), 8)->text();
+
+        connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
+        w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
+
+        SYSTEM->change_center_w(this, w);
+    }break;
+    case venta_items::NOTA_CREDITO:{
+        VentaNotaCredito* w = new VentaNotaCredito;
+        w->set_widget_previous(this);
+        QString id = tb->item(item->row(), 0)->text();
+        QString persona_id = tb->item(item->row(), 1)->text();
+        QString tipo_persona_id = tb->item(item->row(), 2)->text();
+        QString fecha_emision = tb->item(item->row(), 3)->text();
+        QString serie = tb->item(item->row(), 4)->text();
+        QString numero = tb->item(item->row(), 5)->text();
+        QString codigo = tb->item(item->row(), 6)->text();
+        QString nombre = tb->item(item->row(), 7)->text();
+        QString direccion = tb->item(item->row(), 8)->text();
+
+        connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
+        w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
+
+        SYSTEM->change_center_w(this, w);
+    }break;
+    case venta_items::NOTA_DEBITO:{
+        VentaNotaDebito* w = new VentaNotaDebito;
+        w->set_widget_previous(this);
+        QString id = tb->item(item->row(), 0)->text();
+        QString persona_id = tb->item(item->row(), 1)->text();
+        QString tipo_persona_id = tb->item(item->row(), 2)->text();
+        QString fecha_emision = tb->item(item->row(), 3)->text();
+        QString serie = tb->item(item->row(), 4)->text();
+        QString numero = tb->item(item->row(), 5)->text();
+        QString codigo = tb->item(item->row(), 6)->text();
+        QString nombre = tb->item(item->row(), 7)->text();
+        QString direccion = tb->item(item->row(), 8)->text();
+
+        connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
+        w->select(id, persona_id, tipo_persona_id, fecha_emision, serie, numero, codigo, nombre, direccion);
+
+        SYSTEM->change_center_w(this, w);
     }break;
     }
 }
@@ -1013,7 +1066,8 @@ void VentaBuscar::showEvent(QShowEvent *event)
         ui->dateEdit_inicio->setFocus(Qt::TabFocusReason);
     }
 
-    //}
+    on_lineEdit_buscar_textEdited(ui->lineEdit_buscar->text());
+    on_lineEdit_buscar_returnPressed();
 }
 void VentaBuscar::closeEvent(QCloseEvent *event)
 {
@@ -1047,16 +1101,6 @@ bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
                     if (ui->tableWidget->currentItem())
                         ui->tableWidget->currentItem()->setSelected(true);
                 }
-            }break;
-            case Qt::Key_F3: {
-                ui->pushButton_agregar->setFocus(Qt::TabFocusReason);
-                ui->pushButton_agregar->click();
-                return true;
-            }break;
-            case Qt::Key_F4: {
-                ui->pushButton_modificar->setFocus(Qt::TabFocusReason);
-                ui->pushButton_modificar->click();
-                return true;
             }break;
             }
 
@@ -1196,26 +1240,6 @@ bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:
                 ui->pushButton_agregar->click();
-                return true;
-            }
-
-        }else{
-
-        }
-        return false;
-    }
-    w_temp = ui->pushButton_modificar;
-    if(w_temp == obj){
-        if(e->type() == QEvent::KeyPress){
-            QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
-            switch(KeyEvent->key())
-            {
-            case Qt::Key_Tab:
-                this->setFocus();
-                break;
-            case Qt::Key_Return:
-                ui->pushButton_modificar->click();
                 return true;
             }
 

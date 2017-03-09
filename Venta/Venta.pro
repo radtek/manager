@@ -42,7 +42,6 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
 }
 
 SOURCES += venta.cpp \
-    a_venta.cpp \
     ventaamarres.cpp \
     ventaboleta.cpp \
     ventabuscar.cpp \
@@ -64,7 +63,6 @@ SOURCES += venta.cpp \
 
 HEADERS += venta.h\
         venta_global.h \
-    a_venta.h \
     ventaamarres.h \
     ventaboleta.h \
     ventabuscar.h \
@@ -82,7 +80,8 @@ HEADERS += venta.h\
     ventaguiarr.h \
     ventaconfighoja.h \
     ventasnselector.h \
-    ventachartprecio.h
+    ventachartprecio.h \
+    ventadefines.h
 
 unix {
     target.path = /usr/lib
@@ -90,7 +89,6 @@ unix {
 }
 
 FORMS += \
-    a_venta.ui \
     ventaamarres.ui \
     ventaboleta.ui \
     ventabuscar.ui \

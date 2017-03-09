@@ -68,7 +68,7 @@ void ToolBar::on_toolButton_ventas_clicked()
         //b = true;
     }	
 	
-    QWidget* w = SYSTEM->set_center_w(new A_Venta);
+    QWidget* w = SYSTEM->set_center_w(new VentaBuscar);
     APP_MAINWINDOW->setCentralWidget(w);
 
     if(cur_label){
@@ -93,7 +93,7 @@ void ToolBar::on_toolButton_compras_clicked()
         //b = true;
     }
 	
-    QWidget* w = SYSTEM->set_center_w(new A_Compra);
+    QWidget* w = SYSTEM->set_center_w(new CompraBuscar);
     APP_MAINWINDOW->setCentralWidget(w);
 
     if(cur_label){
@@ -105,7 +105,7 @@ void ToolBar::on_toolButton_compras_clicked()
 }
 void ToolBar::on_toolButton_productos_clicked()
 {
-    QWidget* w = SYSTEM->set_center_w(new A_Producto);
+    QWidget* w = SYSTEM->set_center_w(new ProductoBuscar);
     APP_MAINWINDOW->setCentralWidget(w);
 
     if(cur_label){
@@ -118,7 +118,7 @@ void ToolBar::on_toolButton_productos_clicked()
 
 void ToolBar::on_toolButton_colaboradores_clicked()
 {
-    QWidget* w = SYSTEM->set_center_w(new A_Persona);
+    QWidget* w = SYSTEM->set_center_w(new ColaboradorBuscar);
     APP_MAINWINDOW->setCentralWidget(w);
 
     if(cur_label){

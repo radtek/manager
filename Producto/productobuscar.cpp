@@ -24,7 +24,7 @@ ProductoBuscar::ProductoBuscar(QWidget *parent) :
 	marca = "";
 	unidad = "";
 	precio = "";
-	cantidad = "";
+	cantidad = "";        
 
 	this->installEventFilter(this);
 
@@ -40,7 +40,6 @@ ProductoBuscar::ProductoBuscar(QWidget *parent) :
 	ui->pushButton_salir->installEventFilter(this);
 
     ui->pushButton_nuevo->installEventFilter(this);
-    ui->pushButton_modificar->installEventFilter(this);
 }
 
 ProductoBuscar::~ProductoBuscar()
@@ -111,8 +110,6 @@ void ProductoBuscar::on_productoFormTransaction_closing()
 	unidad = widget_prod->get_unidad();
 	precio = widget_prod->get_precio();
 	cantidad = widget_prod->get_cantidad();
-
-	on_lineEdit_codigo_textChanged("");
 }
 void ProductoBuscar::on_pushButton_nuevo_clicked()
 {
@@ -131,46 +128,6 @@ void ProductoBuscar::on_pushButton_nuevo_clicked()
     }
 }
 
-void ProductoBuscar::on_pushButton_modificar_clicked()
-{
-    QTableWidget* tb = ui->tableWidget;
-    QTableWidgetItem* item = tb->currentItem();
-
-	if (!item) {
-        QMessageBox::warning(this, "Advertencia", "Seleccione una marca.", "Ok");
-		return;
-	}
-
-    int ret = QMessageBox::warning(this, "Advertencia", "¿Desea modificar el producto?", "Si", "No");
-    switch(ret){
-    case 0:{
-		int row = item->row();
-		QTableWidget* tb = ui->tableWidget;
-
-		id = tb->item(row, 0)->text();
-		id_tipo = tb->item(row, 1)->text();
-		id_marca = tb->item(row, 2)->text();
-		id_unidad = tb->item(row, 3)->text();
-		codigo = tb->item(row, 4)->text();
-		tipo = tb->item(row, 5)->text();
-		descripcion = tb->item(row, 6)->text();
-		marca = tb->item(row, 7)->text();
-		unidad = tb->item(row, 8)->text();
-		precio = tb->item(row, 9)->text();
-		cantidad = tb->item(row, 10)->text();
-
-        ProductoFormTransaction* w = new ProductoFormTransaction;
-		w->set_data(id, id_tipo, id_marca, id_unidad, codigo, tipo, descripcion, marca, unidad, precio, cantidad);
-		connect(w, SIGNAL(closing()), this, SLOT(on_productoFormTransaction_closing()));
-        w->set_widget_previous(this);
-
-        SYSTEM->change_center_w(this, w);        
-    }break;
-    case 1:{
-
-    }break;
-    }
-}
 void ProductoBuscar::on_pushButton_ok_clicked()
 {
     QTableWidgetItem* item = ui->tableWidget->currentItem();
@@ -381,11 +338,41 @@ void ProductoBuscar::on_lineEdit_unidad_buscar_returnPressed()
 {
 	on_lineEdit_tipo_buscar_returnPressed();
 }
+
+void ProductoBuscar::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
+{
+    QTableWidget* tb = ui->tableWidget;
+
+    int row = item->row();
+
+    id = tb->item(row, 0)->text();
+    id_tipo = tb->item(row, 1)->text();
+    id_marca = tb->item(row, 2)->text();
+    id_unidad = tb->item(row, 3)->text();
+    codigo = tb->item(row, 4)->text();
+    tipo = tb->item(row, 5)->text();
+    descripcion = tb->item(row, 6)->text();
+    marca = tb->item(row, 7)->text();
+    unidad = tb->item(row, 8)->text();
+    precio = tb->item(row, 9)->text();
+    cantidad = tb->item(row, 10)->text();
+
+    ProductoFormTransaction* w = new ProductoFormTransaction;
+    w->set_data(id, id_tipo, id_marca, id_unidad, codigo, tipo, descripcion, marca, unidad, precio, cantidad);
+    connect(w, SIGNAL(closing()), this, SLOT(on_productoFormTransaction_closing()));
+    w->set_widget_previous(this);
+
+    SYSTEM->change_center_w(this, w);
+}
+
 void ProductoBuscar::showEvent(QShowEvent *se)
 {
     se->accept();
 
     ui->lineEdit_descripcion_buscar->setFocus(Qt::TabFocusReason);
+
+    on_lineEdit_descripcion_buscar_textChanged(ui->lineEdit_descripcion_buscar->text());
+    on_lineEdit_descripcion_buscar_returnPressed();
 }
 void ProductoBuscar::closeEvent(QCloseEvent *ce)
 {
@@ -424,16 +411,7 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
 						ui->tableWidget->currentItem()->setSelected(true);
 				}
             }break;
-            case Qt::Key_F3:
-                ui->pushButton_nuevo->setFocus(Qt::TabFocusReason);
-                ui->pushButton_nuevo->click();
-                return true;
-            case Qt::Key_F4:
-                ui->pushButton_modificar->setFocus(Qt::TabFocusReason);
-                ui->pushButton_modificar->click();
-                return true;
             }
-
         }else{
 
         }
@@ -452,9 +430,36 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
 			case Qt::Key_Down: {
 				int index = ui->tableWidget->currentRow();
 				if (index == ui->tableWidget->rowCount() - 1) {
-					on_lineEdit_tipo_buscar_returnPressed();
+                    on_lineEdit_descripcion_buscar_returnPressed();
+                    return true;
 				}
 			}
+            case Qt::Key_F3:{
+                QTableWidgetItem* item = ui->tableWidget->currentItem();
+                if(item) {
+                    CompraChartCosto* w = new CompraChartCosto();
+                    QString producto_id = ui->tableWidget->item(item->row(), 0)->text();
+                    QString unidad = ui->tableWidget->item(item->row(), 8)->text();
+                    QString descripcion = ui->tableWidget->item(item->row(), 6)->text();
+                    w->set_producto(producto_id, unidad, descripcion);
+                    w->set_widget_previous(this);
+                    SYSTEM->change_center_w(this, w);
+                    return true;
+                }
+            }break;
+            case Qt::Key_F4:{
+                QTableWidgetItem* item = ui->tableWidget->currentItem();
+                if(item) {
+                    VentaChartPrecio* w = new VentaChartPrecio();
+                    QString producto_id = ui->tableWidget->item(item->row(), 0)->text();
+                    QString unidad = ui->tableWidget->item(item->row(), 8)->text();
+                    QString descripcion = ui->tableWidget->item(item->row(), 6)->text();
+                    w->set_producto(producto_id, unidad, descripcion);
+                    w->set_widget_previous(this);
+                    SYSTEM->change_center_w(this, w);
+                    return true;
+                }
+            }break;
 			}
 
 		}
@@ -611,23 +616,6 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
         }
         return false;
     }
-    w_temp = ui->pushButton_modificar;
-    if(obj == w_temp){
-        if(e->type() == QEvent::KeyPress){
-            QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
-            switch(KeyEvent->key())
-            {            
-            case Qt::Key_Return:{
-                ui->pushButton_modificar->click();
-                return true;
-            }break;
-            }
-
-        }else{
-
-        }
-        return false;
-    }
     return eventFilter(obj, e);
 }

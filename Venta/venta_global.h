@@ -1,14 +1,6 @@
 #ifndef VENTA_GLOBAL_H
 #define VENTA_GLOBAL_H
 
-#include <QtCore/qglobal.h>
-
-#if defined(VENTA_LIBRARY)
-#  define VENTASHARED_EXPORT Q_DECL_EXPORT
-#else
-#  define VENTASHARED_EXPORT Q_DECL_IMPORT
-#endif
-
 namespace venta_items{
     enum items {
         REGISTRO_SIN_DOCUMENTO=0, BOLETA=1, FACTURA=2, NOTA_PEDIDO=3, GUIA_REMISION_REMITENTE=4
@@ -17,11 +9,21 @@ namespace venta_items{
 }
 
 #include "mylibrary_global.h"
-#include "producto_global.h"
-#include "persona_global.h"
-#include "compra_global.h"
 
-#include "a_venta.h"
+#include "ventadefines.h"
+
+namespace A_Venta{
+    enum{SERIE_N_DIGITS = 4, NUMERO_N_DIGITS = 8, SIZE_TRANSACTION = 12};
+    static void set_serie_numero(QLineEdit* serie, QLineEdit* numero) {
+        QRegExp regExp_serie(QString()+"[0-9]{"+QString().setNum(SERIE_N_DIGITS)+","+QString().setNum(SERIE_N_DIGITS)+"}");
+        QRegExp regExp_numero(QString()+"[0-9]{"+QString().setNum(NUMERO_N_DIGITS)+","+QString().setNum(NUMERO_N_DIGITS)+"}");
+
+        serie->setValidator(new QRegExpValidator(regExp_serie));
+        numero->setValidator(new QRegExpValidator(regExp_numero));
+
+    }
+}
+
 #include "ventaamarres.h"
 #include "ventaboleta.h"
 #include "ventabuscar.h"

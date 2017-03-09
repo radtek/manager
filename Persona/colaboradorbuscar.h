@@ -36,7 +36,17 @@ public slots:
 
     void on_pushButton_agregar_clicked();
 
-    void on_pushButton_modificar_clicked();
+    void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
+
+    void on_radioButton_proveedor_clicked();
+
+    void on_radioButton_transportista_clicked();
+
+    void on_radioButton_cliente_ruc_clicked();
+
+    void on_radioButton_cliente_dni_clicked();
+
+    void on_radioButton_usuario_clicked();
 
 protected:
     void showEvent(QShowEvent *se);

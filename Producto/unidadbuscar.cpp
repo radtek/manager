@@ -25,7 +25,6 @@ UnidadBuscar::UnidadBuscar(QWidget *parent) :
 	ui->pushButton_ok->installEventFilter(this);
 	ui->pushButton_salir->installEventFilter(this);
 	ui->pushButton_nuevo->installEventFilter(this);
-	ui->pushButton_modificar->installEventFilter(this);
 }
 
 UnidadBuscar::~UnidadBuscar()
@@ -50,8 +49,6 @@ void UnidadBuscar::on_unidad_closing()
 	Unidad* widget_unidad = (Unidad*)QObject::sender();
 	id = widget_unidad->getID();
 	unidad = widget_unidad->getUnidad();
-
-	on_lineEdit_unidad_buscar_textChanged("");
 }
 void UnidadBuscar::on_lineEdit_unidad_buscar_textChanged(const QString& arg)
 {
@@ -111,35 +108,6 @@ void UnidadBuscar::on_pushButton_nuevo_clicked()
 	}break;
 	}
 }
-void UnidadBuscar::on_pushButton_modificar_clicked()
-{
-	QTableWidget* table = ui->tableWidget;
-	QTableWidgetItem* item = table->currentItem();
-	if (!item) {
-		int ret = QMessageBox::warning(this, "Advertencia", "Seleccione unidad.", "Ok");
-		return;
-	}
-
-	int ret = QMessageBox::warning(this, "Advertencia", "¿Esta seguro de modificar el item?", "Si", "No");
-	switch (ret) {
-	case 0: {
-		Unidad* w = new Unidad;
-		w->set_widget_previous(this);
-
-		QString id = table->item(item->row(), 0)->text();
-		QString unidad = table->item(item->row(), 1)->text();
-
-		w->set_data(id, unidad);
-
-		connect(w, SIGNAL(closing()), this, SLOT(on_unidad_closing()));
-		SYSTEM->change_center_w(this, w);
-
-	}break;
-	case 1: {
-
-	}break;
-	}
-}
 void UnidadBuscar::on_pushButton_ok_clicked()
 {
 	QTableWidget* tb = ui->tableWidget;
@@ -180,11 +148,33 @@ void UnidadBuscar::on_pushButton_salir_clicked()
 	}
 	}
 }
+void UnidadBuscar::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
+{
+    QTableWidget* table = ui->tableWidget;
+    if (!item) {
+        int ret = QMessageBox::warning(this, "Advertencia", "Seleccione unidad.", "Ok");
+        return;
+    }
+
+    Unidad* w = new Unidad;
+    w->set_widget_previous(this);
+
+    QString id = table->item(item->row(), 0)->text();
+    QString unidad = table->item(item->row(), 1)->text();
+
+    w->set_data(id, unidad);
+
+    connect(w, SIGNAL(closing()), this, SLOT(on_unidad_closing()));
+    SYSTEM->change_center_w(this, w);
+}
 void UnidadBuscar::showEvent(QShowEvent *se)
 {
 	se->accept();
 
 	ui->lineEdit_unidad_buscar->setFocus(Qt::TabFocusReason);
+
+    on_lineEdit_unidad_buscar_textChanged(ui->lineEdit_unidad_buscar->text());
+    on_lineEdit_unidad_buscar_returnPressed();
 }
 void UnidadBuscar::closeEvent(QCloseEvent * ce)
 {
@@ -218,14 +208,6 @@ bool UnidadBuscar::eventFilter(QObject *obj, QEvent *e)
 						ui->tableWidget->currentItem()->setSelected(true);
 				}
             }break;
-            case Qt::Key_F3:
-                ui->pushButton_nuevo->setFocus(Qt::TabFocusReason);
-                ui->pushButton_nuevo->click();
-                return true;
-            case Qt::Key_F4:
-                ui->pushButton_modificar->setFocus(Qt::TabFocusReason);
-                ui->pushButton_modificar->click();
-                return true;
 			}
 
 		}
@@ -266,8 +248,9 @@ bool UnidadBuscar::eventFilter(QObject *obj, QEvent *e)
 				int index = ui->tableWidget->currentRow();
 				if (index == ui->tableWidget->rowCount() - 1) {
 					on_lineEdit_unidad_buscar_returnPressed();
+                    return true;
 				}
-			}
+            }break;
 			}
 
 		}
@@ -321,8 +304,7 @@ bool UnidadBuscar::eventFilter(QObject *obj, QEvent *e)
 	}
 	w_temp = ui->pushButton_nuevo;
 	if (obj == w_temp) {
-		if (e->type() == QEvent::
-			KeyPress) {
+		if (e->type() == QEvent::KeyPress) {
 			QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
 			switch (KeyEvent->key())
@@ -333,28 +315,7 @@ bool UnidadBuscar::eventFilter(QObject *obj, QEvent *e)
 			}break;
 			}
 
-		}
-		else {
-
-		}
-		return false;
-	}
-	w_temp = ui->pushButton_modificar;
-	if (obj == w_temp) {
-		if (e->type() == QEvent::
-			KeyPress) {
-			QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
-			switch (KeyEvent->key())
-			{			
-			case Qt::Key_Return: {
-				ui->pushButton_modificar->click();
-                return true;
-			}break;
-			}
-
-		}
-		else {
+        } else {
 
 		}
 		return false;

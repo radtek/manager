@@ -3,6 +3,8 @@
 
 #include "compra_global.h"
 
+#include "productobuscar.h"
+
 class COMPRASHARED_EXPORT CompraProducto : public ProductoBuscar
 {
     Q_OBJECT

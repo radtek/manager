@@ -5,7 +5,13 @@
 #include <QtCharts>
 #include <QLineSeries>
 using namespace QtCharts;
-#include "compra_global.h"
+
+#include "mylibrary_global.h"
+
+#include "compradefines.h"
+
+//#include "compraboleta.h"
+//#include "comprafactura.h"
 
 namespace Ui {
 class CompraChartCosto;

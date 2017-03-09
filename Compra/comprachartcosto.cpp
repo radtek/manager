@@ -1,6 +1,9 @@
 #include "comprachartcosto.h"
 #include "ui_comprachartcosto.h"
 
+#include "compraboleta.h"
+#include "comprafactura.h"
+
 CompraChartCosto::CompraChartCosto(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::CompraChartCosto)
@@ -840,7 +843,7 @@ void CompraChartCosto::on_pushButton_modificar_clicked()
         int tipo = ui->tableWidget->item(item->row(), 1)->text().toInt();
         switch(tipo)
         {
-        case tipo_documento::FACTURA:{
+        case tipo_documento::FACTURA:{            
             CompraFactura* w = new CompraFactura;
             w->set_widget_previous(this);
             QString id = tb->item(item->row(), 0)->text();
@@ -885,5 +888,5 @@ void CompraChartCosto::on_pushButton_modificar_clicked()
     case 1:{
 
     }break;
-    }
+    }    
 }

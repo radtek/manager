@@ -25,6 +25,9 @@
          <bold>true</bold>
         </font>
        </property>
+       <property name="toolTip">
+        <string>Agregue un producto nuevo a la derecha -&gt;</string>
+       </property>
        <property name="text">
         <string>BUSCAR PRODUCTO</string>
        </property>
@@ -51,7 +54,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Agregar</string>
+        <string>&amp;Nuevo</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/iconos.qrc">
@@ -63,27 +66,8 @@
          <height>32</height>
         </size>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_modificar">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Modificar</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../ManagerSystem/iconos.qrc">
-         <normaloff>:/new/Iconos/modificar_32.png</normaloff>:/new/Iconos/modificar_32.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
+       <property name="shortcut">
+        <string>Alt+N</string>
        </property>
       </widget>
      </item>
@@ -95,6 +79,9 @@
       <font>
        <pointsize>10</pointsize>
       </font>
+     </property>
+     <property name="toolTip">
+      <string>PRESIONE F3 Y F4 PARA COMPRAS Y VENTAS.</string>
      </property>
      <column>
       <property name="text">
@@ -436,7 +423,6 @@
  </widget>
  <tabstops>
   <tabstop>pushButton_nuevo</tabstop>
-  <tabstop>pushButton_modificar</tabstop>
   <tabstop>tableWidget</tabstop>
   <tabstop>lineEdit_codigo</tabstop>
   <tabstop>lineEdit_tipo_buscar</tabstop>
