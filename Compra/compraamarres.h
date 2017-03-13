@@ -26,6 +26,8 @@ private slots:
 
     void on_pushButton_salir_clicked();    
 
+    void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
+
 protected:
     void showEvent(QShowEvent *se);
 
@@ -38,6 +40,8 @@ signals:
 
 private:
     Ui::CompraAmarres *ui;
+
+    bool afterShow;
 
     QWidget* widget_previous;
 

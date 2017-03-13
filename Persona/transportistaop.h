@@ -51,6 +51,8 @@ signals:
 private:
     Ui::TransportistaOp *ui;
 
+    bool afterShow;
+
     QWidget* widget_previous;
 
     SunatConsultaRUC consulta_ruc;

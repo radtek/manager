@@ -75,6 +75,8 @@ signals:
 private:
     Ui::ProductoFormTransaction *ui;
 
+    bool afterShow;
+
     QWidget* widget_previous;
 
     QString id_tipo;

@@ -434,7 +434,7 @@ void Sistema::clear_center_w(QWidget* w)
     }
 }
 
-QWidget* Sistema::change_center_w(QWidget* old_w, QWidget* new_w)
+QWidget* Sistema::change_center_w(QWidget* old_w, QWidget* new_w, bool isClose)
 {
     if(!old_w){        
         return 0;
@@ -442,7 +442,7 @@ QWidget* Sistema::change_center_w(QWidget* old_w, QWidget* new_w)
 
     QWidget* temp = old_w->parentWidget();
     if(temp){
-        //qDebug()<<typeid(*temp).name()<<endl;
+
     }
 
     QGridLayout* gridLayout = 0;
@@ -460,8 +460,14 @@ QWidget* Sistema::change_center_w(QWidget* old_w, QWidget* new_w)
 
 	if (old_w->isVisible()) old_w->hide();
 
-	bool b = old_w->close();
+    bool b = true;
+    if(isClose)
+        b = old_w->close();
+    else
+        old_w->hide();
+
 	if (!b) return NULL;
+
     gridLayout->removeWidget(old_w);
     gridLayout->addWidget(new_w, 0, 1);
 

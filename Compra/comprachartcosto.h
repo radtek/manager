@@ -67,6 +67,8 @@ protected:
 private:
     Ui::CompraChartCosto *ui;
 
+    bool afterShow;
+
     QWidget* widget_previous;
 
     int pos;

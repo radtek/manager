@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1086</width>
-    <height>598</height>
+    <height>608</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -90,6 +90,11 @@
      </item>
      <item>
       <widget class="QComboBox" name="comboBox_transformar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="currentIndex">
         <number>2</number>
        </property>
@@ -125,6 +130,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_transformar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>OK</string>
        </property>
@@ -170,6 +180,11 @@
      </item>
      <item>
       <widget class="QDateEdit" name="dateEdit_declaracion">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="displayFormat">
         <string>MMMM</string>
        </property>
@@ -198,6 +213,11 @@
      </item>
      <item>
       <widget class="QDateEdit" name="dateEdit_emision">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="displayFormat">
         <string>dd-MM-yyyy</string>
        </property>
@@ -240,6 +260,11 @@
          <width>130</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -403,6 +428,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -423,7 +453,13 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_nombre"/>
+      <widget class="QLineEdit" name="lineEdit_nombre">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -451,7 +487,13 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_direccion"/>
+      <widget class="QLineEdit" name="lineEdit_direccion">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -500,6 +542,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
      <item>
@@ -509,6 +556,11 @@
          <width>180</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
@@ -597,6 +649,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
      <item>
@@ -606,6 +663,11 @@
          <width>180</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
@@ -721,6 +783,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
      <item>
@@ -730,6 +797,11 @@
          <width>180</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
@@ -815,6 +887,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
       </widget>
      </item>
      <item>
@@ -824,6 +901,11 @@
          <width>180</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
@@ -923,12 +1005,20 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_down">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string/>
+        <string>Bajar</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/Iconos.qrc">
          <normaloff>:/new/Iconos/br_down.png</normaloff>:/new/Iconos/br_down.png</iconset>
+       </property>
+       <property name="shortcut">
+        <string>Alt+Down</string>
        </property>
        <property name="flat">
         <bool>true</bool>
@@ -937,12 +1027,20 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_up">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string/>
+        <string>Subir</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/Iconos.qrc">
          <normaloff>:/new/Iconos/br_up.png</normaloff>:/new/Iconos/br_up.png</iconset>
+       </property>
+       <property name="shortcut">
+        <string>Alt+Up</string>
        </property>
        <property name="flat">
         <bool>true</bool>
@@ -951,12 +1049,20 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_borrar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string/>
+        <string>Quitar</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/Iconos.qrc">
          <normaloff>:/new/Iconos/sq_minus.png</normaloff>:/new/Iconos/sq_minus.png</iconset>
+       </property>
+       <property name="shortcut">
+        <string>Del</string>
        </property>
        <property name="flat">
         <bool>true</bool>
@@ -967,6 +1073,11 @@
    </item>
    <item>
     <widget class="QTableWidget" name="tableWidget">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <attribute name="horizontalHeaderDefaultSectionSize">
       <number>100</number>
      </attribute>
@@ -1024,6 +1135,11 @@
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="1" column="2">
         <widget class="QLineEdit" name="lineEdit_total">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>0</string>
          </property>
@@ -1036,6 +1152,7 @@
         <widget class="QLabel" name="label_subtotal">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -1049,6 +1166,7 @@
         <widget class="QLabel" name="label_total">
          <property name="font">
           <font>
+           <pointsize>10</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -1060,6 +1178,11 @@
        </item>
        <item row="1" column="0">
         <widget class="QLineEdit" name="lineEdit_subtotal">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>0</string>
          </property>
@@ -1070,6 +1193,11 @@
        </item>
        <item row="1" column="1">
         <widget class="QLineEdit" name="lineEdit_igv">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>0</string>
          </property>
@@ -1084,6 +1212,7 @@
           <widget class="QLabel" name="label_igv">
            <property name="font">
             <font>
+             <pointsize>10</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
@@ -1095,6 +1224,13 @@
          </item>
          <item>
           <widget class="QLabel" name="label_igv_value">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
            <property name="text">
             <string>0.18</string>
            </property>
@@ -1123,8 +1259,13 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_eliminar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string/>
+        <string>&amp;Eliminar</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/Iconos.qrc">
@@ -1168,8 +1309,13 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string/>
+        <string>Anu&amp;lar</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/Iconos.qrc">
@@ -1204,8 +1350,13 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_amarres">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string/>
+        <string>&amp;Amarres</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/Iconos.qrc">
@@ -1237,8 +1388,13 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_imprimir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string/>
+        <string>I&amp;mprimir</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/Iconos.qrc">
@@ -1270,8 +1426,13 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_guardar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string/>
+        <string>&amp;Guardar</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/Iconos.qrc">
@@ -1287,8 +1448,13 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_salir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string/>
+        <string>&amp;Salir</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/Iconos.qrc">

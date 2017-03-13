@@ -66,11 +66,11 @@ void _StartProgram::on_pb_login_aceptar()
 
         APP_MAINWINDOW->set_toolBar(APP_TOOLBAR);
 
-        APP_TOOLBAR->setContextMenuPolicy(Qt::PreventContextMenu);
-
-        APP_MAINWINDOW->setCentralWidget(new Home);
+        APP_TOOLBAR->setContextMenuPolicy(Qt::PreventContextMenu);        
 
         APP_MAINWINDOW->showMaximized();
+
+        APP_MAINWINDOW->setCentralWidget(new Home);
     }
 }
 

@@ -7,11 +7,14 @@ ToolBar::ToolBar(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    afterShow = false;
+
     cur_label = NULL;
 
     ui->pushButton_rollback->hide();
     ui->pushButton_commit->hide();
 
+    this->installEventFilter(this);
     ui->toolButton_colaboradores->installEventFilter(this);
     ui->toolButton_compras->installEventFilter(this);
     ui->toolButton_home->installEventFilter(this);
@@ -19,7 +22,8 @@ ToolBar::ToolBar(QWidget *parent) :
     ui->toolButton_productos->installEventFilter(this);
     ui->toolButton_reportes->installEventFilter(this);
     ui->toolButton_ventas->installEventFilter(this);
-
+    ui->pushButton_backup->installEventFilter(this);
+    ui->pushButton_restore->installEventFilter(this);
 }
 
 ToolBar::~ToolBar()
@@ -47,15 +51,16 @@ void ToolBar::set_labels_ssheet(int pos)
 
 void ToolBar::on_toolButton_home_clicked()
 {
+    ui->toolButton_home->setFocus();
+
     QWidget* w = new Home;
 
     APP_MAINWINDOW->hideToolBar();
     APP_MAINWINDOW->setCentralWidget(w);
-
 }
 
 void ToolBar::on_toolButton_ventas_clicked()
-{	
+{	    
     //bool b = false;
     double igv = SYSTEM->get_igv();
     if(igv == 0.0){
@@ -67,7 +72,9 @@ void ToolBar::on_toolButton_ventas_clicked()
         QMessageBox::warning(0, "Actualize Tipo de Cambio", "Usted puede actualizar el Tipo de Cambio en el módulo de Configuración", "Ok");
         //b = true;
     }	
-	
+
+    ui->toolButton_ventas->setFocus();
+
     QWidget* w = SYSTEM->set_center_w(new VentaBuscar);
     APP_MAINWINDOW->setCentralWidget(w);
 
@@ -80,7 +87,7 @@ void ToolBar::on_toolButton_ventas_clicked()
 }
 
 void ToolBar::on_toolButton_compras_clicked()
-{
+{    
 	//bool b = false;
     double igv = SYSTEM->get_igv();
     if(igv == 0.0){
@@ -93,6 +100,8 @@ void ToolBar::on_toolButton_compras_clicked()
         //b = true;
     }
 	
+    ui->toolButton_compras->setFocus();
+
     QWidget* w = SYSTEM->set_center_w(new CompraBuscar);
     APP_MAINWINDOW->setCentralWidget(w);
 
@@ -105,7 +114,11 @@ void ToolBar::on_toolButton_compras_clicked()
 }
 void ToolBar::on_toolButton_productos_clicked()
 {
-    QWidget* w = SYSTEM->set_center_w(new ProductoBuscar);
+    ui->toolButton_productos->setFocus();
+
+    QWidget* place = new ProductoBuscar;
+    QWidget* w = SYSTEM->set_center_w(place);
+
     APP_MAINWINDOW->setCentralWidget(w);
 
     if(cur_label){
@@ -118,6 +131,8 @@ void ToolBar::on_toolButton_productos_clicked()
 
 void ToolBar::on_toolButton_colaboradores_clicked()
 {
+    ui->toolButton_colaboradores->setFocus();
+
     QWidget* w = SYSTEM->set_center_w(new ColaboradorBuscar);
     APP_MAINWINDOW->setCentralWidget(w);
 
@@ -131,6 +146,8 @@ void ToolBar::on_toolButton_colaboradores_clicked()
 }
 void ToolBar::on_toolButton_reportes_clicked()
 {
+    ui->toolButton_reportes->setFocus();
+
     QWidget* w = SYSTEM->set_center_w(new A_Reporte);
     APP_MAINWINDOW->setCentralWidget(w);
 
@@ -144,6 +161,15 @@ void ToolBar::on_toolButton_reportes_clicked()
 
 void ToolBar::on_toolButton_configuracion_clicked()
 {
+    ui->toolButton_configuracion->setFocus();
+
+    if(cur_label){
+        cur_label->setStyleSheet("");
+    }
+    cur_label = ui->label_configuracion;
+
+    ui->label_configuracion->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");
+
     QWidget* w = new Configuracion;
 	w->setAttribute(Qt::WA_DeleteOnClose);
     w->show();
@@ -347,38 +373,59 @@ void ToolBar::on_pushButton_restore_clicked()
 
 void ToolBar::showEvent(QShowEvent *se)
 {
-    this->setFocus();
-    QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
-    QApplication::sendEvent(this, key);
-
-    //ui->toolButton_opciones->setStyleSheet("");
-    //ui->toolButton_home->setStyleSheet("background-color: rgb(0, 0, 0);");
     se->accept();
+
+    afterShow = true;
 }
 bool ToolBar::eventFilter(QObject *obj, QEvent *e)
 {
     QWidget* w_temp;
-    /*
+
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus(Qt::TabFocusReason);
+            }else{
+                this->setFocus();
+                QKeyEvent *event = new QKeyEvent(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
+                QApplication::sendEvent(this, event);
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    focusWidget()->setFocus(Qt::TabFocusReason);
+                }else{
+                    this->setFocus();
+                    QKeyEvent *event = new QKeyEvent(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
+                    QApplication::sendEvent(this, event);
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
             switch(KeyEvent->key())
             {
             case Qt::Key_Tab:{
-                ui->toolButton_opciones->setStyleSheet("");
-                ui->toolButton_home->setStyleSheet("background-color: rgb(0, 0, 0);");
+                if(cur_label){
+                    cur_label->setStyleSheet("");
+                }
+                cur_label = ui->label_inicio;
+
+                ui->label_inicio->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");
+                ui->toolButton_home->setFocus(Qt::TabFocusReason);
+                return true;
             }break;
-
             }
-
-        }else{
-
         }
         return false;
     }
-    */
+
     w_temp = ui->toolButton_home;
     if(obj == w_temp){
         if(e->type() == QEvent::KeyPress){
@@ -387,11 +434,22 @@ bool ToolBar::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Tab:{
-                //ui->toolButton_opciones->setStyleSheet("");
-                //ui->toolButton_home->setStyleSheet("background-color: rgb(0, 0, 0);");
+                if(cur_label){
+                    cur_label->setStyleSheet("");
+                }
+                cur_label = ui->label_ventas;
+
+                ui->label_ventas->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");
+                ui->toolButton_ventas->setFocus(Qt::TabFocusReason);
+                return true;
             }break;
             case Qt::Key_Return:{
                 ui->toolButton_home->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -409,11 +467,22 @@ bool ToolBar::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Tab:{
-                //ui->toolButton_ventas->setStyleSheet("");
-                //ui->toolButton_compras->setStyleSheet("background-color: rgb(0, 0, 0);");
+                if(cur_label){
+                    cur_label->setStyleSheet("");
+                }
+                cur_label = ui->label_compras;
+
+                ui->label_compras->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");
+                ui->toolButton_compras->setFocus(Qt::TabFocusReason);
+                return true;
             }break;
-            case Qt::Key_Return:{                
+            case Qt::Key_Return:{
                 ui->toolButton_ventas->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -431,11 +500,22 @@ bool ToolBar::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Tab:{
-                //ui->toolButton_compras->setStyleSheet("");
-                //ui->toolButton_productos->setStyleSheet("background-color: rgb(0, 0, 0);");
+                if(cur_label){
+                    cur_label->setStyleSheet("");
+                }
+                cur_label = ui->label_productos;
+
+                ui->label_productos->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");
+                ui->toolButton_productos->setFocus(Qt::TabFocusReason);
+                return true;
             }break;
-            case Qt::Key_Return:{                
+            case Qt::Key_Return:{
                 ui->toolButton_compras->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -454,11 +534,22 @@ bool ToolBar::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Tab:{
-                //ui->toolButton_productos->setStyleSheet("");
-                //ui->toolButton_colaboradores->setStyleSheet("background-color: rgb(0, 0, 0);");
+                if(cur_label){
+                    cur_label->setStyleSheet("");
+                }
+                cur_label = ui->label_colaboradores;
+
+                ui->label_colaboradores->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");
+                ui->toolButton_colaboradores->setFocus(Qt::TabFocusReason);
+                return true;
             }break;
-            case Qt::Key_Return:{                
+            case Qt::Key_Return:{
                 ui->toolButton_productos->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -476,11 +567,22 @@ bool ToolBar::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Tab:{
-                //ui->toolButton_colaboradores->setStyleSheet("");
-                //ui->toolButton_reportes->setStyleSheet("background-color: rgb(0, 0, 0);");
+                if(cur_label){
+                    cur_label->setStyleSheet("");
+                }
+                cur_label = ui->label_reportes;
+
+                ui->label_reportes->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");
+                ui->toolButton_reportes->setFocus(Qt::TabFocusReason);
+                return true;
             }break;
             case Qt::Key_Return:{
                 ui->toolButton_colaboradores->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -498,11 +600,22 @@ bool ToolBar::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Tab:{
-                //ui->toolButton_reportes->setStyleSheet("");
-                //ui->toolButton_opciones->setStyleSheet("background-color: rgb(0, 0, 0);");
+                if(cur_label){
+                    cur_label->setStyleSheet("");
+                }
+                cur_label = ui->label_configuracion;
+
+                ui->label_configuracion->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");
+                ui->toolButton_configuracion->setFocus(Qt::TabFocusReason);
+                return true;
             }break;
             case Qt::Key_Return:{
                 ui->toolButton_reportes->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -520,12 +633,75 @@ bool ToolBar::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Tab:{
-                this->setFocus();
-                //ui->toolButton_opciones->setStyleSheet("");
-                //ui->toolButton_home->setStyleSheet("background-color: rgb(0, 0, 0);");
+                if(cur_label){
+                    cur_label->setStyleSheet("");
+                    ui->pushButton_backup->setFocus(Qt::TabFocusReason);
+                }
+                return true;
             }break;
             case Qt::Key_Return:{
                 ui->toolButton_configuracion->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_backup;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Tab:{
+                ui->pushButton_restore->setFocus(Qt::TabFocusReason);
+                return true;
+            }break;
+            case Qt::Key_Return:{
+                ui->pushButton_backup->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_restore;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Tab:{
+                this->setFocus();
+                QKeyEvent *event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
+                QApplication::sendEvent(this, event);
+                return true;
+            }break;
+            case Qt::Key_Return:{
+                ui->pushButton_restore->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }

@@ -119,6 +119,8 @@ protected:
 private:
     Ui::CompraNotaDebito *ui;
 
+    bool afterShow;
+
     QWidget* widget_previous;
 
     int mes_declaracion;

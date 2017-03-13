@@ -10,6 +10,9 @@
     <height>410</height>
    </rect>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -66,9 +69,6 @@
          <height>32</height>
         </size>
        </property>
-       <property name="shortcut">
-        <string>Alt+N</string>
-       </property>
       </widget>
      </item>
     </layout>
@@ -83,6 +83,29 @@
      <property name="toolTip">
       <string>PRESIONE F3 Y F4 PARA COMPRAS Y VENTAS.</string>
      </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::ExtendedSelection</enum>
+     </property>
+     <column>
+      <property name="text">
+       <string>ID</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Tipo_ID</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Marca_ID</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Unidad_ID</string>
+      </property>
+     </column>
      <column>
       <property name="text">
        <string>Codigo</string>
@@ -115,22 +138,7 @@
      </column>
      <column>
       <property name="text">
-       <string>ID</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Tipo_ID</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Marca_ID</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Unidad_ID</string>
+       <string>Cantidad</string>
       </property>
      </column>
     </widget>

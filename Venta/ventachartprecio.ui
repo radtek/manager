@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>883</width>
-    <height>414</height>
+    <width>982</width>
+    <height>423</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -66,6 +66,11 @@
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Unidad:</string>
        </property>
@@ -90,6 +95,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_3">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Descripción:</string>
        </property>
@@ -114,6 +124,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_title_marca">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Marca:</string>
        </property>
@@ -151,6 +166,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_modificar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Modificar</string>
        </property>
@@ -165,6 +185,11 @@
        <width>0</width>
        <height>192</height>
       </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
      </property>
      <column>
       <property name="text">
@@ -265,6 +290,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_ok">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Ok</string>
        </property>
@@ -272,6 +302,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_salir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Salir</string>
        </property>
@@ -321,6 +356,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Cantidad</string>
        </property>
@@ -328,6 +368,11 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="doubleSpinBox_cantidad_compra">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="decimals">
         <number>4</number>
        </property>
@@ -338,6 +383,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_9">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Devolución de Nota de Crédito</string>
        </property>
@@ -345,6 +395,11 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="doubleSpinBox_cantidad_c_nc">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="decimals">
         <number>4</number>
        </property>
@@ -410,6 +465,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Cantidad</string>
        </property>
@@ -417,6 +477,11 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="doubleSpinBox_cantidad_venta">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="decimals">
         <number>4</number>
        </property>
@@ -433,6 +498,11 @@
          <height>0</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Cantidad de RSN y NP no revisado</string>
        </property>
@@ -440,6 +510,11 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="doubleSpinBox_cantidad_v_rsn_np">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="decimals">
         <number>4</number>
        </property>
@@ -450,6 +525,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_10">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Retorno por Nota de Crédito</string>
        </property>
@@ -457,6 +537,11 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="doubleSpinBox_cantidad_v_nc">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="decimals">
         <number>4</number>
        </property>
@@ -498,9 +583,9 @@
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
-         <underline>false</underline>
         </font>
        </property>
        <property name="styleSheet">
@@ -532,9 +617,9 @@
       <widget class="QLabel" name="label_8">
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
-         <underline>false</underline>
         </font>
        </property>
        <property name="styleSheet">
@@ -566,7 +651,7 @@
       <widget class="QLabel" name="label_13">
        <property name="font">
         <font>
-         <pointsize>8</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>

@@ -10,6 +10,8 @@ Login::Login(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    afterShow = false;
+
     QString text;
     foreach(QNetworkInterface interfac, QNetworkInterface::allInterfaces())
     {
@@ -57,10 +59,13 @@ void Login::on_pushButton_aceptar_clicked()
     if(query.exec(str_query)){
         qDebug()<<str_query<<" ok :)"<<endl;
         query.next();
-        if(query.isValid()){                        
+        if(query.isValid()){
             online = true;
+        }else{
+            QMessageBox::warning(this, "Advertencia", "El usuario no es válido.", "Ok");
         }
     }else{
+        QMessageBox::warning(this, "Advertencia", "El usuario no es válido.", "Ok");
         qDebug()<<str_query<<" bad :("<<endl;
     }
 
@@ -73,11 +78,9 @@ void Login::on_pushButton_cancelar_clicked()
 
 void Login::showEvent(QShowEvent *se)
 {
-    this->setFocus();
-    QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
-    QApplication::sendEvent(this, key);
-
     se->accept();
+
+    afterShow = false;
 }
 
 bool Login::eventFilter(QObject *obj, QEvent *e)
@@ -85,6 +88,30 @@ bool Login::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                QFocusEvent *event = new QFocusEvent(QEvent::FocusIn, Qt::OtherFocusReason);
+                QApplication::sendEvent(focusWidget(), event);
+            }else{
+                this->setFocus();
+                QKeyEvent *event = new QKeyEvent(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
+                QApplication::sendEvent(this, event);
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    focusWidget()->setFocus(Qt::TabFocusReason);
+                }else{
+                    this->setFocus();
+                    QKeyEvent *event = new QKeyEvent(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
+                    QApplication::sendEvent(this, event);
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
@@ -108,7 +135,15 @@ bool Login::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Return:{
-                ui->lineEdit_contrasenia->setFocus(Qt::TabFocusReason);
+                if(ui->lineEdit_contrasenia->text().compare("") == 0)
+                    ui->lineEdit_contrasenia->setFocus(Qt::TabFocusReason);
+                else
+                    ui->pushButton_aceptar->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(ui->lineEdit_usuario, key);
                 return true;
             }break;
             }
@@ -126,7 +161,15 @@ bool Login::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Return:{
-                ui->pushButton_aceptar->click();
+                if(ui->lineEdit_usuario->text().compare("") == 0)
+                    ui->lineEdit_usuario->setFocus(Qt::TabFocusReason);
+                else
+                    ui->pushButton_aceptar->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(ui->lineEdit_contrasenia, key);
                 return true;
             }break;
             }
@@ -148,6 +191,11 @@ bool Login::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_aceptar->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(ui->pushButton_aceptar, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -167,6 +215,11 @@ bool Login::eventFilter(QObject *obj, QEvent *e)
             }break;
             case Qt::Key_Return:{
                 ui->pushButton_cancelar->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(ui->pushButton_aceptar, key);
                 return true;
             }break;
             }

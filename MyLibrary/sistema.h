@@ -68,7 +68,7 @@ public:
 
     void clear_center_w(QWidget* w);
 
-    QWidget* change_center_w(QWidget* old_w = new QWidget(), QWidget* new_w = new QWidget());
+    QWidget* change_center_w(QWidget* old_w = new QWidget(), QWidget* new_w = new QWidget(), bool isClose=true);
 
     QWidget* set_center_w(QWidget* w);
 

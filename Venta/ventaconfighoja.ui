@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>502</width>
-    <height>189</height>
+    <width>513</width>
+    <height>194</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -111,6 +111,7 @@
       <widget class="QLabel" name="label">
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -136,6 +137,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_imprimir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Imprimir</string>
        </property>
@@ -159,6 +165,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_guardar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Guardar</string>
        </property>
@@ -166,6 +177,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_salir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Salir</string>
        </property>
@@ -206,6 +222,13 @@
      </item>
      <item>
       <widget class="QLabel" name="label_3">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
        <property name="text">
         <string>Ancho</string>
        </property>
@@ -213,6 +236,11 @@
      </item>
      <item>
       <widget class="QSpinBox" name="spinBox_width">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="maximum">
         <number>10000</number>
        </property>
@@ -220,6 +248,13 @@
      </item>
      <item>
       <widget class="QLabel" name="label_4">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
        <property name="text">
         <string>Largo</string>
        </property>
@@ -227,6 +262,11 @@
      </item>
      <item>
       <widget class="QSpinBox" name="spinBox_height">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="maximum">
         <number>10000</number>
        </property>
@@ -269,6 +309,7 @@
       <widget class="QLabel" name="label_2">
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -280,6 +321,13 @@
      </item>
      <item>
       <widget class="QLabel" name="label_6">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
        <property name="text">
         <string>Filas</string>
        </property>
@@ -287,6 +335,11 @@
      </item>
      <item>
       <widget class="QSpinBox" name="spinBox_margen_fila">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="minimum">
         <number>0</number>
        </property>
@@ -300,6 +353,13 @@
      </item>
      <item>
       <widget class="QLabel" name="label_5">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
        <property name="text">
         <string>Columnas</string>
        </property>
@@ -307,6 +367,11 @@
      </item>
      <item>
       <widget class="QSpinBox" name="spinBox_margen_columna">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="minimum">
         <number>0</number>
        </property>

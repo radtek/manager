@@ -6,6 +6,7 @@
 #include "comboboxdelegate.h"
 #include "database_connection.h"
 #include "doublespinboxdelegate.h"
+#include "lineedit.h"
 #include "lineeditdelegate.h"
 #include "reniecconsultadni.h"
 #include "session.h"

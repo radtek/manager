@@ -7,6 +7,10 @@ CompraAmarres::CompraAmarres(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    afterShow = false;
+
+    widget_previous = NULL;
+
     ui->tableWidget->hideColumn(0);
     ui->tableWidget->hideColumn(1);
     ui->tableWidget->hideColumn(2);
@@ -70,6 +74,10 @@ void CompraAmarres::set_documento(QString id, int tipo)
             ui->tableWidget->setItem(rowCount, 6, new QTableWidgetItem(numero));
             ui->tableWidget->setItem(rowCount, 7, new QTableWidgetItem(codigo));
             ui->tableWidget->setItem(rowCount, 8, new QTableWidgetItem(nombre));
+
+            for(int j=0; j<ui->tableWidget->columnCount(); j++)
+                ui->tableWidget->item(rowCount, j)->setFlags(Qt::ItemIsEnabled
+                                                             | Qt::ItemIsSelectable);
         }
         SYSTEM->table_resize_to_contents(0, ui->tableWidget, 10);
 
@@ -167,14 +175,15 @@ void CompraAmarres::on_pushButton_salir_clicked()
         SYSTEM->clear_center_w(this);
     }
 }
+void CompraAmarres::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
+{
+    on_pushButton_modificar_clicked();
+}
 void CompraAmarres::showEvent(QShowEvent *se)
 {
     se->accept();
-    if(focusWidget()){
-        focusWidget()->setFocus();
-    }else{
-        ui->tableWidget->setFocus(Qt::TabFocusReason);
-    }
+
+    afterShow = true;
 }
 void CompraAmarres::closeEvent(QCloseEvent *ce)
 {
@@ -186,6 +195,37 @@ bool CompraAmarres::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->tableWidget->setFocus();
+                ui->tableWidget->selectRow(0);
+                for(int i=0; i<ui->tableWidget->columnCount(); i++)
+                    ui->tableWidget->item(0, i)->setSelected(true);
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    focusWidget()->setFocus();
+                }else{
+                    ui->tableWidget->setFocus();
+                    ui->tableWidget->selectRow(0);
+                    for(int i=0; i<ui->tableWidget->columnCount(); i++)
+                        ui->tableWidget->item(0, i)->setSelected(true);
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
             switch(KeyEvent->key())

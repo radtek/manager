@@ -10,6 +10,10 @@ CompraChartCosto::CompraChartCosto(QWidget *parent) :
 {
     ui->setupUi(this);    
 
+    afterShow = false;
+
+    widget_previous = NULL;
+
     pos = 0;
     size_query = 10;
 
@@ -679,7 +683,8 @@ void CompraChartCosto::on_year_down()
 void CompraChartCosto::showEvent(QShowEvent *se)
 {
     se->accept();
-    ui->dateEdit->setFocus(Qt::TabFocusReason);
+
+    afterShow = true;
 }
 
 bool CompraChartCosto::eventFilter(QObject *watched, QEvent *event)
@@ -687,6 +692,35 @@ bool CompraChartCosto::eventFilter(QObject *watched, QEvent *event)
     QWidget* w_temp;
     w_temp = this;
     if(watched == w_temp){
+        if(event->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->tableWidget->setFocus();
+                ui->tableWidget->selectRow(0);
+                for(int i=0; i<ui->tableWidget->columnCount(); i++)
+                    ui->tableWidget->item(0, i)->setSelected(true);
+            }
+            return true;
+        }
+        if(event->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(event->type() == QEvent::Paint){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->tableWidget->setFocus();
+                ui->tableWidget->selectRow(0);
+                for(int i=0; i<ui->tableWidget->columnCount(); i++)
+                    ui->tableWidget->item(0, i)->setSelected(true);
+            }
+            afterShow = false;
+            return true;
+        }
         if(event->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)event;
             switch(KeyEvent->key())

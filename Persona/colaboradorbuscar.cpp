@@ -7,6 +7,9 @@ ColaboradorBuscar::ColaboradorBuscar(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    firstShow = false;
+    afterShow = false;
+
     this->widget_previous = NULL;    
 
     pos = 0;
@@ -20,8 +23,10 @@ ColaboradorBuscar::ColaboradorBuscar(QWidget *parent) :
     tipo = persona_items::CLIENTE_RUC;
     //disconnect(ui->pushButton_agregar, SIGNAL(clicked()), this, SLOT(on_pushButton_agregar_clicked()));
     //disconnect(ui->pushButton_modificar, SIGNAL(clicked()), this, SLOT(on_pushButton_modificar_clicked()));
-    // INSTALL EVENTFILTER
 
+    disconnect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
+
+    // INSTALL EVENTFILTER    
     this->installEventFilter(this);
     ui->lineEdit_buscar->installEventFilter(this);
     ui->tableWidget->installEventFilter(this);
@@ -59,6 +64,46 @@ QString ColaboradorBuscar::get_nombre()
 QString ColaboradorBuscar::get_direccion()
 {
     return direccion;
+}
+void ColaboradorBuscar::setTipoProveedor()
+{
+    tipo = persona_items::PROVEEDOR;
+}
+void ColaboradorBuscar::setTipoTransportista()
+{
+    tipo = persona_items::TRANSPORTISTA;
+}
+void ColaboradorBuscar::setTipoClienteRUC()
+{
+    tipo = persona_items::CLIENTE_RUC;
+}
+void ColaboradorBuscar::setTipoClienteDNI()
+{
+    tipo = persona_items::CLIENTE_DNI;
+}
+void ColaboradorBuscar::setTipoUsuario()
+{
+    tipo = persona_items::USUARIO;
+}
+void ColaboradorBuscar::hideOptProveedor()
+{
+    ui->radioButton_proveedor->hide();
+}
+void ColaboradorBuscar::hideOptTransportista()
+{
+    ui->radioButton_transportista->hide();
+}
+void ColaboradorBuscar::hideOptClienteRUC()
+{
+    ui->radioButton_cliente_ruc->hide();
+}
+void ColaboradorBuscar::hideOptClienteDNI()
+{
+    ui->radioButton_cliente_dni->hide();
+}
+void ColaboradorBuscar::hideOptUsuario()
+{
+    ui->radioButton_usuario->hide();
 }
 void ColaboradorBuscar::on_colaborador_closing()
 {
@@ -100,21 +145,34 @@ void ColaboradorBuscar::on_colaborador_closing()
     }break;
 
     }
+    if(id.compare("") == 0)
+        return;
+
+    QTableWidgetItem* item = ui->tableWidget->currentItem();
+
+    //ui->tableWidget->item(item->row(), 0)->setText(id);
+    ui->tableWidget->item(item->row(), 1)->setText(codigo);
+    ui->tableWidget->item(item->row(), 2)->setText(nombre);
+    ui->tableWidget->item(item->row(), 3)->setText(direccion);
+
+    SYSTEM->table_resize_to_contents(0, ui->tableWidget);
 }
 
 void ColaboradorBuscar::on_lineEdit_buscar_textChanged(const QString& arg)
 {
-    connect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
+    //connect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
     pos = 0;
 
     ui->tableWidget->setRowCount(0);
     ui->tableWidget->setColumnCount(0);
     ui->tableWidget->clear();
+
+    on_lineEdit_buscar_returnPressed();
 }
 
 void ColaboradorBuscar::on_lineEdit_buscar_returnPressed()
 {
-    disconnect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
+    //disconnect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
     QString str_query;
 
     QString arg = ui->lineEdit_buscar->text();
@@ -139,7 +197,7 @@ void ColaboradorBuscar::on_lineEdit_buscar_returnPressed()
         str_query += " FROM persona";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
         str_query += " JOIN proveedor ON persona.id = proveedor.juridica_persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '"+arg+"'";
+        str_query += " WHERE juridica."+match+" LIKE '%"+arg+"'";
         str_query += " ORDER BY juridica.razon_social";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
@@ -161,7 +219,7 @@ void ColaboradorBuscar::on_lineEdit_buscar_returnPressed()
         str_query += " FROM persona";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
         str_query += " JOIN transportista ON persona.id = transportista.juridica_persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '"+arg+"'";
+        str_query += " WHERE juridica."+match+" LIKE '%"+arg+"'";
         str_query += " ORDER BY juridica."+match;
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
@@ -183,7 +241,7 @@ void ColaboradorBuscar::on_lineEdit_buscar_returnPressed()
         str_query += " FROM persona";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
         str_query += " JOIN cliente_ruc ON persona.id = cliente_ruc.juridica_persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '"+arg+"'";
+        str_query += " WHERE juridica."+match+" LIKE '%"+arg+"'";
         str_query += " ORDER BY juridica."+match;
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
@@ -205,7 +263,7 @@ void ColaboradorBuscar::on_lineEdit_buscar_returnPressed()
         str_query += " FROM persona";
         str_query += " JOIN naturales ON persona.id = naturales.persona_id";
         str_query += " JOIN cliente_dni ON persona.id = cliente_dni.naturales_persona_id";
-        str_query += " WHERE naturales."+match+" LIKE '"+arg+"'";
+        str_query += " WHERE naturales."+match+" LIKE '%"+arg+"'";
         str_query += " ORDER BY naturales."+match;
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
@@ -230,7 +288,7 @@ void ColaboradorBuscar::on_lineEdit_buscar_returnPressed()
         str_query += " JOIN naturales ON persona.id = naturales.persona_id";
         str_query += " JOIN usuario ON persona.id = usuario.naturales_persona_id";
         str_query += " JOIN rol ON rol.id = usuario.rol_id";
-        str_query += " WHERE "+match+" LIKE '"+arg+"'";
+        str_query += " WHERE "+match+" LIKE '%"+arg+"'";
         str_query += " ORDER BY "+match;
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
@@ -342,7 +400,10 @@ void ColaboradorBuscar::on_lineEdit_buscar_returnPressed()
                 ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(nombre));
             }break;
 
-            }            
+            }
+            for(int j=0; j<ui->tableWidget->columnCount(); j++)
+                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
+                                                             | Qt::ItemIsSelectable);
             ++pos;
         }
         SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
@@ -396,7 +457,9 @@ void ColaboradorBuscar::on_pushButton_ok_clicked()
         setAttribute(Qt::WA_DeleteOnClose);
         SYSTEM->change_center_w(this, widget_previous);
     }else{
-        SYSTEM->clear_center_w(this);
+        QTableWidgetItem* item = ui->tableWidget->currentItem();
+        if(item)
+            on_tableWidget_itemDoubleClicked(item);
     }
 }
 void ColaboradorBuscar::on_pushButton_salir_clicked()
@@ -536,7 +599,7 @@ void ColaboradorBuscar::on_radioButton_proveedor_clicked()
     tipo = persona_items::PROVEEDOR;
 
     on_lineEdit_buscar_textChanged("");
-    on_lineEdit_buscar_returnPressed();
+    //on_lineEdit_buscar_returnPressed();
 }
 
 void ColaboradorBuscar::on_radioButton_transportista_clicked()
@@ -544,7 +607,7 @@ void ColaboradorBuscar::on_radioButton_transportista_clicked()
     tipo = persona_items::TRANSPORTISTA;
 
     on_lineEdit_buscar_textChanged("");
-    on_lineEdit_buscar_returnPressed();
+    //on_lineEdit_buscar_returnPressed();
 }
 
 void ColaboradorBuscar::on_radioButton_cliente_ruc_clicked()
@@ -552,7 +615,7 @@ void ColaboradorBuscar::on_radioButton_cliente_ruc_clicked()
     tipo = persona_items::CLIENTE_RUC;
 
     on_lineEdit_buscar_textChanged("");
-    on_lineEdit_buscar_returnPressed();
+    //on_lineEdit_buscar_returnPressed();
 }
 
 void ColaboradorBuscar::on_radioButton_cliente_dni_clicked()
@@ -560,7 +623,7 @@ void ColaboradorBuscar::on_radioButton_cliente_dni_clicked()
     tipo = persona_items::CLIENTE_DNI;
 
     on_lineEdit_buscar_textChanged("");
-    on_lineEdit_buscar_returnPressed();
+    //on_lineEdit_buscar_returnPressed();
 }
 
 void ColaboradorBuscar::on_radioButton_usuario_clicked()
@@ -568,16 +631,19 @@ void ColaboradorBuscar::on_radioButton_usuario_clicked()
     tipo = persona_items::USUARIO;
 
     on_lineEdit_buscar_textChanged("");
-    on_lineEdit_buscar_returnPressed();
+    //on_lineEdit_buscar_returnPressed();
 }
 void ColaboradorBuscar::showEvent(QShowEvent *se)
 {
     se->accept();
 
-    ui->lineEdit_buscar->setFocus(Qt::TabFocusReason);
+    afterShow = true;
 
-    on_lineEdit_buscar_textChanged(ui->lineEdit_buscar->text());
-    on_lineEdit_buscar_returnPressed();
+    if(!firstShow){
+        on_lineEdit_buscar_textChanged(ui->lineEdit_buscar->text());
+        //on_lineEdit_buscar_returnPressed();
+        firstShow = true;
+    }
 }
 
 void ColaboradorBuscar::hideEvent(QHideEvent* he)
@@ -593,6 +659,38 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->lineEdit_buscar->setFocus();
+                ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    if(focusWidget() == ui->pushButton_agregar){
+                        ui->lineEdit_buscar->setFocus();
+                        ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                    }else{
+                        focusWidget()->setFocus();
+                    }
+                }else{
+                    ui->lineEdit_buscar->setFocus();
+                    ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
@@ -632,6 +730,11 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:{
 
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -649,6 +752,11 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_ok->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             case Qt::Key_Down: {
                 int index = ui->tableWidget->currentRow();
                 if (index == ui->tableWidget->rowCount() - 1) {
@@ -681,6 +789,11 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_ok->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -702,6 +815,11 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_salir->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -718,6 +836,11 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:{
                 ui->pushButton_agregar->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }

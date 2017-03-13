@@ -31,6 +31,8 @@ protected:
 
 private:
     Ui::Login *ui;
+
+    bool afterShow;
 };
 
 template class Q_DECL_EXPORT singleton<Login>;

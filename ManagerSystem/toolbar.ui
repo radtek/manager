@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>951</width>
-    <height>150</height>
+    <height>168</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -67,14 +67,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
               </property>
               <property name="text">
@@ -135,7 +135,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QLabel" name="label_7">
+             <widget class="QLabel" name="label_inicio">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -228,15 +228,18 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
+              </property>
+              <property name="contextMenuPolicy">
+               <enum>Qt::DefaultContextMenu</enum>
               </property>
               <property name="styleSheet">
                <string notr="true"/>
@@ -385,14 +388,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
               </property>
               <property name="layoutDirection">
@@ -539,14 +542,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
               </property>
               <property name="text">
@@ -690,14 +693,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
               </property>
               <property name="text">
@@ -838,14 +841,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
               </property>
               <property name="text">
@@ -1002,14 +1005,14 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>55</width>
+                <height>55</height>
                </size>
               </property>
               <property name="text">
@@ -1026,7 +1029,7 @@
                </size>
               </property>
               <property name="shortcut">
-               <string>Alt+N</string>
+               <string>Alt+U</string>
               </property>
               <property name="autoRaise">
                <bool>true</bool>
@@ -1070,7 +1073,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QLabel" name="label_opciones">
+             <widget class="QLabel" name="label_configuracion">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -1093,7 +1096,7 @@
                <string notr="true"/>
               </property>
               <property name="text">
-               <string>Configuració&lt;u&gt;&lt;b&gt;n&lt;/b&gt;&lt;/u&gt;</string>
+               <string>Config&lt;u&gt;&lt;b&gt;u&lt;/b&gt;&lt;/u&gt;ración</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -1255,21 +1258,21 @@
          <widget class="QPushButton" name="pushButton_backup">
           <property name="minimumSize">
            <size>
-            <width>30</width>
-            <height>30</height>
+            <width>0</width>
+            <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>30</width>
-            <height>30</height>
+            <width>9999999</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="toolTip">
            <string>backup</string>
           </property>
           <property name="text">
-           <string/>
+           <string>Backup</string>
           </property>
           <property name="icon">
            <iconset resource="iconos.qrc">
@@ -1306,21 +1309,21 @@
          <widget class="QPushButton" name="pushButton_restore">
           <property name="minimumSize">
            <size>
-            <width>30</width>
-            <height>30</height>
+            <width>0</width>
+            <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>30</width>
-            <height>30</height>
+            <width>9999999</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="toolTip">
            <string>restaurar</string>
           </property>
           <property name="text">
-           <string/>
+           <string>Restaurar</string>
           </property>
           <property name="icon">
            <iconset resource="iconos.qrc">

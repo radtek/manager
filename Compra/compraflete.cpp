@@ -10,6 +10,8 @@ CompraFlete::CompraFlete(QWidget *parent) :
     igv = SYSTEM->get_igv();
     dolar = SYSTEM->get_dolar();
 
+    afterShow = false;
+
     widget_previous = NULL;
 
     QRegExp regExp_ruc("[0-9]{11,11}");
@@ -141,7 +143,7 @@ bool CompraFlete::select(QString id
     str_query += " WHERE flete.comprobante_documento_id = "+id+")";
     str_query += " UNION ALL";
     str_query += "(SELECT producto.id, d_h_prod.cantidad, unidad.unidad";
-    str_query += ", concat(producto.descripcion,' ',marca.marca), d_h_prod.precio, d_h_prod.precio_aux FROM documento";
+    str_query += ", concat(producto.descripcion,' ',IF(marca.marca IS NULL, '', concat(' ', marca.marca))), d_h_prod.precio, '' FROM documento";
     //str_query += " JOIN documento_h_persona d_h_per ON d.id = d_h_per.documento_id";
     //str_query += " JOIN persona ON persona.id = d_h_per.persona_id";
     //str_query += " JOIN juridica ON persona.id = d_h_per.persona_id";
@@ -781,11 +783,7 @@ void CompraFlete::showEvent(QShowEvent *se)
 
     se->accept();
 
-    if(focusWidget()){
-        focusWidget()->setFocus();
-    }else{
-        ui->dateEdit_declaracion->setFocus(Qt::TabFocusReason);
-    }
+    afterShow = true;
 }
 
 void CompraFlete::closeEvent(QCloseEvent *ce)
@@ -799,6 +797,33 @@ bool CompraFlete::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->dateEdit_declaracion->setFocus();
+                ui->dateEdit_declaracion->setCurrentSectionIndex(ui->dateEdit_declaracion->currentSectionIndex());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    focusWidget()->setFocus();
+                }else{
+                    ui->dateEdit_declaracion->setFocus();
+                    ui->dateEdit_declaracion->setCurrentSectionIndex(ui->dateEdit_declaracion->currentSectionIndex());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
             switch(KeyEvent->key())

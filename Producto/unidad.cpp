@@ -9,6 +9,8 @@ Unidad::Unidad(QWidget *parent) :
 
 	id = "";
 
+    afterShow = false;
+
 	widget_previous = NULL;
 
 	//QRegExp regExp_in("[a-zA-Z ]{45,45}");
@@ -183,12 +185,7 @@ void Unidad::showEvent(QShowEvent *se)
 {
 	se->accept();
 
-	if (focusWidget()) {
-		focusWidget()->setFocus();
-	}
-	else {
-		ui->lineEdit_unidad->setFocus(Qt::TabFocusReason);
-	}
+    afterShow = true;
 }
 void Unidad::closeEvent(QCloseEvent *ce)
 {
@@ -201,6 +198,33 @@ bool Unidad::eventFilter(QObject *obj, QEvent *e)
 	QWidget* w_temp;
 	w_temp = this;
 	if (obj == w_temp) {
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->lineEdit_unidad->setFocus();
+                ui->lineEdit_unidad->setCursorPosition(ui->lineEdit_unidad->text().length());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    focusWidget()->setFocus();
+                }else{
+                    ui->lineEdit_unidad->setFocus();
+                    ui->lineEdit_unidad->setCursorPosition(ui->lineEdit_unidad->text().length());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
 		if (e->type() == QEvent::KeyPress) {
 			QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
@@ -227,6 +251,11 @@ bool Unidad::eventFilter(QObject *obj, QEvent *e)
 			case Qt::Key_Return: {
 				ui->pushButton_guardar->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
 			}
 
 			}
@@ -246,6 +275,11 @@ bool Unidad::eventFilter(QObject *obj, QEvent *e)
 			case Qt::Key_Return:
 				ui->pushButton_guardar->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
 			}
 
 		}
@@ -268,6 +302,11 @@ bool Unidad::eventFilter(QObject *obj, QEvent *e)
 				ui->pushButton_salir->click();
                 return true;
 			}break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
 			}
 
 		}
@@ -286,6 +325,11 @@ bool Unidad::eventFilter(QObject *obj, QEvent *e)
 			case Qt::Key_Return:
 				ui->pushButton_eliminar->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
 			}
 
 		}

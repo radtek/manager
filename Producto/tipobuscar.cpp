@@ -7,6 +7,11 @@ TipoBuscar::TipoBuscar(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+    firstShow = false;
+    afterShow = false;
+
+    widget_previous = NULL;
+
 	id = "";
 	tipo = "";
 
@@ -18,6 +23,8 @@ TipoBuscar::TipoBuscar(QWidget *parent) :
 
 	//connect(ui->pushButton_opes, SIGNAL(clicked()), this, SLOT(on_pushButton_opes_clicked()));
 	
+    disconnect(ui->lineEdit_tipo_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_tipo_buscar_returnPressed()));
+
     // INSTALL FILTERS
     this->installEventFilter(this);
     ui->lineEdit_tipo_buscar->installEventFilter(this);
@@ -49,21 +56,33 @@ void TipoBuscar::on_tipo_closing()
 	Tipo* widget_tipo = (Tipo*)QObject::sender();
 	id = widget_tipo->getID();
 	tipo = widget_tipo->getTipo();
+
+    if(id.compare("") == 0)
+        return;
+
+    QTableWidgetItem* item = ui->tableWidget->currentItem();
+
+    ui->tableWidget->item(item->row(), 0)->setText(id);
+    ui->tableWidget->item(item->row(), 1)->setText(tipo);
+
+    SYSTEM->table_resize_to_contents(0, ui->tableWidget);
 }
 void TipoBuscar::on_lineEdit_tipo_buscar_textChanged(const QString& arg)
 {
-    connect(ui->lineEdit_tipo_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_tipo_buscar_returnPressed()));
+    //connect(ui->lineEdit_tipo_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_tipo_buscar_returnPressed()));
 	pos = 0;
 
 	ui->tableWidget->setRowCount(0);
 	ui->tableWidget->setColumnCount(0);
 	ui->tableWidget->clear();
+
+    on_lineEdit_tipo_buscar_returnPressed();
 }
 void TipoBuscar::on_lineEdit_tipo_buscar_returnPressed()
 {	
-    disconnect(ui->lineEdit_tipo_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_tipo_buscar_returnPressed()));
+    //disconnect(ui->lineEdit_tipo_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_tipo_buscar_returnPressed()));
 	QString tipo = ui->lineEdit_tipo_buscar->text();
-	QString str_query = "SELECT id, tipo FROM tipo WHERE tipo LIKE '" + tipo + "%'";
+    QString str_query = "SELECT id, tipo FROM tipo WHERE tipo LIKE '%" + tipo + "%'";
 			str_query += " LIMIT "+QString().setNum(pos)+", "+QString().setNum(size_query)+"";
 	
 	QSqlQuery query;
@@ -84,9 +103,12 @@ void TipoBuscar::on_lineEdit_tipo_buscar_returnPressed()
 			ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
 			ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(tipo));
 
-			SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
+            for(int j=0; j<ui->tableWidget->columnCount(); j++)
+                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
+                                                             | Qt::ItemIsSelectable);
 			++pos;
 		}
+        SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
 	} else {
 
 	}
@@ -122,7 +144,9 @@ void TipoBuscar::on_pushButton_ok_clicked()
         setAttribute(Qt::WA_DeleteOnClose);
         SYSTEM->change_center_w(this, widget_previous);
     }else{
-        SYSTEM->clear_center_w(this);
+        QTableWidgetItem* item = ui->tableWidget->currentItem();
+        if(item)
+            on_tableWidget_itemDoubleClicked(item);
     }
 }
 
@@ -169,10 +193,13 @@ void TipoBuscar::showEvent(QShowEvent *se)
 {
     se->accept();
 
-    ui->lineEdit_tipo_buscar->setFocus(Qt::TabFocusReason);
+    afterShow = true;
 
-    on_lineEdit_tipo_buscar_textChanged(ui->lineEdit_tipo_buscar->text());
-    on_lineEdit_tipo_buscar_returnPressed();
+    if(!firstShow){
+        on_lineEdit_tipo_buscar_textChanged(ui->lineEdit_tipo_buscar->text());
+        //on_lineEdit_tipo_buscar_returnPressed();
+        firstShow = true;
+    }
 }
 void TipoBuscar::closeEvent(QCloseEvent * ce)
 {
@@ -184,6 +211,38 @@ bool TipoBuscar::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->lineEdit_tipo_buscar->setFocus();
+                ui->lineEdit_tipo_buscar->setCursorPosition(ui->lineEdit_tipo_buscar->text().length());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    if(focusWidget() == ui->pushButton_nuevo){
+                        ui->lineEdit_tipo_buscar->setFocus();
+                        ui->lineEdit_tipo_buscar->setCursorPosition(ui->lineEdit_tipo_buscar->text().length());
+                    }else{
+                        focusWidget()->setFocus();
+                    }
+                }else{
+                    ui->lineEdit_tipo_buscar->setFocus();
+                    ui->lineEdit_tipo_buscar->setCursorPosition(ui->lineEdit_tipo_buscar->text().length());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
@@ -223,6 +282,11 @@ bool TipoBuscar::eventFilter(QObject *obj, QEvent *e)
                 //ui->tableWidget->setFocus();
                 //ui->tableWidget->selectRow(0);
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }else{
 
@@ -239,6 +303,11 @@ bool TipoBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_ok->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
 			case Qt::Key_Down: {
 				int index = ui->tableWidget->currentRow();
 				if (index == ui->tableWidget->rowCount() - 1) {
@@ -264,6 +333,11 @@ bool TipoBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_ok->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -283,6 +357,11 @@ bool TipoBuscar::eventFilter(QObject *obj, QEvent *e)
             }break;
             case Qt::Key_Return:{
                 ui->pushButton_salir->click();
+                return true;                
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -301,6 +380,11 @@ bool TipoBuscar::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:{
                 ui->pushButton_nuevo->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }

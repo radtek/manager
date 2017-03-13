@@ -7,6 +7,9 @@ CompraBuscar::CompraBuscar(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    firstShow = false;
+    afterShow = false;
+
     widget_previous = NULL;
 
     modo_only_date = false;
@@ -21,6 +24,8 @@ CompraBuscar::CompraBuscar(QWidget *parent) :
 
     ui->radioButton_factura->setChecked(true);
     tipo = compra_items::FACTURA;
+
+    disconnect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
 
     // INSTALL EVENT FILTERS
     this->installEventFilter(this);
@@ -37,6 +42,78 @@ CompraBuscar::~CompraBuscar()
 {
     qDebug()<<"delete compra buscar"<<endl;
     delete ui;
+}
+void CompraBuscar::setTipoOrden()
+{
+    tipo = compra_items::ORDEN;
+}
+void CompraBuscar::setTipoBoleta()
+{
+    tipo = compra_items::BOLETA;
+}
+void CompraBuscar::setTipoFactura()
+{
+    tipo = compra_items::FACTURA;
+}
+void CompraBuscar::setTipoGuiaRR()
+{
+    tipo = compra_items::GUIA_REMISION_REMITENTE;
+}
+void CompraBuscar::setTipoFlete()
+{
+    tipo = compra_items::FLETE;
+}
+void CompraBuscar::setTipoNotaCredito()
+{
+    tipo = compra_items::NOTA_CREDITO;
+}
+void CompraBuscar::setTipoNotaDebito()
+{
+    tipo = compra_items::NOTA_DEBITO;
+}
+void CompraBuscar::setTipoSaldo()
+{
+    tipo = compra_items::SALDO;
+}
+void CompraBuscar::setTipoRegSinDoc()
+{
+    tipo = compra_items::REG_SIN_DOC;
+}
+void CompraBuscar::hideOptOrden()
+{
+    ui->radioButton_orden->hide();
+}
+void CompraBuscar::hideOptBoleta()
+{
+    ui->radioButton_boleta->hide();
+}
+void CompraBuscar::hideOptFactura()
+{
+    ui->radioButton_factura->hide();
+}
+void CompraBuscar::hideOptGuiaRR()
+{
+    ui->radioButton_guia->hide();
+}
+void CompraBuscar::hideOptFlete()
+{
+    ui->radioButton_flete->hide();
+}
+void CompraBuscar::hideOptNotaCredito()
+{
+    ui->radioButton_nota_credito->hide();
+}
+void CompraBuscar::hideOptNotaDebito()
+{
+    ui->radioButton_nota_debito->hide();
+}
+void CompraBuscar::hideOptSaldo()
+{
+    ui->radioButton_saldo->hide();
+}
+void CompraBuscar::hideOptRegSinDoc()
+{
+    ui->radioButton_reg_sin_doc->hide();
 }
 void CompraBuscar::set_tipo(int tipo)
 {
@@ -157,6 +234,8 @@ void CompraBuscar::on_lineEdit_buscar_textEdited(const QString &arg1)
     ui->tableWidget->setRowCount(0);
     ui->tableWidget->setColumnCount(0);
     ui->tableWidget->clear();
+
+    on_lineEdit_buscar_returnPressed();
 }
 
 void CompraBuscar::on_lineEdit_buscar_returnPressed()
@@ -188,7 +267,7 @@ void CompraBuscar::on_lineEdit_buscar_returnPressed()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '" + arg + "' AND ";
+        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
         str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
@@ -202,7 +281,7 @@ void CompraBuscar::on_lineEdit_buscar_returnPressed()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '" + arg + "' AND ";
+        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
         str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
@@ -216,7 +295,7 @@ void CompraBuscar::on_lineEdit_buscar_returnPressed()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '" + arg + "' AND ";
+        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
         str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
@@ -230,7 +309,7 @@ void CompraBuscar::on_lineEdit_buscar_returnPressed()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '" + arg + "' AND ";
+        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
         str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
@@ -244,7 +323,7 @@ void CompraBuscar::on_lineEdit_buscar_returnPressed()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '" + arg + "' AND ";
+        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
         str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
@@ -258,7 +337,7 @@ void CompraBuscar::on_lineEdit_buscar_returnPressed()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '" + arg + "' AND ";
+        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
         str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
@@ -272,7 +351,7 @@ void CompraBuscar::on_lineEdit_buscar_returnPressed()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '" + arg + "' AND ";
+        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
         str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
@@ -827,17 +906,14 @@ void CompraBuscar::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
 void CompraBuscar::showEvent(QShowEvent *event)
 {
     event->accept();
-    //if(focusWidget()){
-        //focusWidget()->setFocus();
-    //}else{
-    if(modo_only_date){
-        ui->tableWidget->setFocus(Qt::TabFocusReason);
-    }else{
-        ui->dateEdit_inicio->setFocus(Qt::TabFocusReason);
-    }
 
-    on_lineEdit_buscar_textEdited(ui->lineEdit_buscar->text());
-    on_lineEdit_buscar_returnPressed();
+    afterShow = true;
+
+    if(!firstShow){
+        on_lineEdit_buscar_textEdited(ui->lineEdit_buscar->text());
+        //on_lineEdit_buscar_returnPressed();
+        firstShow = true;
+    }
 }
 void CompraBuscar::closeEvent(QCloseEvent *event)
 {
@@ -850,6 +926,38 @@ bool CompraBuscar::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->lineEdit_buscar->setFocus();
+                ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    if(focusWidget() == ui->pushButton_agregar){
+                        ui->lineEdit_buscar->setFocus();
+                        ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                    }else{
+                        focusWidget()->setFocus();
+                    }
+                }else{
+                    ui->lineEdit_buscar->setFocus();
+                    ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
 

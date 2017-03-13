@@ -41,6 +41,8 @@ private:
 private:
     Ui::ManagerSystem *ui;
 
+    bool afterShow;
+
     QShortcut* shortCut_salir;
 
 };

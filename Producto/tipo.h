@@ -46,6 +46,8 @@ signals:
 private:
     Ui::Tipo *ui;
 
+    bool afterShow;
+
 	QWidget* widget_previous;
 
 	QString id;

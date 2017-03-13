@@ -74,6 +74,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButton">
+          <property name="focusPolicy">
+           <enum>Qt::TabFocus</enum>
+          </property>
           <property name="text">
            <string>Enviar un correo</string>
           </property>
@@ -361,6 +364,9 @@
               </property>
               <property name="cursor">
                <cursorShape>PointingHandCursor</cursorShape>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::StrongFocus</enum>
               </property>
               <property name="contextMenuPolicy">
                <enum>Qt::DefaultContextMenu</enum>

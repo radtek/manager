@@ -61,6 +61,8 @@ public slots:
 private:
     Ui::ToolBar *ui;
 
+    bool afterShow;
+
     QLabel* cur_label;
 };
 

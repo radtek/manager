@@ -7,7 +7,11 @@ Home::Home(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    afterShow = false;
+
     ui->pushButton->hide();
+
+    this->installEventFilter(this);
 
     ui->toolButton_colaboradores->installEventFilter(this);
     ui->toolButton_compras->installEventFilter(this);
@@ -89,10 +93,29 @@ void Home::showEvent(QShowEvent *se)
     ui->toolButton_ventas->setFocus(Qt::TabFocusReason);
 
     se->accept();
+
+    afterShow = true;
 }
 bool Home::eventFilter(QObject *obj, QEvent *e)
 {
     QWidget* w_temp;
+    w_temp = this;
+    if(obj == w_temp){
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                //if(focusWidget()){
+                    //focusWidget()->setFocus();
+                //}else{
+                this->setFocus();
+                QKeyEvent *event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
+                QApplication::sendEvent(this, event);
+                //}
+                afterShow = false;
+            }
+            return true;
+        }
+        return false;
+    }
     w_temp = ui->toolButton_ventas;
     if(obj == w_temp){
         if(e->type() == QEvent::KeyPress){

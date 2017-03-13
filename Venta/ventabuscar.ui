@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>821</width>
-    <height>373</height>
+    <height>378</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <widget class="QLabel" name="label_titulo">
        <property name="font">
         <font>
-         <pointsize>10</pointsize>
+         <pointsize>12</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -45,8 +45,13 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_agregar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string>Nuevo</string>
+        <string>&amp;Nuevo</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/Iconos.qrc">
@@ -205,6 +210,11 @@
      </item>
      <item>
       <widget class="QDateEdit" name="dateEdit_inicio">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="displayFormat">
         <string>dd-MM-yyyy</string>
        </property>
@@ -222,6 +232,11 @@
      </item>
      <item>
       <widget class="QDateEdit" name="dateEdit_fin">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="displayFormat">
         <string>dd-MM-yyyy</string>
        </property>
@@ -249,6 +264,11 @@
        <width>450</width>
        <height>0</height>
       </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
      </property>
      <column>
       <property name="text">
@@ -313,6 +333,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Código o Nombre</string>
        </property>
@@ -325,6 +350,11 @@
          <width>350</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
@@ -347,6 +377,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_ok">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Ok</string>
        </property>
@@ -354,6 +389,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_salir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Salir</string>
        </property>

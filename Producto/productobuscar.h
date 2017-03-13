@@ -3,8 +3,8 @@
 
 #include "producto_global.h"
 
-#include "comprachartcosto.h"
-#include "ventachartprecio.h"
+//#include "comprachartcosto.h"
+//#include "ventachartprecio.h"
 
 namespace Ui {
 class ProductoBuscar;
@@ -75,6 +75,9 @@ signals:
 
 private:
     Ui::ProductoBuscar *ui;
+
+    bool firstShow;
+    bool afterShow;
 
     QWidget* widget_previous;
 

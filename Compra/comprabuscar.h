@@ -25,6 +25,26 @@ public:
     QString getCodigo(){ return codigo; }
     QString getNombre(){ return nombre; }
 
+    void setTipoOrden();
+    void setTipoFactura();
+    void setTipoBoleta();
+    void setTipoGuiaRR();
+    void setTipoFlete();
+    void setTipoNotaCredito();
+    void setTipoNotaDebito();
+    void setTipoSaldo();
+    void setTipoRegSinDoc();
+
+    void hideOptOrden();
+    void hideOptFactura();
+    void hideOptBoleta();
+    void hideOptGuiaRR();
+    void hideOptFlete();
+    void hideOptNotaCredito();
+    void hideOptNotaDebito();
+    void hideOptSaldo();
+    void hideOptRegSinDoc();
+
     void set_tipo(int tipo);
 
     void set_widget_previous(QWidget* w);
@@ -76,6 +96,9 @@ signals:
 
 private:
     Ui::CompraBuscar *ui;
+
+    bool firstShow;
+    bool afterShow;
 
     QWidget* widget_previous;
 

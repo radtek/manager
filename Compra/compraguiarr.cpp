@@ -7,6 +7,8 @@ CompraGuiaRR::CompraGuiaRR(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    afterShow = false;
+
     widget_previous = NULL;
 
     pos_dame_productos = -1;
@@ -86,7 +88,7 @@ bool CompraGuiaRR::select(QString id
     QString str_query;
 
     str_query = "SELECT producto.id, d_h_prod.cantidad, unidad.unidad";
-    str_query += ", producto.descripcion, d_h_prod.precio FROM documento";
+    str_query += ", concat(producto.descripcion,' ',IF(marca.marca IS NULL, '', concat(' ', marca.marca))), d_h_prod.precio FROM documento";
     //str_query += " JOIN documento_h_persona d_h_per ON d.id = d_h_per.documento_id";
     //str_query += " JOIN persona ON persona.id = d_h_per.persona_id";
     //str_query += " JOIN juridica ON persona.id = d_h_per.persona_id";
@@ -460,11 +462,7 @@ void CompraGuiaRR::showEvent(QShowEvent *se)
 {
     se->accept();
 
-    if(focusWidget()){
-        focusWidget()->setFocus();
-    }else{
-        ui->dateTimeEdit_emision->setFocus(Qt::TabFocusReason);
-    }
+    afterShow = true;
 }
 void CompraGuiaRR::closeEvent(QCloseEvent *ce)
 {
@@ -477,6 +475,33 @@ bool CompraGuiaRR::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->dateTimeEdit_emision->setFocus();
+                ui->dateTimeEdit_emision->setCurrentSectionIndex(ui->dateTimeEdit_emision->currentSectionIndex());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    focusWidget()->setFocus();
+                }else{
+                    ui->dateTimeEdit_emision->setFocus();
+                    ui->dateTimeEdit_emision->setCurrentSectionIndex(ui->dateTimeEdit_emision->currentSectionIndex());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
             switch(KeyEvent->key())

@@ -7,6 +7,8 @@ ManagerSystem::ManagerSystem(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    afterShow = false;
+
     //QThread* thread = new QThread;
     //connect(thread, SIGNAL (started()), worker, SLOT (process()));
 
@@ -56,11 +58,12 @@ void ManagerSystem::hideToolBar()
 }
 void ManagerSystem::on_shortCut_salir()
 {
-
+    this->close();
 }
 
 void ManagerSystem::on_application_state_changed(Qt::ApplicationState state)
 {
+    /*
     if(state == Qt::ApplicationSuspended){
         //qDebug()<<"application suspended"<<endl;
     }
@@ -81,8 +84,9 @@ void ManagerSystem::on_application_state_changed(Qt::ApplicationState state)
                 qDebug()<<"QTableWidget"<<endl;
                 QApplication::focusWidget()->parentWidget()->setFocus();
             */
-        }
-    }
+        //}
+    //}
+/*
     if(state == Qt::ApplicationActive){
         //qDebug()<<"application active"<<endl;
 
@@ -92,7 +96,7 @@ void ManagerSystem::on_application_state_changed(Qt::ApplicationState state)
                 QApplication::focusWidget()->setFocus(Qt::TabFocusReason);
             }
         }*/
-    }
+    //}
 }
 
 void ManagerSystem::focusInEvent(QFocusEvent *fe)
@@ -106,15 +110,9 @@ void ManagerSystem::focusOutEvent(QFocusEvent *fe)
 
 void ManagerSystem::showEvent(QShowEvent *se)
 {
-
-    //this->setFocus();
-    //QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier);
-    //QApplication::sendEvent(this, key);
-    if(centralWidget() && typeid(centralWidget()) == typeid(Home)){
-        ((Home*)centralWidget())->setFocus_ini();
-    }
     se->accept();
 
+    afterShow = true;
 }
 
 void ManagerSystem::closeEvent(QCloseEvent *ce)
@@ -141,8 +139,16 @@ void ManagerSystem::closeEvent(QCloseEvent *ce)
 bool ManagerSystem::eventFilter(QObject *obj, QEvent *e)
 {
 
+    if(e->type() == QEvent::Paint){
+        if(afterShow) {
+
+            afterShow = false;
+        }
+        return true;
+    }
+
     if (e->type() == QEvent::KeyPress){
-        if (obj== this){
+        if (obj == this){
             QKeyEvent *ke = static_cast<QKeyEvent*>(e);
 
             if (ke->key()== Qt::Key_F1){

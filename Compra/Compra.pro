@@ -158,10 +158,6 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release/ -lPersona
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lPersona
     else:unix: LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lPersona
-
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/release/ -lVenta
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lVenta
-    else:unix: LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lVenta
 } else {
     win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../VS2015_Tesseract-master/release/ -lzlib
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../VS2015_Tesseract-master/debug/ -lzlib
@@ -210,10 +206,6 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release/ -lPersona
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lPersona
     else:unix: LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lPersona
-
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/release/ -lVenta
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lVenta
-    else:unix: LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lVenta
 }
     INCLUDEPATH += $$PWD/../../../VS2015_Tesseract-master/zlib/include
     DEPENDPATH += $$PWD/../../../VS2015_Tesseract-master/zlib/include
@@ -284,5 +276,3 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     DEPENDPATH += $$PWD/../Persona
     INCLUDEPATH += $$PWD/../Persona
     DEPENDPATH += $$PWD/../Persona
-    INCLUDEPATH += $$PWD/../Venta
-    DEPENDPATH += $$PWD/../Venta

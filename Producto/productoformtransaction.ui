@@ -21,6 +21,9 @@
     <pointsize>10</pointsize>
    </font>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -501,24 +504,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_precio">
-       <property name="minimumSize">
-        <size>
-         <width>120</width>
-         <height>0</height>
-        </size>
-       </property>
+      <widget class="LineEdit" name="lineEdit_precio">
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-       <property name="prefix">
-        <string>S/. </string>
-       </property>
-       <property name="decimals">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <double>1000000.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -562,24 +550,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_cantidad">
-       <property name="minimumSize">
-        <size>
-         <width>120</width>
-         <height>0</height>
-        </size>
-       </property>
+      <widget class="LineEdit" name="lineEdit_cantidad">
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-       <property name="prefix">
-        <string>S/. </string>
-       </property>
-       <property name="decimals">
-        <number>5</number>
-       </property>
-       <property name="maximum">
-        <double>1000000.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -621,7 +594,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Eliminar</string>
+        <string>&amp;Eliminar</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/iconos.qrc">
@@ -659,7 +632,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Guardar</string>
+        <string>&amp;Guardar</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/iconos.qrc">
@@ -684,7 +657,7 @@
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>Salir</string>
+        <string>&amp;Salir</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/iconos.qrc">
@@ -702,6 +675,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>LineEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">lineedit.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>lineEdit_codigo</tabstop>
   <tabstop>lineEdit_tipo</tabstop>
@@ -714,8 +694,8 @@
   <tabstop>pushButton_buscar_unidad</tabstop>
   <tabstop>pushButton_limpiar_unidad</tabstop>
   <tabstop>lineEdit_descripcion</tabstop>
-  <tabstop>doubleSpinBox_precio</tabstop>
-  <tabstop>doubleSpinBox_cantidad</tabstop>
+  <tabstop>lineEdit_precio</tabstop>
+  <tabstop>lineEdit_cantidad</tabstop>
   <tabstop>pushButton_eliminar</tabstop>
   <tabstop>pushButton_guardar</tabstop>
   <tabstop>pushButton_salir</tabstop>

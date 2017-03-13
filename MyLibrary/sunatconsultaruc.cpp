@@ -594,6 +594,8 @@ void SunatConsultaRUC::setEstablecimientos()
         for(int j = 0; j < columns; j++) {
             QTableWidgetItem* item = new QTableWidgetItem(list_result[count].simplified());
             table_establecimientos->setItem(i, j, item);
+            item->setFlags(Qt::ItemIsEnabled
+                            | Qt::ItemIsSelectable);
             count++;
         }
     }

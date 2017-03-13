@@ -7,6 +7,8 @@ ProductoFormTransaction::ProductoFormTransaction(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    afterShow = false;
+
     widget_previous = NULL;
 
 	this->id = "";
@@ -55,8 +57,8 @@ ProductoFormTransaction::ProductoFormTransaction(QWidget *parent) :
 
     ui->lineEdit_descripcion->installEventFilter(this);
 
-	ui->doubleSpinBox_cantidad->installEventFilter(this);
-    ui->doubleSpinBox_precio->installEventFilter(this);
+    ui->lineEdit_precio->installEventFilter(this);
+    ui->lineEdit_cantidad->installEventFilter(this);
 
     ui->pushButton_guardar->installEventFilter(this);
     ui->pushButton_salir->installEventFilter(this);    
@@ -106,11 +108,11 @@ QString ProductoFormTransaction::get_unidad()
 }
 QString ProductoFormTransaction::get_precio()
 {
-	return QString().setNum(ui->doubleSpinBox_precio->value());
+    return ui->lineEdit_precio->text();
 }
 QString ProductoFormTransaction::get_cantidad()
 {
-	return QString().setNum(ui->doubleSpinBox_cantidad->value());
+    return ui->lineEdit_cantidad->text();
 }
 void ProductoFormTransaction::set_widget_previous(QWidget *w)
 {
@@ -130,8 +132,8 @@ void ProductoFormTransaction::set_data(QString id, QString id_tipo, QString id_m
     ui->lineEdit_marca->setText(marca);
     ui->lineEdit_unidad->setText(unidad);
     ui->lineEdit_descripcion->setText(descripcion);
-	ui->doubleSpinBox_precio->setValue(precio.toDouble());
-	ui->doubleSpinBox_cantidad->setValue(cantidad.toDouble());
+    ui->lineEdit_precio->setText(precio);
+    ui->lineEdit_cantidad->setText(cantidad);
 }
 bool ProductoFormTransaction::guardar()
 {	
@@ -162,7 +164,7 @@ bool ProductoFormTransaction::guardar()
 
         str_query = "INSERT INTO producto(id, codigo, tipo_id, marca_id, unidad_id, descripcion, precio, cantidad, habilitado)VALUES";
         str_query += QString() + "(" + id + ", '" + codigo + "', " + id_tipo;
-        str_query += ", "+id_marca+", "+id_unidad+", '"+nombre+"', '"+QString().setNum(ui->doubleSpinBox_precio->value()) + "', '" + QString().setNum(ui->doubleSpinBox_cantidad->value()) +"', 1)";
+        str_query += ", "+id_marca+", "+id_unidad+", '"+nombre+"', '"+ ui->lineEdit_precio->text() + "', '" + ui->lineEdit_cantidad->text() +"', 1)";
         str_query += "&&END_QUERY&&";
     }else{
         str_query = "UPDATE producto";
@@ -171,8 +173,8 @@ bool ProductoFormTransaction::guardar()
         str_query += ", marca_id = "+id_marca;
         str_query += ", unidad_id = "+id_unidad;
         str_query += ", descripcion = '"+nombre+"'";
-        str_query += ", precio = '"+QString().setNum(ui->doubleSpinBox_precio->value())+"'";
-        str_query += ", cantidad = '"+QString().setNum(ui->doubleSpinBox_cantidad->value())+"'";
+        str_query += ", precio = '"+ui->lineEdit_precio->text()+"'";
+        str_query += ", cantidad = '"+ui->lineEdit_cantidad->text()+"'";
         str_query += ", habilitado = 1";
         str_query += " WHERE id = "+id;
         str_query += "&&END_QUERY&&";
@@ -342,12 +344,7 @@ void ProductoFormTransaction::showEvent(QShowEvent* se)
 {    
     se->accept();
 
-    if(focusWidget()){
-        focusWidget()->setFocus();
-    }else{
-        ui->lineEdit_descripcion->setFocus(Qt::TabFocusReason);
-
-    }
+    afterShow = true;
 }
 void ProductoFormTransaction::closeEvent(QCloseEvent* ce)
 {
@@ -360,6 +357,33 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->lineEdit_descripcion->setFocus();
+                ui->lineEdit_descripcion->setCursorPosition(ui->lineEdit_descripcion->text().length());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    focusWidget()->setFocus();
+                }else{
+                    ui->lineEdit_descripcion->setFocus();
+                    ui->lineEdit_descripcion->setCursorPosition(ui->lineEdit_descripcion->text().length());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
@@ -385,6 +409,11 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_buscar_tipo->setFocus(Qt::TabFocusReason);
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -402,6 +431,11 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_buscar_tipo->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -419,6 +453,11 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_buscar_marca->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -436,6 +475,11 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_buscar_unidad->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -453,6 +497,11 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_limpiar_tipo->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -470,6 +519,11 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_limpiar_marca->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -487,6 +541,11 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_limpiar_unidad->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -502,7 +561,12 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Return:{
-				ui->doubleSpinBox_precio->setFocus(Qt::TabFocusReason);
+                ui->lineEdit_precio->setFocus(Qt::TabFocusReason);
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -512,17 +576,42 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
         }
         return false;
     }
-	w_temp = ui->doubleSpinBox_precio;
-	if (obj == w_temp) {
+    w_temp = ui->lineEdit_precio;
+	if (obj == w_temp) {        
 		if (e->type() == QEvent::KeyPress) {
+            qDebug()<<"KeyPress"<<endl;
 			QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
 			switch (KeyEvent->key())
 			{
-			case Qt::Key_Return: {
-				ui->doubleSpinBox_cantidad->setFocus(Qt::TabFocusReason);
+            case Qt::Key_Return:{
+                ui->lineEdit_cantidad->setFocus(Qt::TabFocusReason);
                 return true;
 			}break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            case Qt::Key_Period:{
+                QString str = ui->lineEdit_precio->text();
+                int periodPosition = str.indexOf('.');
+                int cursorPosition;
+                if(periodPosition == -1){
+                    cursorPosition = ui->lineEdit_precio->cursorPosition();
+                    str.insert(cursorPosition, '.');
+                    cursorPosition += 1;
+                }else{
+                    cursorPosition = ui->lineEdit_precio->cursorPosition();
+                    str.replace(".", " ");
+                    str.insert(ui->lineEdit_precio->cursorPosition(), '.');
+                    str.replace(" ", "");
+                    if(periodPosition >= cursorPosition)
+                        cursorPosition += 1;
+                }
+                ui->lineEdit_precio->setText(str);
+                ui->lineEdit_precio->setCursorPosition(cursorPosition);
+                return true;
+            }break;
 			}
 
         } else {
@@ -533,7 +622,7 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
         }
 		return false;
 	}
-	w_temp = ui->doubleSpinBox_cantidad;
+    w_temp = ui->lineEdit_cantidad;
 	if (obj == w_temp) {
 		if (e->type() == QEvent::KeyPress) {
 			QKeyEvent *KeyEvent = (QKeyEvent*)e;
@@ -544,6 +633,31 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
 				ui->pushButton_guardar->click();
                 return true;
 			}break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            case Qt::Key_Period:{
+                QString str = ui->lineEdit_cantidad->text();
+                int periodPosition = str.indexOf('.');
+                int cursorPosition;
+                if(periodPosition == -1){
+                    cursorPosition = ui->lineEdit_cantidad->cursorPosition();
+                    str.insert(cursorPosition, '.');
+                    cursorPosition += 1;
+                }else{
+                    cursorPosition = ui->lineEdit_cantidad->cursorPosition();
+                    str.replace(".", " ");
+                    str.insert(ui->lineEdit_cantidad->cursorPosition(), '.');
+                    str.replace(" ", "");
+                    if(periodPosition >= cursorPosition)
+                        cursorPosition += 1;
+                }
+                ui->lineEdit_cantidad->setText(str);
+                ui->lineEdit_cantidad->setCursorPosition(cursorPosition);
+                return true;
+            }break;
 			}
 
         } else {
@@ -564,6 +678,11 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_guardar->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -586,6 +705,11 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_salir->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         } else {
@@ -603,6 +727,11 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_eliminar->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }

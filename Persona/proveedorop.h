@@ -51,6 +51,8 @@ protected:
 private:
     Ui::ProveedorOp *ui;
 
+    bool afterShow;
+
     QWidget* widget_previous;
 
     SunatConsultaRUC consulta_ruc;

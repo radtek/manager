@@ -114,6 +114,8 @@ protected:
 private:
     Ui::CompraFlete *ui;
 
+    bool afterShow;
+
     QWidget* widget_previous;
 
     int mes_declaracion;

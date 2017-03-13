@@ -77,6 +77,8 @@ signals:
 private:
     Ui::CompraSaldo *ui;
 
+    bool afterShow;
+
     QWidget* widget_previous;
 
     QSqlQuery query;

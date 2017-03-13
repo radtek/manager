@@ -46,6 +46,8 @@ signals:
 private:
 	Ui::Unidad *ui;
 
+    bool afterShow;
+
 	QWidget* widget_previous;
 
 	QString id;

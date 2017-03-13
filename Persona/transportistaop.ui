@@ -842,7 +842,7 @@ DIPONIBLE</string>
            </font>
           </property>
           <property name="text">
-           <string>Eliminar</string>
+           <string>&amp;Eliminar</string>
           </property>
           <property name="icon">
            <iconset resource="../ManagerSystem/iconos.qrc">
@@ -880,7 +880,7 @@ DIPONIBLE</string>
            </font>
           </property>
           <property name="text">
-           <string>Guardar</string>
+           <string>&amp;Guardar</string>
           </property>
           <property name="icon">
            <iconset resource="../ManagerSystem/iconos.qrc">
@@ -902,7 +902,7 @@ DIPONIBLE</string>
            </font>
           </property>
           <property name="text">
-           <string>Salir</string>
+           <string>&amp;Salir</string>
           </property>
           <property name="icon">
            <iconset resource="../ManagerSystem/iconos.qrc">

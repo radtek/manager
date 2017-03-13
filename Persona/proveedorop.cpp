@@ -7,6 +7,8 @@ ProveedorOp::ProveedorOp(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    afterShow = false;
+
     widget_previous = NULL;
 
     // SET REG EXPS -------------------------------------
@@ -438,11 +440,7 @@ void ProveedorOp::showEvent(QShowEvent *event)
 {
     event->accept();
 
-    if(focusWidget()){
-        focusWidget()->setFocus();
-    }else{
-        ui->lineEdit_ruc->setFocus(Qt::TabFocusReason);
-    }
+    afterShow = true;
 }
 void ProveedorOp::closeEvent(QCloseEvent *event)
 {
@@ -454,6 +452,33 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->lineEdit_ruc->setFocus();
+                ui->lineEdit_ruc->setCursorPosition(ui->lineEdit_ruc->text().length());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    focusWidget()->setFocus();
+                }else{
+                    ui->lineEdit_ruc->setFocus();
+                    ui->lineEdit_ruc->setCursorPosition(ui->lineEdit_ruc->text().length());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
@@ -479,6 +504,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_razon_social->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -496,6 +526,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_razon_social->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -513,6 +548,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_tipo_contribuyente->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -530,6 +570,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_nombre_comercial->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -547,6 +592,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_estado->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -564,6 +614,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_condicion->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -581,6 +636,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_direccion->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -598,6 +658,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_telefono->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -615,6 +680,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_fax->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -632,6 +702,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_representante->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -649,6 +724,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_pagina_web->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -666,6 +746,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_email->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -683,6 +768,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_comentario->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -700,6 +790,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_nombre->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -717,6 +812,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_rpm->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -734,6 +834,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_rpc->setFocus();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -751,6 +856,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_guardar->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -768,6 +878,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_guardar->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -786,6 +901,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_eliminar->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -805,6 +925,11 @@ bool ProveedorOp::eventFilter(QObject *obj, QEvent *e)
             }break;
             case Qt::Key_Return:{
                 ui->pushButton_salir->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }

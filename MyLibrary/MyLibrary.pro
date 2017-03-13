@@ -68,13 +68,13 @@ SOURCES += mylibrary.cpp \
     reniecconsultadni.cpp \
     session.cpp \
     sistema.cpp \
-    sunatconsultaruc.cpp
+    sunatconsultaruc.cpp \
+    lineedit.cpp
 
 HEADERS += mylibrary.h \
     mylibrary_global.h \
     comboboxdelegate.h \
     database_connection.h \
-    doublespinboxdelegate.h \
     lineeditdelegate.h \
     reniecconsultadni.h \
     session.h \
@@ -83,7 +83,9 @@ HEADERS += mylibrary.h \
     share_typedef.h \
     singleton.h \
     sistema.h \
-    sunatconsultaruc.h
+    sunatconsultaruc.h \
+    doublespinboxdelegate.h \
+    lineedit.h
 
 unix {
     target.path = /usr/lib

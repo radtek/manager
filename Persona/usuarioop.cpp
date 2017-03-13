@@ -7,6 +7,8 @@ UsuarioOp::UsuarioOp(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    afterShow = false;
+
     widget_previous = NULL;
 
     // OTHER SETS
@@ -239,11 +241,7 @@ void UsuarioOp::showEvent(QShowEvent *event)
 {
     event->accept();
 
-    if(focusWidget()){
-        focusWidget()->setFocus();
-    }else{
-        ui->lineEdit_dni->setFocus(Qt::TabFocusReason);
-    }
+    afterShow = true;
 }
 void UsuarioOp::closeEvent(QCloseEvent *event)
 {
@@ -256,6 +254,33 @@ bool UsuarioOp::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->lineEdit_dni->setFocus();
+                ui->lineEdit_dni->setCursorPosition(ui->lineEdit_dni->text().length());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    focusWidget()->setFocus();
+                }else{
+                    ui->lineEdit_dni->setFocus();
+                    ui->lineEdit_dni->setCursorPosition(ui->lineEdit_dni->text().length());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
@@ -281,6 +306,11 @@ bool UsuarioOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_nombre->setFocus(Qt::TabFocusReason);
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -298,6 +328,11 @@ bool UsuarioOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->comboBox_tipo->setFocus(Qt::TabFocusReason);
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -315,6 +350,11 @@ bool UsuarioOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_usuario->setFocus(Qt::TabFocusReason);
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -332,6 +372,11 @@ bool UsuarioOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->lineEdit_pass->setFocus(Qt::TabFocusReason);
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -349,6 +394,11 @@ bool UsuarioOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_guardar->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -366,6 +416,11 @@ bool UsuarioOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_guardar->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -384,6 +439,11 @@ bool UsuarioOp::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_eliminar->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -403,6 +463,11 @@ bool UsuarioOp::eventFilter(QObject *obj, QEvent *e)
             }break;
             case Qt::Key_Return:{
                 ui->pushButton_salir->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }

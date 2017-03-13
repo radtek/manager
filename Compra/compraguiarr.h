@@ -89,6 +89,8 @@ protected:
 private:
     Ui::CompraGuiaRR *ui;
 
+    bool afterShow;
+
     QWidget* widget_previous;
 
     QSqlQuery query;    

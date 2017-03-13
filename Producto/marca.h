@@ -46,6 +46,8 @@ signals:
 private:
 	Ui::Marca *ui;
 
+    bool afterShow;
+
 	QWidget* widget_previous;
 
 	QString id;

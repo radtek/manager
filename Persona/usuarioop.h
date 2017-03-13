@@ -49,6 +49,8 @@ signals:
 private:
     Ui::UsuarioOp *ui;
 
+    bool afterShow;
+
     QWidget* widget_previous;
 
     QString id;

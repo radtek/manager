@@ -116,6 +116,8 @@ signals:
 private:
     Ui::CompraBoleta *ui;
 
+    bool afterShow;
+
     QWidget* widget_previous;
 
     int mes_declaracion;

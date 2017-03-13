@@ -23,6 +23,18 @@ public:
     QString get_nombre();
     QString get_direccion();
 
+    void setTipoProveedor();
+    void setTipoTransportista();
+    void setTipoClienteRUC();
+    void setTipoClienteDNI();
+    void setTipoUsuario();
+
+    void hideOptProveedor();
+    void hideOptTransportista();
+    void hideOptClienteRUC();
+    void hideOptClienteDNI();
+    void hideOptUsuario();
+
 public slots:
     void on_colaborador_closing();
 
@@ -60,8 +72,8 @@ protected:
 private:
     Ui::ColaboradorBuscar *ui;
 
-public:
-    //TemplateReporte* temp_rep;
+    bool firstShow;
+    bool afterShow;
 
     QWidget* widget_previous;
 

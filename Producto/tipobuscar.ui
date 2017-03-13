@@ -51,7 +51,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Nuevo</string>
+        <string>&amp;Nuevo</string>
        </property>
        <property name="icon">
         <iconset resource="../ManagerSystem/iconos.qrc">

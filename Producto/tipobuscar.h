@@ -47,6 +47,9 @@ signals:
 private:
 	Ui::TipoBuscar *ui;
 
+    bool firstShow;
+    bool afterShow;
+
 	QWidget* widget_previous;
 
 	int pos;

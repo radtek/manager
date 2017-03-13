@@ -374,7 +374,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/Search_1.png</normaloff>:/new/Iconos/Search_1.png</iconset>
        </property>
        <property name="flat">
@@ -478,7 +478,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/Search_1.png</normaloff>:/new/Iconos/Search_1.png</iconset>
        </property>
       </widget>
@@ -489,7 +489,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/edit_find.png</normaloff>:/new/Iconos/edit_find.png</iconset>
        </property>
        <property name="flat">
@@ -503,7 +503,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/doc_delete.png</normaloff>:/new/Iconos/doc_delete.png</iconset>
        </property>
        <property name="flat">
@@ -605,7 +605,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/Search_1.png</normaloff>:/new/Iconos/Search_1.png</iconset>
        </property>
       </widget>
@@ -616,7 +616,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/edit_find.png</normaloff>:/new/Iconos/edit_find.png</iconset>
        </property>
        <property name="flat">
@@ -630,7 +630,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/doc_delete.png</normaloff>:/new/Iconos/doc_delete.png</iconset>
        </property>
        <property name="flat">
@@ -849,7 +849,7 @@
         <string>Ingresar producto</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/Search_1.png</normaloff>:/new/Iconos/Search_1.png</iconset>
        </property>
       </widget>
@@ -869,12 +869,23 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_down">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Alt + Flecha Abajo</string>
+       </property>
        <property name="text">
-        <string/>
+        <string>Bajar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/br_down.png</normaloff>:/new/Iconos/br_down.png</iconset>
+       </property>
+       <property name="shortcut">
+        <string>Alt+Down</string>
        </property>
        <property name="flat">
         <bool>true</bool>
@@ -883,12 +894,23 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_up">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Alt + Flecha Arriba</string>
+       </property>
        <property name="text">
-        <string/>
+        <string>Subir</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/br_up.png</normaloff>:/new/Iconos/br_up.png</iconset>
+       </property>
+       <property name="shortcut">
+        <string>Alt+Up</string>
        </property>
        <property name="flat">
         <bool>true</bool>
@@ -897,12 +919,23 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_borrar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Suprimir</string>
+       </property>
        <property name="text">
-        <string/>
+        <string>Quitar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/sq_minus.png</normaloff>:/new/Iconos/sq_minus.png</iconset>
+       </property>
+       <property name="shortcut">
+        <string>Del</string>
        </property>
        <property name="flat">
         <bool>true</bool>
@@ -917,6 +950,9 @@
       <font>
        <pointsize>10</pointsize>
       </font>
+     </property>
+     <property name="toolTip">
+      <string>PRESIONE F3 Y F4 PARA COMPRAS Y VENTAS.</string>
      </property>
      <attribute name="horizontalHeaderDefaultSectionSize">
       <number>110</number>
@@ -1088,11 +1124,16 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_eliminar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string/>
+        <string>&amp;Eliminar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/eliminar.png</normaloff>:/new/Iconos/eliminar.png</iconset>
        </property>
        <property name="iconSize">
@@ -1121,11 +1162,16 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_amarres">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string/>
+        <string>&amp;Amarres</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/amarres.png</normaloff>:/new/Iconos/amarres.png</iconset>
        </property>
        <property name="iconSize">
@@ -1154,11 +1200,16 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_guardar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string/>
+        <string>&amp;Guardar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/guardar.png</normaloff>:/new/Iconos/guardar.png</iconset>
        </property>
        <property name="iconSize">
@@ -1171,11 +1222,16 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_salir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string/>
+        <string>&amp;Salir</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/salir.png</normaloff>:/new/Iconos/salir.png</iconset>
        </property>
        <property name="iconSize">
@@ -1220,8 +1276,6 @@
   <tabstop>lineEdit_igv</tabstop>
   <tabstop>lineEdit_total</tabstop>
  </tabstops>
- <resources>
-  <include location="../ManagerSystem/Iconos.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

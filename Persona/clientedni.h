@@ -49,6 +49,8 @@ signals:
 private:
     Ui::ClienteDNI *ui;
 
+    bool afterShow;
+
 	ReniecConsultaDNI consulta_dni;
 
     QWidget* widget_previous;

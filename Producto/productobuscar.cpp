@@ -7,7 +7,9 @@ ProductoBuscar::ProductoBuscar(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	// Inicializando datos miembro
+    firstShow = false;
+    afterShow = false;
+
 	widget_previous = NULL;	
 
 	pos = 0;
@@ -25,6 +27,17 @@ ProductoBuscar::ProductoBuscar(QWidget *parent) :
 	unidad = "";
 	precio = "";
 	cantidad = "";        
+
+    disconnect(ui->lineEdit_codigo, SIGNAL(returnPressed())
+                , this, SLOT(on_lineEdit_codigo_returnPressed()));
+    disconnect(ui->lineEdit_descripcion_buscar, SIGNAL(returnPressed())
+                , this, SLOT(on_lineEdit_descripcion_buscar_returnPressed()));
+    disconnect(ui->lineEdit_marca_buscar, SIGNAL(returnPressed())
+                , this, SLOT(on_lineEdit_marca_buscar_returnPressed()));
+    disconnect(ui->lineEdit_tipo_buscar, SIGNAL(returnPressed())
+                , this, SLOT(on_lineEdit_tipo_buscar_returnPressed()));
+    disconnect(ui->lineEdit_unidad_buscar, SIGNAL(returnPressed())
+                , this, SLOT(on_lineEdit_unidad_buscar_returnPressed()));
 
 	this->installEventFilter(this);
 
@@ -99,17 +112,37 @@ void ProductoBuscar::set_widget_previous(QWidget *widget_previous)
 void ProductoBuscar::on_productoFormTransaction_closing()
 {
 	ProductoFormTransaction* widget_prod = (ProductoFormTransaction*)QObject::sender();
+
 	id = widget_prod->get_ID();
 	id_tipo = widget_prod->get_IDTipo();
 	id_marca = widget_prod->get_IDMarca();
 	id_unidad = widget_prod->get_IDUnidad();
 	codigo = widget_prod->get_codigo();
-	tipo = widget_prod->get_tipo();
-	descripcion = widget_prod->get_descripcion();
+	tipo = widget_prod->get_tipo();	
 	marca = widget_prod->get_marca();
 	unidad = widget_prod->get_unidad();
+    descripcion = widget_prod->get_descripcion();
 	precio = widget_prod->get_precio();
 	cantidad = widget_prod->get_cantidad();
+
+    if(id.compare("") == 0)
+        return;
+
+    QTableWidgetItem* item = ui->tableWidget->currentItem();
+
+    //ui->tableWidget->item(item->row(), 0)->setText(id);
+    ui->tableWidget->item(item->row(), 1)->setText(id_tipo);
+    ui->tableWidget->item(item->row(), 2)->setText(id_marca);
+    ui->tableWidget->item(item->row(), 3)->setText(id_unidad);
+    ui->tableWidget->item(item->row(), 4)->setText(codigo);
+    ui->tableWidget->item(item->row(), 5)->setText(tipo);
+    ui->tableWidget->item(item->row(), 6)->setText(descripcion);
+    ui->tableWidget->item(item->row(), 7)->setText(marca);
+    ui->tableWidget->item(item->row(), 8)->setText(unidad);
+    ui->tableWidget->item(item->row(), 9)->setText(precio);
+    ui->tableWidget->item(item->row(), 10)->setText(cantidad);
+
+    SYSTEM->table_resize_to_contents(0, ui->tableWidget);
 }
 void ProductoBuscar::on_pushButton_nuevo_clicked()
 {
@@ -152,7 +185,9 @@ void ProductoBuscar::on_pushButton_ok_clicked()
         setAttribute(Qt::WA_DeleteOnClose);
 		SYSTEM->change_center_w(this, widget_previous);
 	} else {
-		SYSTEM->clear_center_w(this);
+        QTableWidgetItem* item = ui->tableWidget->currentItem();
+        if(item)
+            on_tableWidget_itemDoubleClicked(item);
 	}        
 }
 void ProductoBuscar::on_pushButton_salir_clicked()
@@ -167,16 +202,18 @@ void ProductoBuscar::on_pushButton_salir_clicked()
 }
 void ProductoBuscar::on_lineEdit_codigo_textChanged(const QString& arg)
 {
-    connect(ui->lineEdit_codigo, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_codigo_returnPressed()));
+    //connect(ui->lineEdit_codigo, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_codigo_returnPressed()));
 	pos = 0;
 	
 	ui->tableWidget->setRowCount(0);
 	ui->tableWidget->setColumnCount(0);
 	ui->tableWidget->clear();
+
+    on_lineEdit_codigo_returnPressed();
 }
 void ProductoBuscar::on_lineEdit_codigo_returnPressed()
 {
-    disconnect(ui->lineEdit_codigo, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_codigo_returnPressed()));
+    //disconnect(ui->lineEdit_codigo, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_codigo_returnPressed()));
 	QString codigo = ui->lineEdit_codigo->text();
 	QString str_query = "SELECT producto.id, tipo.id, marca.id, unidad.id, codigo, tipo.tipo, descripcion, marca.marca, unidad.unidad, precio, cantidad";
 			str_query += " FROM producto";
@@ -228,26 +265,30 @@ void ProductoBuscar::on_lineEdit_codigo_returnPressed()
 			ui->tableWidget->setItem(pos, 9, new QTableWidgetItem(precio));
 			ui->tableWidget->setItem(pos, 10, new QTableWidgetItem(cantidad));
 
-			SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);			
+            for(int j=0; j<ui->tableWidget->columnCount(); j++)
+                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
+                                                             | Qt::ItemIsSelectable);
 			++pos;
 		}
-	}
-	else {
+        SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
+    }else{
 
 	}
 }
 void ProductoBuscar::on_lineEdit_tipo_buscar_textChanged(const QString& arg)
 {
-    connect(ui->lineEdit_tipo_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_tipo_buscar_returnPressed()));
+    //connect(ui->lineEdit_tipo_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_tipo_buscar_returnPressed()));
 	pos = 0;
 
 	ui->tableWidget->setRowCount(0);
 	ui->tableWidget->setColumnCount(0);
 	ui->tableWidget->clear();
+
+    on_lineEdit_tipo_buscar_returnPressed();
 }
 void ProductoBuscar::on_lineEdit_tipo_buscar_returnPressed()
-{
-    disconnect(ui->lineEdit_tipo_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_tipo_buscar_returnPressed()));
+{    
+    //disconnect(ui->lineEdit_tipo_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_tipo_buscar_returnPressed()));
 	QString tipo = ui->lineEdit_tipo_buscar->text();
 	QString descripcion = ui->lineEdit_descripcion_buscar->text();
 	QString marca = ui->lineEdit_marca_buscar->text();
@@ -258,11 +299,11 @@ void ProductoBuscar::on_lineEdit_tipo_buscar_returnPressed()
 	str_query += " LEFT JOIN tipo AS tipo ON tipo.id = tipo_id";
 	str_query += " LEFT JOIN marca AS marca ON marca.id = marca_id";
 	str_query += " LEFT JOIN unidad AS unidad ON unidad.id = unidad_id";
-	str_query += " WHERE (tipo LIKE '" + tipo + "%' OR tipo IS NULL)";
-	str_query += " AND descripcion LIKE '" + descripcion + "%'";
-	str_query += " AND (marca LIKE '" + marca + "%' OR marca IS NULL)";
-	str_query += " AND (unidad LIKE '" + unidad + "%' OR unidad IS NULL)";
-	str_query += " ORDER BY tipo, descripcion, marca, unidad";
+    str_query += " WHERE (tipo LIKE '%" + tipo + "%' OR tipo IS NULL)";
+    str_query += " AND descripcion LIKE '%" + descripcion + "%'";
+    str_query += " AND (marca LIKE '%" + marca + "%' OR marca IS NULL)";
+    str_query += " AND (unidad LIKE '%" + unidad + "%' OR unidad IS NULL)";
+    str_query += " ORDER BY descripcion, marca, unidad, tipo";
 	str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
 
 	QSqlQuery query;
@@ -306,13 +347,15 @@ void ProductoBuscar::on_lineEdit_tipo_buscar_returnPressed()
 			ui->tableWidget->setItem(pos, 9, new QTableWidgetItem(precio));
 			ui->tableWidget->setItem(pos, 10, new QTableWidgetItem(cantidad));
 
-			SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
+            for(int j=0; j<ui->tableWidget->columnCount(); j++)
+                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
+                                                             | Qt::ItemIsSelectable);
 			++pos;
 		}
-	}
-	else {
+        SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
+    }else{
 
-	}
+    }
 }
 void ProductoBuscar::on_lineEdit_descripcion_buscar_textChanged(const QString& arg)
 {
@@ -345,17 +388,17 @@ void ProductoBuscar::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
 
     int row = item->row();
 
-    id = tb->item(row, 0)->text();
-    id_tipo = tb->item(row, 1)->text();
-    id_marca = tb->item(row, 2)->text();
-    id_unidad = tb->item(row, 3)->text();
-    codigo = tb->item(row, 4)->text();
-    tipo = tb->item(row, 5)->text();
-    descripcion = tb->item(row, 6)->text();
-    marca = tb->item(row, 7)->text();
-    unidad = tb->item(row, 8)->text();
-    precio = tb->item(row, 9)->text();
-    cantidad = tb->item(row, 10)->text();
+    QString id = tb->item(row, 0)->text();
+    QString id_tipo = tb->item(row, 1)->text();
+    QString id_marca = tb->item(row, 2)->text();
+    QString id_unidad = tb->item(row, 3)->text();
+    QString codigo = tb->item(row, 4)->text();
+    QString tipo = tb->item(row, 5)->text();
+    QString descripcion = tb->item(row, 6)->text();
+    QString marca = tb->item(row, 7)->text();
+    QString unidad = tb->item(row, 8)->text();
+    QString precio = tb->item(row, 9)->text();
+    QString cantidad = tb->item(row, 10)->text();
 
     ProductoFormTransaction* w = new ProductoFormTransaction;
     w->set_data(id, id_tipo, id_marca, id_unidad, codigo, tipo, descripcion, marca, unidad, precio, cantidad);
@@ -369,19 +412,17 @@ void ProductoBuscar::showEvent(QShowEvent *se)
 {
     se->accept();
 
-    ui->lineEdit_descripcion_buscar->setFocus(Qt::TabFocusReason);
+    afterShow = true;
 
-    on_lineEdit_descripcion_buscar_textChanged(ui->lineEdit_descripcion_buscar->text());
-    on_lineEdit_descripcion_buscar_returnPressed();
+    if(!firstShow){
+        on_lineEdit_descripcion_buscar_textChanged(ui->lineEdit_descripcion_buscar->text());
+        //on_lineEdit_descripcion_buscar_returnPressed();
+        firstShow = true;
+    }
 }
 void ProductoBuscar::closeEvent(QCloseEvent *ce)
 {
-	ce->accept();
-
-    if(focusWidget()){
-        focusWidget()->clearFocus();
-    }
-    //ui->lineEdit_descripcion_buscar->setFocus(Qt::TabFocusReason);
+	ce->accept();    
 	emit closing();
 }
 bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
@@ -389,6 +430,38 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->lineEdit_descripcion_buscar->setFocus();
+                ui->lineEdit_descripcion_buscar->setCursorPosition(ui->lineEdit_descripcion_buscar->text().length());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    if(focusWidget() == ui->pushButton_nuevo){
+                        ui->lineEdit_descripcion_buscar->setFocus();
+                        ui->lineEdit_descripcion_buscar->setCursorPosition(ui->lineEdit_descripcion_buscar->text().length());
+                    }else{
+                        focusWidget()->setFocus();
+                    }
+                }else{
+                    ui->lineEdit_descripcion_buscar->setFocus();
+                    ui->lineEdit_descripcion_buscar->setCursorPosition(ui->lineEdit_descripcion_buscar->text().length());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
@@ -402,13 +475,15 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
 					ui->tableWidget->setFocus(Qt::TabFocusReason);
 					if (ui->tableWidget->currentItem())
 						ui->tableWidget->currentItem()->setSelected(true);
-				}
+                    return true;
+                }
             }break;
 			case Qt::Key_Down: {
 				if (this->focusWidget() != ui->tableWidget) {
 					ui->tableWidget->setFocus(Qt::TabFocusReason);
 					if (ui->tableWidget->currentItem())
 						ui->tableWidget->currentItem()->setSelected(true);
+                    return true;
 				}
             }break;
             }
@@ -427,6 +502,11 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
 			case Qt::Key_Return:
 				ui->pushButton_ok->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
 			case Qt::Key_Down: {
 				int index = ui->tableWidget->currentRow();
 				if (index == ui->tableWidget->rowCount() - 1) {
@@ -434,9 +514,10 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
                     return true;
 				}
 			}
+                /*
             case Qt::Key_F3:{
                 QTableWidgetItem* item = ui->tableWidget->currentItem();
-                if(item) {
+                if(item) {                    
                     CompraChartCosto* w = new CompraChartCosto();
                     QString producto_id = ui->tableWidget->item(item->row(), 0)->text();
                     QString unidad = ui->tableWidget->item(item->row(), 8)->text();
@@ -460,13 +541,13 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
                     return true;
                 }
             }break;
+            */
 			}
 
-		}
-		else {
+        } else {
 
 		}
-		return false;
+        return false;
 	}
 	w_temp = ui->pushButton_ok;
 	if (obj == w_temp) {
@@ -478,6 +559,11 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
 			case Qt::Key_Return:
 				ui->pushButton_ok->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
 			}
 
 		}
@@ -500,6 +586,11 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
 				ui->pushButton_salir->click();
                 return true;
 			}break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
 			}
 
 		}
@@ -518,6 +609,11 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
 			case Qt::Key_Return: {
                 //ui->tableWidget->setFocus(Qt::TabFocusReason);
 			}break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
 			}
 
 		}
@@ -536,6 +632,11 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
 			case Qt::Key_Return: {
                 //ui->tableWidget->setFocus(Qt::TabFocusReason);
 			}break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
 			}
 
 		}
@@ -554,6 +655,11 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
 			case Qt::Key_Return: {
                 //ui->tableWidget->setFocus(Qt::TabFocusReason);
 			}break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
 			}
 
 		}
@@ -572,6 +678,11 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
 			case Qt::Key_Return: {
                 //ui->tableWidget->setFocus(Qt::TabFocusReason);
 			}break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
 			}
 
 		}
@@ -590,6 +701,11 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
 			case Qt::Key_Return: {
                 //ui->tableWidget->setFocus(Qt::TabFocusReason);
 			}break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
 			}
 
 		}
@@ -607,6 +723,11 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:{
                 ui->pushButton_nuevo->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }

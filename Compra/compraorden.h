@@ -100,6 +100,8 @@ protected:
 private:
     Ui::CompraOrden *ui;        
 
+    bool afterShow;
+
     QWidget* widget_previous;
 
     int mes_emision;

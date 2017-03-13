@@ -49,6 +49,8 @@ private slots:
 private:
     Ui::Home *ui;
 
+    bool afterShow;
+
     QWidget* mainw;
     QWidget* toolbar;
 };

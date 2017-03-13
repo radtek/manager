@@ -54,7 +54,7 @@
         <string>&amp;Nuevo</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/Black_New-Page.png</normaloff>:/new/Iconos/Black_New-Page.png</iconset>
        </property>
        <property name="iconSize">
@@ -62,9 +62,6 @@
          <width>32</width>
          <height>32</height>
         </size>
-       </property>
-       <property name="shortcut">
-        <string>Alt+N</string>
        </property>
       </widget>
      </item>
@@ -435,8 +432,6 @@
   <tabstop>pushButton_ok</tabstop>
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
- <resources>
-  <include location="../ManagerSystem/Iconos.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
