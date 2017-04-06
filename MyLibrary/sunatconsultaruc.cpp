@@ -29,6 +29,8 @@ SunatConsultaRUC::SunatConsultaRUC(QWidget *parent) :
     isDatosRead = false;
     count = 0;
 	count_datos = 0;
+
+    tt_image = 0;
 	time_transcurred = 0;
     time_establecimientos_transcurred = 0;
 
@@ -45,6 +47,10 @@ SunatConsultaRUC::~SunatConsultaRUC()
 		delete timer_image;
 	if (timer_datos)
 		delete timer_datos;
+    if (timer_consultar_loc_anexos)
+        delete timer_consultar_loc_anexos;
+    if (timer_establecimientos)
+        delete timer_establecimientos;
 }
 
 void SunatConsultaRUC::set_data(QLabel* label_captcha
@@ -52,7 +58,7 @@ void SunatConsultaRUC::set_data(QLabel* label_captcha
 	, QLineEdit* le_razonSocial, QLineEdit* le_tipoContribuyente
 	, QLineEdit* le_nombreComercial, QLineEdit* le_direccion
     , QLineEdit* le_estado, QLineEdit* le_condicion, QTableWidget* table_establecimientos)
-{
+{        
     this->le_ruc = le_ruc;
 	QRegExp regExp_ruc("[0-9]{11,11}");
 	this->le_ruc->setValidator(new QRegExpValidator(regExp_ruc));
@@ -75,9 +81,23 @@ void SunatConsultaRUC::set_data(QLabel* label_captcha
 	this->le_direccion = le_direccion;
     this->table_establecimientos = table_establecimientos;
 
-	//view_consultaRuc->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);	
+    connect(view_consultaRuc, SIGNAL(renderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus,int))
+            , this, SLOT(renderProccessTerminated()));
 
-	view_consultaRuc->load(tr("http://www.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias"));
+    view_consultaRuc->setUrl(tr("http://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias"));
+    //qDebug()<<QDir::currentPath()<<endl;
+    //qDebug()<<QApplication::applicationDirPath()<<endl;
+    //qDebug()<<QApplication::applicationFilePath()<<endl;
+    /*
+    view_consultaRuc->page()->profile()->setCachePath(QApplication::applicationDirPath());
+    view_consultaRuc->page()->profile()->setPersistentStoragePath(QApplication::applicationDirPath());
+    view_consultaRuc->page()->profile()->clearAllVisitedLinks();
+    view_consultaRuc->page()->profile()->clearHttpCache();
+    view_consultaRuc->page()->profile()->setHttpCacheType(QWebEngineProfile::NoCache);
+    view_consultaRuc->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+    */
+
+    view_consultaRuc->load(tr("http://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias"));
     //view_consultaRuc->reload(tr("http://www.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias"));
 
     //view_consultaRuc->show();
@@ -97,11 +117,11 @@ void SunatConsultaRUC::consultar_anexos()
 
     page->runJavaScript(strJS, [=](const QVariant &v)
     {
-        QFile file(str_name_file);
+        QFile file;
+        file.setFileName(str_name_file);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
             return;
-        file.flush();
-        qDebug() << v << endl;
+        file.flush();        
         QTextStream out(&file);
         out << v.toString();
         file.close();
@@ -141,7 +161,7 @@ void SunatConsultaRUC::loadFinished(bool b)
 	}
     qDebug()<<"BEGIN"<<endl;
 
-    if(b){		
+    if(b){
 		timer_image->start(100);		
     }
 
@@ -165,12 +185,21 @@ void SunatConsultaRUC::on_le_consulta_ruc_textEdited()
 
     }    		
 }
+void SunatConsultaRUC::renderProccessTerminated()
+{
+    qDebug()<<"haber"<<endl;
+}
 
 void SunatConsultaRUC::setImage()
 {			
 	//if (isImageRead) return;	
 	qDebug() << "Read Image" << endl;
     
+    if(tt_image > 2500){
+        tt_image = 0;
+        timer_image->stop();
+    }
+    tt_image += 100;
 	QWebEngineView* view = view_consultaRuc;
 	QWebEnginePage* page = view->page();
 
@@ -187,14 +216,18 @@ void SunatConsultaRUC::setImage()
 	qDebug() << strJS << endl;
 	page->runJavaScript(strJS, [](const QVariant &v)
 	{
-		QFile file("image.dat");
+        QFile file;
+        file.setFileName("image.dat");
 		if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 			return;
-		file.flush();
-		QTextStream out(&file);
-		out << v.toString();
-		file.close();
+
+        //qDebug()<<v.toString()<<endl;
+        file.flush();
+        QTextStream out(&file);
+        out << v.toString();
+        file.close();
 	});
+
 	QFile file;
 	file.setFileName("image.dat");
 	if (!file.open(QIODevice::ReadWrite | QIODevice::Text))
@@ -213,17 +246,11 @@ void SunatConsultaRUC::setImage()
 	str_img = str_img.mid(i_height+1, -1);
 
 	qDebug() << "str_img: " << str_img.length() << endl;
+
 	if (str_img.length() < 500) {
 		qDebug() << "no Image" << endl;		
 		return;
 	}
-	int int_width = width;
-	int int_height = height;
-
-	QPixmap pixmap(int_width, int_height);
-
-	qDebug() << int_width << endl;
-	qDebug() << int_height << endl;
 
 	QByteArray array = QByteArray::fromBase64(str_img.toStdString().c_str());
 	
@@ -241,120 +268,118 @@ void SunatConsultaRUC::setImage()
         if(label_captcha->pixmap())
 			img = label_captcha->pixmap()->toImage();
 
-	if (img != img_2) {
-		qDebug() << "NO SON IGUALES" << endl;
-		if (count > 2) {
-            timer_image->stop();
-            count = 0;
-			
-			QSize sizeImage = img_2.size();
-			int width = sizeImage.width(), height = sizeImage.height();
+    if (img != img_2) {
+		qDebug() << "NO SON IGUALES" << endl;               
 
-			qDebug() << width << endl;
-			qDebug() << height << endl;
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
-					QColor color = img_2.pixelColor(x, y);
+        if(count < 4){
+            count++;
+            return;
+        }
+        tt_image = 0;
+        timer_image->stop();
+        count = 0;
 
-					int countLightColor = 0;
-					if (color.red() <= 255 && color.red() >= 216
-						&& color.green() <= 255 && color.green() >= 216
-						&& color.blue() <= 255 && color.blue() >= 216) countLightColor++;
+        label_captcha->setPixmap(QPixmap::fromImage(img_2));
 
-					if (countLightColor == 1) img_2.setPixel(x, y, qRgb(255, 255, 255));
+        if (img_2.save("file.png"))
+            qDebug() << "SAVE FILE" << endl;
+        else
+            qDebug() << "not SAVE FILE" << endl;
 
-					int countHeavyColor = 0;
-					if (!(color.red() <= 255 && color.red() >= 216
-						&& color.green() <= 255 && color.green() >= 216
-						&& color.blue() <= 255 && color.blue() >= 216)) countHeavyColor++;
+        QSize sizeImage = img_2.size();
+        int width = sizeImage.width(), height = sizeImage.height();
 
-					if (countHeavyColor == 1) img_2.setPixel(x, y, qRgb(0, 0, 0));
-				}
-			}
-			
+        qDebug() << width << endl;
+        qDebug() << height << endl;
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                QColor color = img_2.pixelColor(x, y);
 
-			label_captcha->setPixmap(QPixmap::fromImage(img_2));
-			
-			if (img_2.save("file.png"))
-				qDebug() << "SAVE FILE" << endl;
-			else
-				qDebug() << "not SAVE FILE" << endl;
-			
-			char *outText;
+                int countLightColor = 0;
+                if (color.red() <= 255 && color.red() >= 216
+                    && color.green() <= 255 && color.green() >= 216
+                    && color.blue() <= 255 && color.blue() >= 216) countLightColor++;
 
-			tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
+                if (countLightColor == 1) img_2.setPixel(x, y, qRgb(255, 255, 255));
 
-			// Initialize tesseract-ocr with English, without specifying tessdata path
-			int r = api->Init("C:/Users/lorda/Desktop/VS2015_Tesseract-master/tesseract_3.04/tessdata/", "eng", tesseract::OEM_DEFAULT, NULL, 0, NULL, NULL, true);
-			qDebug() << "r: " << r << endl;
-			if (r) {
-				qDebug() << "NOT initialize TESSERACT" << endl;
-				qDebug() << "3" << endl;
-				fprintf(stderr, "Could not initialize tesseract.\n");
-				exit(1);
-			}
-			else {
-				qDebug() << "INITIALIZE TESSERACT" << endl;
-			}
+                int countHeavyColor = 0;
+                if (!(color.red() <= 255 && color.red() >= 216
+                    && color.green() <= 255 && color.green() >= 216
+                    && color.blue() <= 255 && color.blue() >= 216)) countHeavyColor++;
+
+                if (countHeavyColor == 1) img_2.setPixel(x, y, qRgb(0, 0, 0));
+            }
+        }
+
+        char *outText;
+
+        tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
+
+        // Initialize tesseract-ocr with English, without specifying tessdata path
+        int r = api->Init("C:/Users/lorda/Desktop/VS2015_Tesseract-master/tesseract_3.04/tessdata/", "eng", tesseract::OEM_DEFAULT, NULL, 0, NULL, NULL, true);
+        //qDebug() << "r: " << r << endl;
+        if (r) {
+            qDebug() << "NOT initialize TESSERACT" << endl;
+            qDebug() << "3" << endl;
+            fprintf(stderr, "Could not initialize tesseract.\n");
+            exit(1);
+        } else {
+            //qDebug() << "INITIALIZE TESSERACT" << endl;
+        }
 
 
-			// Open input image with leptonica library
-			Pix *image = pixRead("file.png");
+        // Open input image with leptonica library
+        Pix *image = pixRead("file.png");
 
-			api->SetImage(image);
-			// Get OCR result
-			outText = api->GetUTF8Text();
+        api->SetImage(image);
+        // Get OCR result
+        outText = api->GetUTF8Text();
 
-			qDebug() << "OUTPUT: " << outText << endl;
+        qDebug() << "OUTPUT: " << outText << endl;
 
-			QString str_output = outText;
-			
-			str_output.replace("\n", "");
-			str_output.replace(" ", "");
-			qDebug() << "OUTPUT_CORRECTNESS: " << str_output << endl;
+        QString str_output = outText;
 
-			str_output = str_output.toUpper();
+        str_output.replace("\n", "");
+        str_output.replace(" ", "");
+        qDebug() << "OUTPUT_CORRECTNESS: " << str_output << endl;
 
-			qDebug() << "OUTPUT_CORRECTNESS TO UPPER: " << str_output << endl;
+        str_output = str_output.toUpper();
 
-			if (str_output.length() == 4)
-				le_captcha->setText(str_output);
-			else
-				le_captcha->setText("AAAA");
+        qDebug() << "OUTPUT_CORRECTNESS TO UPPER: " << str_output << endl;
 
-			// Destroy used object and release memory
-			api->End();
-			delete[] outText;			
+        if (str_output.length() == 4)
+            le_captcha->setText(str_output);
+        else
+            le_captcha->setText("AAAA");
 
-			QString ruc = le_ruc->text();
-			if (ruc.length() != 11) {
-				return;
-			}
-			QWebEngineView* view = view_consultaRuc;
-			QWebEnginePage* page = view->page();
+        // Destroy used object and release memory
+        api->End();
+        delete[] outText;
 
-			QString captcha = le_captcha->text();			
+        QString ruc = le_ruc->text();
+        if (ruc.length() != 11) {
+            return;
+        }
+        QWebEngineView* view = view_consultaRuc;
+        QWebEnginePage* page = view->page();
 
-			QString strJS = QString() + "frames[0].document.mainForm.search1.value = "
-			+ "'" + ruc + "';";
+        QString captcha = le_captcha->text();
 
-			strJS += "frames[0].document.mainForm.codigo.value = "
-			"'" + captcha + "';";
+        QString strJS = QString() + "frames[0].document.mainForm.search1.value = "
+        + "'" + ruc + "';";
 
-			strJS += "frames[0].document.getElementsByClassName('form-button')[0].click();";
+        strJS += "frames[0].document.mainForm.codigo.value = "
+        "'" + captcha + "';";
 
-			page->runJavaScript(strJS, [](const QVariant &v) { //qDebug() << v.toString();
-			});
+        strJS += "frames[0].document.getElementsByClassName('form-button')[0].click();";
 
-			le_ruc->selectAll();
-			le_ruc->setFocus();
+        page->runJavaScript(strJS, [](const QVariant &v) { //qDebug() << v.toString();
+        });
 
-			timer_datos->start(100);			
-			
-		} else {
-			count++;
-			return;
-		}
+        le_ruc->selectAll();
+        le_ruc->setFocus();
+
+        timer_datos->start(100);
 	} else {
 		qDebug() << "SON IGUALES" << endl;
 	}
@@ -398,13 +423,15 @@ void SunatConsultaRUC::setDatos()
 		
 	page->runJavaScript(strJS, [=](const QVariant &v)
 	{
-		QFile file(str_name_file);
+        QFile file;
+        file.setFileName(str_name_file);
 		if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
 			return;
 		file.flush();
-		qDebug() << v << endl;
+        //qDebug() << v << endl;
 		QTextStream out(&file);
 		out << v.toString();
+        //qDebug()<<v.toString()<<endl;
 		file.close();
 	});
 
@@ -412,15 +439,16 @@ void SunatConsultaRUC::setDatos()
 	QString str_document;
 		
 	file.setFileName(str_name_file);
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-		return;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+        //return;
+    }
 	bArray = file.readAll();
 	str_document = QString().fromLatin1(bArray);
 
 	QList<QString> list_result;
 	list_result = str_document.split("\n\n", QString::SkipEmptyParts);
 	qDebug()<<"str_document: "<<str_document<<endl;        
-	file.close();
+    //file.close();
 		
     QList<QString> list_search{"Número de RUC:", "Tipo Contribuyente:"
                             , "Nombre Comercial:", "Estado del Contribuyente:"
@@ -473,7 +501,7 @@ void SunatConsultaRUC::setDatos()
     table_establecimientos->setRowCount(0);
     table_establecimientos->clearContents();
 
-    timer_consultar_loc_anexos->start(1500);
+    timer_consultar_loc_anexos->start(2000);
 }
 
 void SunatConsultaRUC::setEstablecimientos()
@@ -498,6 +526,8 @@ void SunatConsultaRUC::setEstablecimientos()
         return;
     bArray_ruc = file.readAll();
     str_ruc = QString().fromLatin1(bArray_ruc);
+
+    file.close();
 
     if(le_ruc->text().compare(str_ruc) == 0) {
 
@@ -524,11 +554,12 @@ void SunatConsultaRUC::setEstablecimientos()
 
     page->runJavaScript(strJS, [=](const QVariant &v)
     {
-        QFile file(str_name_file);
+        QFile file;
+        file.setFileName(str_name_file);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
             return;
         file.flush();
-        qDebug() << v << endl;
+        //qDebug() << v << endl;
         QTextStream out(&file);
         out << v.toString();
         file.close();

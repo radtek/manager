@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>460</width>
-    <height>283</height>
+    <width>591</width>
+    <height>287</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="Iconos.qrc">
+    <normaloff>:/new/Iconos/Services.png</normaloff>:/new/Iconos/Services.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -20,6 +24,7 @@
       <widget class="QLabel" name="label_datos">
        <property name="font">
         <font>
+         <pointsize>12</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -60,6 +65,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Dólar</string>
        </property>
@@ -83,16 +93,26 @@
      </item>
      <item>
       <widget class="QLabel" name="label_dolar_value">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>0.00</string>
+        <string>0</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLabel" name="label_dolar_date">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>No Fecha</string>
        </property>
@@ -129,6 +149,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>IGV</string>
        </property>
@@ -152,16 +177,26 @@
      </item>
      <item>
       <widget class="QLabel" name="label_igv_value">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>0.00</string>
+        <string>0</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLabel" name="label_igv_date">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>No Fecha</string>
        </property>
@@ -195,6 +230,7 @@
       <widget class="QLabel" name="label">
        <property name="font">
         <font>
+         <pointsize>12</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -223,6 +259,11 @@
     <layout class="QHBoxLayout" name="horizontalLayout_8">
      <item>
       <widget class="QLabel" name="label_3">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Extrayendo desde internet</string>
        </property>
@@ -242,13 +283,39 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>...</string>
        </property>
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="pushButton_reload">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="Iconos.qrc">
+         <normaloff>:/new/Iconos/playback_reload.png</normaloff>:/new/Iconos/playback_reload.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButton_ver_internet">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Ver en internet</string>
        </property>
@@ -298,6 +365,11 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true"/>
        </property>
@@ -307,23 +379,45 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_cambio">
-       <property name="wrapping">
-        <bool>false</bool>
+      <widget class="QLineEdit" name="lineEdit_id_tipo_cambio">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>0</height>
+        </size>
        </property>
-       <property name="buttonSymbols">
-        <enum>QAbstractSpinBox::UpDownArrows</enum>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>16777215</height>
+        </size>
        </property>
-       <property name="keyboardTracking">
-        <bool>true</bool>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
-       <property name="decimals">
-        <number>3</number>
+      </widget>
+     </item>
+     <item>
+      <widget class="LineEdit" name="lineEdit_tipo_cambio">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QDateEdit" name="dateEdit_cambio">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="wrapping">
         <bool>false</bool>
        </property>
@@ -340,6 +434,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_guardar_cambio">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Guardar</string>
        </property>
@@ -360,6 +459,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_ver_cambio">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Ver</string>
        </property>
@@ -383,20 +487,35 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>IGV</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_igv">
-       <property name="decimals">
-        <number>3</number>
+      <widget class="LineEdit" name="lineEdit_igv">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QDateEdit" name="dateEdit_igv">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="wrapping">
         <bool>false</bool>
        </property>
@@ -410,6 +529,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_guardar_igv">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Guardar</string>
        </property>
@@ -430,6 +554,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_ver_igv">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Ver</string>
        </property>
@@ -454,6 +583,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_salir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Salir</string>
        </property>
@@ -463,13 +597,27 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>LineEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">lineedit.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
+  <tabstop>pushButton_ver_internet</tabstop>
+  <tabstop>lineEdit_tipo_cambio</tabstop>
   <tabstop>dateEdit_cambio</tabstop>
+  <tabstop>pushButton_guardar_cambio</tabstop>
   <tabstop>pushButton_ver_cambio</tabstop>
+  <tabstop>lineEdit_igv</tabstop>
   <tabstop>dateEdit_igv</tabstop>
+  <tabstop>pushButton_guardar_igv</tabstop>
   <tabstop>pushButton_ver_igv</tabstop>
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="Iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

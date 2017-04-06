@@ -12,6 +12,57 @@ Sistema::Sistema()
     ssheet_no_select = "";
 
 }
+QString& Sistema::normalDecimal(QString &value)
+{
+    int count = 0;
+    for(int i=0; i<value.length(); i++){
+        if(QString(value[i]).compare("0") == 0){
+            count++;
+        }else{
+            break;
+        }
+    }
+    value = value.remove(0, count);
+
+    bool hasDot = false;
+    for(int i=0; i<value.length(); i++){
+        if(QString(value[i]).compare(".") == 0){
+            hasDot = true;
+            break;
+        }
+    }
+    if(!hasDot){
+        if(value.compare("") == 0){
+            value = "0";
+        }
+    }else{
+        if(QString(value[0]).compare(".") == 0){
+            value = value.insert(0, '0');
+        }
+
+        count = 0;
+        for(int i=value.length()-1; i>=0; i--){
+            if(QString(value[i]).compare("0") == 0){
+                count++;
+            }else{                
+                break;
+            }
+        }
+        value = value.remove(value.length()-count, count);
+
+        count = 0;
+        for(int i=value.length()-1; i>=0; i--){
+            if(QString(value[i]).compare(".") == 0){
+                break;
+            }else{
+                count++;
+            }
+        }
+        QString round = QString().setNum(value.toDouble(), 'f', count);
+        value = round;
+    }
+    return value;
+}
 
 double Sistema::get_igv()
 {
@@ -30,7 +81,7 @@ double Sistema::get_dolar()
 {
     if(dolar == 0.0){
         QSqlQuery query;
-        QString str_query = "SELECT num FROM tipo_cambio WHERE moneda_id = " + QString().setNum(moneda_items::SOL) + " ORDER BY fecha DESC LIMIT 1";
+        QString str_query = "SELECT num FROM tipo_cambio WHERE moneda_id = " + QString().setNum(moneda_items::DOLAR) + " ORDER BY fecha DESC LIMIT 1";
         qDebug()<<str_query<<endl;
         if(query.exec(str_query)){
             query.next();
@@ -57,7 +108,7 @@ double Sistema::get_dolar(const QDate& date)
 {
     double dolar = 0.0;
     QSqlQuery query;
-    QString str_query = "SELECT num FROM tipo_cambio WHERE moneda_id = "+QString().setNum(moneda_items::SOL)+" AND fecha <= '"+date.toString("yyyy-MM-dd")+"'";
+    QString str_query = "SELECT num FROM tipo_cambio WHERE moneda_id = "+QString().setNum(moneda_items::DOLAR)+" AND fecha <= '"+date.toString("yyyy-MM-dd")+"'";
     str_query += " ORDER BY fecha DESC LIMIT 1";
     qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
@@ -66,7 +117,28 @@ double Sistema::get_dolar(const QDate& date)
     }
     return dolar;
 }
+QSqlQuery Sistema::get_id_igv(const QDate &date)
+{
+    QSqlQuery query;
+    QString str_query = "SELECT id, num FROM igv WHERE moneda_id = " + QString().setNum(moneda_items::SOL) + " AND fecha <= '"+date.toString("yyyy-MM-dd")+"'";
+    str_query += " ORDER BY fecha DESC LIMIT 1";
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
 
+    }
+    return query;
+}
+QSqlQuery Sistema::get_id_dolar(const QDate &date)
+{
+    QSqlQuery query;
+    QString str_query = "SELECT id, num FROM tipo_cambio WHERE moneda_id = "+QString().setNum(moneda_items::DOLAR)+" AND fecha <= '"+date.toString("yyyy-MM-dd")+"'";
+    str_query += " ORDER BY fecha DESC LIMIT 1";
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+
+    }
+    return query;
+}
 void Sistema::cpy_q_to_tb(QSqlQuery &q, QTableWidget *tb)
 {
     if(!q.isSelect()) {

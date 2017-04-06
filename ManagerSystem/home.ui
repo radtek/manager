@@ -147,7 +147,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="iconos.qrc">
+             <iconset resource="Iconos.qrc">
               <normaloff>:/new/Iconos/Personal.png</normaloff>:/new/Iconos/Personal.png</iconset>
             </property>
             <property name="iconSize">
@@ -230,7 +230,7 @@
                <string notr="true">color: rgb(0, 0, 0);</string>
               </property>
               <property name="text">
-               <string>Ventas</string>
+               <string>&lt;u&gt;&lt;b&gt;V&lt;/b&gt;&lt;/u&gt;entas</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -257,7 +257,7 @@
                <string notr="true">color: rgb(0, 0, 0);</string>
               </property>
               <property name="text">
-               <string>Compras</string>
+               <string>&lt;u&gt;&lt;b&gt;C&lt;/b&gt;&lt;/u&gt;ompras</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -278,7 +278,7 @@
                <string notr="true">color: rgb(0, 0, 0);</string>
               </property>
               <property name="text">
-               <string>Productos</string>
+               <string>&lt;u&gt;&lt;b&gt;P&lt;/b&gt;&lt;/u&gt;roductos</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -299,7 +299,7 @@
                <string notr="true">color: rgb(0, 0, 0);</string>
               </property>
               <property name="text">
-               <string>Reportes</string>
+               <string>&lt;u&gt;&lt;b&gt;R&lt;/b&gt;&lt;/u&gt;eportes</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -320,7 +320,7 @@
                <string notr="true">color: rgb(0, 0, 0);</string>
               </property>
               <property name="text">
-               <string>Configuración</string>
+               <string>Config&lt;u&gt;&lt;b&gt;u&lt;/b&gt;&lt;/u&gt;ración</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -341,7 +341,7 @@
                <string notr="true">color: rgb(0, 0, 0);</string>
               </property>
               <property name="text">
-               <string>Colaboradores</string>
+               <string>Cola&lt;u&gt;&lt;b&gt;b&lt;/b&gt;&lt;/u&gt;oradores</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -381,7 +381,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Android_Market.png</normaloff>:/new/Iconos/Android_Market.png</iconset>
               </property>
               <property name="iconSize">
@@ -389,6 +389,9 @@
                 <width>90</width>
                 <height>90</height>
                </size>
+              </property>
+              <property name="shortcut">
+               <string>Alt+V</string>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -464,7 +467,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Windows_Marketplace.png</normaloff>:/new/Iconos/Windows_Marketplace.png</iconset>
               </property>
               <property name="iconSize">
@@ -472,6 +475,9 @@
                 <width>90</width>
                 <height>90</height>
                </size>
+              </property>
+              <property name="shortcut">
+               <string>Alt+C</string>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -523,7 +529,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Tune-Up_Utilities.png</normaloff>:/new/Iconos/Tune-Up_Utilities.png</iconset>
               </property>
               <property name="iconSize">
@@ -531,6 +537,9 @@
                 <width>90</width>
                 <height>90</height>
                </size>
+              </property>
+              <property name="shortcut">
+               <string>Alt+P</string>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -582,7 +591,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/myspace_alt.png</normaloff>:/new/Iconos/myspace_alt.png</iconset>
               </property>
               <property name="iconSize">
@@ -590,6 +599,9 @@
                 <width>90</width>
                 <height>90</height>
                </size>
+              </property>
+              <property name="shortcut">
+               <string>Alt+B</string>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -641,7 +653,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Journal.png</normaloff>:/new/Iconos/Journal.png</iconset>
               </property>
               <property name="iconSize">
@@ -649,6 +661,9 @@
                 <width>90</width>
                 <height>90</height>
                </size>
+              </property>
+              <property name="shortcut">
+               <string>Alt+R</string>
               </property>
               <property name="popupMode">
                <enum>QToolButton::DelayedPopup</enum>
@@ -694,7 +709,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Services.png</normaloff>:/new/Iconos/Services.png</iconset>
               </property>
               <property name="iconSize">
@@ -702,6 +717,9 @@
                 <width>90</width>
                 <height>90</height>
                </size>
+              </property>
+              <property name="shortcut">
+               <string>Alt+U</string>
               </property>
               <property name="popupMode">
                <enum>QToolButton::DelayedPopup</enum>
@@ -788,7 +806,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Facebook_alt_5.png</normaloff>:/new/Iconos/Facebook_alt_5.png</iconset>
               </property>
               <property name="iconSize">
@@ -835,7 +853,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Twitter_alt_1.png</normaloff>:/new/Iconos/Twitter_alt_1.png</iconset>
               </property>
               <property name="iconSize">
@@ -882,7 +900,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Gmail.png</normaloff>:/new/Iconos/Gmail.png</iconset>
               </property>
               <property name="iconSize">
@@ -968,8 +986,6 @@
   <tabstop>pushButton</tabstop>
   <tabstop>pushButton_usuario</tabstop>
  </tabstops>
- <resources>
-  <include location="iconos.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

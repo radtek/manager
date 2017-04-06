@@ -36,7 +36,6 @@ ReniecConsultaDNI::~ReniecConsultaDNI()
 void ReniecConsultaDNI::set_data(QLabel* label_captcha, QLineEdit* lineEdit_dni
     , QLineEdit* lineEdit_codigoCaptcha, QLineEdit* lineEdit_nombre)
 {
-    qDebug() << "reniecaconsulta::set_data" << endl;
     this->le_dni = lineEdit_dni;
 
     this->le_captcha = lineEdit_codigoCaptcha;
@@ -54,7 +53,12 @@ void ReniecConsultaDNI::set_data(QLabel* label_captcha, QLineEdit* lineEdit_dni
 
     this->label_captcha = label_captcha;
 
-    //view_consultaDNI->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+    /*
+    view_consultaDNI->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+    view_consultaDNI->page()->profile()->setHttpCacheType(QWebEngineProfile::NoCache);
+    view_consultaDNI->page()->profile()->clearHttpCache();
+    view_consultaDNI->page()->profile()->cookieStore()->deleteAllCookies();
+    */
 
     view_consultaDNI->load(tr("https://cel.reniec.gob.pe/valreg/valreg.do?accion=ini"));
 
@@ -63,8 +67,7 @@ void ReniecConsultaDNI::set_data(QLabel* label_captcha, QLineEdit* lineEdit_dni
 
 void ReniecConsultaDNI::setImage()
 {
-    qDebug() << "Read Image" << endl;
-
+    //qDebug() << "Read Image" << endl;
     QWebEngineView* view = view_consultaDNI;
     QWebEnginePage* page = view->page();
 
@@ -138,7 +141,7 @@ void ReniecConsultaDNI::setImage()
 
     if (img != img_2) {
         qDebug() << "NO SON IGUALES" << endl;
-        if (count > 3) {
+        if (count > 4) {
             timer_image->stop();
             count = 0;
 

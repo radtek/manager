@@ -147,8 +147,10 @@
        </spacer>
       </item>
      </layout>
-     <zorder></zorder>
-     <zorder></zorder>
+     <zorder>lineEdit_host</zorder>
+     <zorder>lineEdit_puerto</zorder>
+     <zorder>label_puerto</zorder>
+     <zorder>label_host</zorder>
      <zorder>horizontalSpacer_2</zorder>
      <zorder>horizontalSpacer_3</zorder>
     </widget>
@@ -277,7 +279,10 @@
        </spacer>
       </item>
      </layout>
-     <zorder></zorder>
+     <zorder>label_clave</zorder>
+     <zorder>lineEdit_clave</zorder>
+     <zorder>label_nombre</zorder>
+     <zorder>lineEdit_usuario</zorder>
      <zorder>horizontalSpacer_4</zorder>
      <zorder>horizontalSpacer_5</zorder>
     </widget>

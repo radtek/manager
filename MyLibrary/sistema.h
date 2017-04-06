@@ -25,12 +25,16 @@ public:
 
     // PERSON_TEMPLATE
     // PRODUCT_TEMPLATE
+    QString& normalDecimal(QString& value);
 
     double get_igv();
     double get_dolar();
 
     double get_igv(const QDate& date);
     double get_dolar(const QDate& date);
+
+    QSqlQuery get_id_igv(const QDate& date);
+    QSqlQuery get_id_dolar(const QDate& date);
 
     void cpy_q_to_tb(QSqlQuery& q, QTableWidget* tb);
 
@@ -54,7 +58,7 @@ public:
 
     void windowCentered(QWidget* w);
 
-    void table_resize_to_contents(QWidget* p, QTableWidget* tb, int visible_rows= 8);
+    void table_resize_to_contents(QWidget* p, QTableWidget* tb, int visible_rows = 12);
 
 	void form_disable_widgets(QVector<QWidget*> v);
 

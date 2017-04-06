@@ -81,13 +81,13 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Google_Sketchup.png</normaloff>:/new/Iconos/Google_Sketchup.png</iconset>
               </property>
               <property name="iconSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>45</width>
+                <height>45</height>
                </size>
               </property>
               <property name="shortcut">
@@ -248,13 +248,13 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Android_Market.png</normaloff>:/new/Iconos/Android_Market.png</iconset>
               </property>
               <property name="iconSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>45</width>
+                <height>45</height>
                </size>
               </property>
               <property name="shortcut">
@@ -405,13 +405,13 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Windows_Marketplace (1).png</normaloff>:/new/Iconos/Windows_Marketplace (1).png</iconset>
               </property>
               <property name="iconSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>45</width>
+                <height>45</height>
                </size>
               </property>
               <property name="shortcut">
@@ -556,13 +556,13 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Tune-Up_Utilities.png</normaloff>:/new/Iconos/Tune-Up_Utilities.png</iconset>
               </property>
               <property name="iconSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>45</width>
+                <height>45</height>
                </size>
               </property>
               <property name="shortcut">
@@ -707,17 +707,17 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/myspace_alt.png</normaloff>:/new/Iconos/myspace_alt.png</iconset>
               </property>
               <property name="iconSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>45</width>
+                <height>45</height>
                </size>
               </property>
               <property name="shortcut">
-               <string>Alt+O</string>
+               <string>Alt+B</string>
               </property>
               <property name="checkable">
                <bool>false</bool>
@@ -784,7 +784,7 @@
                </size>
               </property>
               <property name="text">
-               <string>C&lt;u&gt;&lt;b&gt;o&lt;/b&gt;&lt;/u&gt;laboradores</string>
+               <string>Cola&lt;u&gt;&lt;b&gt;b&lt;/b&gt;&lt;/u&gt;oradores</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -855,13 +855,13 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Journal.png</normaloff>:/new/Iconos/Journal.png</iconset>
               </property>
               <property name="iconSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>45</width>
+                <height>45</height>
                </size>
               </property>
               <property name="shortcut">
@@ -1019,13 +1019,13 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="iconos.qrc">
+               <iconset resource="Iconos.qrc">
                 <normaloff>:/new/Iconos/Services.png</normaloff>:/new/Iconos/Services.png</iconset>
               </property>
               <property name="iconSize">
                <size>
-                <width>40</width>
-                <height>40</height>
+                <width>45</width>
+                <height>45</height>
                </size>
               </property>
               <property name="shortcut">
@@ -1173,7 +1173,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="iconos.qrc">
+           <iconset resource="Iconos.qrc">
             <normaloff>:/new/Iconos/rollback.jpg</normaloff>:/new/Iconos/rollback.jpg</iconset>
           </property>
           <property name="iconSize">
@@ -1224,7 +1224,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="iconos.qrc">
+           <iconset resource="Iconos.qrc">
             <normaloff>:/new/Iconos/commit.jpg</normaloff>:/new/Iconos/commit.jpg</iconset>
           </property>
           <property name="iconSize">
@@ -1275,7 +1275,7 @@
            <string>Backup</string>
           </property>
           <property name="icon">
-           <iconset resource="iconos.qrc">
+           <iconset resource="Iconos.qrc">
             <normaloff>:/new/Iconos/backup.png</normaloff>:/new/Iconos/backup.png</iconset>
           </property>
           <property name="iconSize">
@@ -1326,7 +1326,7 @@
            <string>Restaurar</string>
           </property>
           <property name="icon">
-           <iconset resource="iconos.qrc">
+           <iconset resource="Iconos.qrc">
             <normaloff>:/new/Iconos/restore_2.jpg</normaloff>:/new/Iconos/restore_2.jpg</iconset>
           </property>
           <property name="iconSize">
@@ -1369,8 +1369,6 @@
   <tabstop>toolButton_reportes</tabstop>
   <tabstop>toolButton_configuracion</tabstop>
  </tabstops>
- <resources>
-  <include location="iconos.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

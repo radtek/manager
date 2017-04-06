@@ -15,6 +15,8 @@ public:
     explicit Configuracion(QWidget *parent = 0);
     ~Configuracion();
 
+    void set_widget_previous(QWidget* widget_previous);
+
     void process_cambio(const QDate& date);
 
     void llenarDatos();
@@ -22,51 +24,44 @@ public:
     bool update_cambio();
     bool update_igv();
 
-    QPushButton* get_pb_ver_cambio();
-    QPushButton* get_pb_ver_igv();
-
 private:
-	void setCambio(const QDate& date);
 
 private slots:
-	void show_timeCambio();
-
-    void loadStarted();
-
-    void loadFinished(bool b);
-
     void on_pushButton_guardar_cambio_clicked();
 
     void on_pushButton_guardar_igv_clicked();
 
     void on_pushButton_salir_clicked();
 
-    void on_pushButton_ver_internet_clicked();
+    void on_pushButton_ver_cambio_clicked();
+
+    void on_pushButton_ver_igv_clicked();
 
     void on_dateEdit_cambio_dateChanged(const QDate &date);
 
-protected:
-    bool eventFilter(QObject *, QEvent *);
+    void on_dateEdit_igv_dateChanged(const QDate &date);
 
+protected:
 	void showEvent(QShowEvent* se);
+
+    bool eventFilter(QObject *, QEvent *);
 
 private:
     Ui::Configuracion *ui;
 
-    QWebEngineView* webView_tipo_cambio;
-    QDate date_tipo_cambio;
+    QWidget* widget_previous;
+
+    SunatTipoCambio sunatCambio;
+
     bool is_wait;
 
     QSqlQuery query_config;
 
-	QTimer* timer_cambio;
-
-	bool isShow;
+    bool afterShow;
+    bool firstShow;
 
 	int countReload;
-	int countDatos;
-	
-	QTextEdit* textEdit;
+	int countDatos;	
 };
 
 template class Q_DECL_EXPORT singleton<Configuracion>;

@@ -31,7 +31,9 @@ SOURCES += main.cpp\
     home.cpp \
     login.cpp \
     opcionesdb.cpp \
-    toolbar.cpp
+    toolbar.cpp \
+    vercambio.cpp \
+    verigv.cpp
 
 
 HEADERS  += managersystem.h \
@@ -43,7 +45,9 @@ HEADERS  += managersystem.h \
     toolbar.h \
     locallibrary.h \
     modules_library.h \
-    shares.h
+    shares.h \
+    vercambio.h \
+    verigv.h
 
 
 FORMS    += managersystem.ui \
@@ -51,7 +55,9 @@ FORMS    += managersystem.ui \
     home.ui \
     login.ui \
     opcionesdb.ui \
-    toolbar.ui
+    toolbar.ui \
+    vercambio.ui \
+    verigv.ui
 
 win32:contains(QMAKE_HOST.arch, x86_64) {
     win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../VS2015_Tesseract-master/x64/release/ -lzlib
@@ -94,21 +100,9 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-MyLibrary-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lMyLibrary
     else:unix: LIBS += -L$$PWD/../build-MyLibrary-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lMyLibrary
 
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Producto-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release/ -lProducto
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Producto-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lProducto
-    else:unix: LIBS += -L$$PWD/../build-Producto-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lProducto
-
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release/ -lPersona
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lPersona
-    else:unix: LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lPersona
-
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release/ -lCompra
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lCompra
-    else:unix: LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lCompra
-
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release/ -lVenta
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lVenta
-    else:unix: LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lVenta
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Facturacion-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release/ -lFacturacion
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Facturacion-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lFacturacion
+    else:unix: LIBS += -L$$PWD/../build-Facturacion-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/ -lFacturacion
 
     win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release/ -lQtXlsxWriter
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug/ -lQtXlsxWriter
@@ -154,21 +148,9 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-MyLibrary-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lMyLibrary
     else:unix: LIBS += -L$$PWD/../build-MyLibrary-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lMyLibrary
 
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Producto-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release/ -lProducto
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Producto-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lProducto
-    else:unix: LIBS += -L$$PWD/../build-Producto-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lProducto
-
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release/ -lPersona
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lPersona
-    else:unix: LIBS += -L$$PWD/../build-Persona-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lPersona
-
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release/ -lCompra
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lCompra
-    else:unix: LIBS += -L$$PWD/../build-Compra-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lCompra
-
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release/ -lVenta
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lVenta
-    else:unix: LIBS += -L$$PWD/../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lVenta
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Facturacion-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release/ -lFacturacion
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Facturacion-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lFacturacion
+    else:unix: LIBS += -L$$PWD/../build-Facturacion-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/ -lFacturacion
 
     win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release/ -lQtXlsxWriter
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug/ -lQtXlsxWriter
@@ -237,16 +219,8 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
 
     INCLUDEPATH += $$PWD/../MyLibrary
     DEPENDPATH += $$PWD/../MyLibrary
-    INCLUDEPATH += $$PWD/../Producto
-    DEPENDPATH += $$PWD/../Producto
-    INCLUDEPATH += $$PWD/../Persona
-    DEPENDPATH += $$PWD/../Persona
-    INCLUDEPATH += $$PWD/../Persona
-    DEPENDPATH += $$PWD/../Persona
-    INCLUDEPATH += $$PWD/../Compra
-    DEPENDPATH += $$PWD/../Compra
-    INCLUDEPATH += $$PWD/../Venta
-    DEPENDPATH += $$PWD/../Venta
+    INCLUDEPATH += $$PWD/../Facturacion
+    DEPENDPATH += $$PWD/../Facturacion
     INCLUDEPATH += $$PWD/../QtXlsxWriter
     DEPENDPATH += $$PWD/../QtXlsxWriter
 

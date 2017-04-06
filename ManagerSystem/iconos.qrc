@@ -137,5 +137,10 @@
         <file>Iconos/agregar-user.png</file>
         <file>Iconos/programmer.png</file>
         <file>Iconos/check.jpg</file>
+        <file>Iconos/edit.png</file>
+        <file>Iconos/edit (2).png</file>
+        <file>Iconos/edit-user.png</file>
+        <file>Iconos/transfer-data-between-documents.png</file>
+        <file>Iconos/Data_Transfer-48.png</file>
     </qresource>
 </RCC>

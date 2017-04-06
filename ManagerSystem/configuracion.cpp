@@ -7,60 +7,77 @@ Configuracion::Configuracion(QWidget *parent) :
 {
     ui->setupUi(this);
 
-	isShow = false;
+    afterShow = false;
+    firstShow = false;
 
-	textEdit = NULL;
-	webView_tipo_cambio = NULL;
-	countReload = 0;
-	countDatos = 0;
-	timer_cambio = NULL;
+    widget_previous = NULL;
 
-	if (!timer_cambio) {
-		timer_cambio = new QTimer();
-		connect(timer_cambio, SIGNAL(timeout()), this, SLOT(show_timeCambio()));
-	}	
+    disconnect(ui->dateEdit_igv, SIGNAL(dateChanged(QDate))
+               , this, SLOT(on_dateEdit_igv_dateChanged(QDate)));
 
-	disconnect(ui->dateEdit_cambio, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_cambio_dateChanged(QDate)));
-	ui->dateEdit_cambio->setDate(QDate::currentDate());
-	connect(ui->dateEdit_cambio, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_cambio_dateChanged(QDate)));
+    sunatCambio.set_data(ui->lineEdit_id_tipo_cambio
+                         , ui->lineEdit_tipo_cambio
+                         , ui->dateEdit_cambio
+                         , ui->label_loading
+                         , ui->pushButton_reload
+                         , ui->pushButton_guardar_cambio
+                         , ui->pushButton_ver_internet);    
 
-	ui->dateEdit_igv->setDate(QDate::currentDate());
+    ui->dateEdit_igv->setDate(QDate::currentDate());
+    connect(ui->dateEdit_igv, SIGNAL(dateChanged(QDate))
+               , this, SLOT(on_dateEdit_igv_dateChanged(QDate)));
 
-	if (!webView_tipo_cambio) {
-		webView_tipo_cambio = new QWebEngineView;
-		connect(webView_tipo_cambio, SIGNAL(loadStarted()), this, SLOT(loadStarted()));
-		connect(webView_tipo_cambio, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-	}
-	webView_tipo_cambio->load(tr("http://www.sunat.gob.pe/cl-at-ittipcam/tcS01Alias"));
-    //webView_tipo_cambio->show();
+    ui->lineEdit_id_tipo_cambio->hide();
+
+    process_cambio(ui->dateEdit_cambio->date());
+
+    this->installEventFilter(this);
+
+    ui->pushButton_ver_internet->installEventFilter(this);
+
+    ui->lineEdit_tipo_cambio->installEventFilter(this);
+    ui->dateEdit_cambio->installEventFilter(this);
+    ui->pushButton_guardar_cambio->installEventFilter(this);
+    ui->pushButton_ver_cambio->installEventFilter(this);
+
+    ui->lineEdit_igv->installEventFilter(this);
+    ui->dateEdit_igv->installEventFilter(this);
+    ui->pushButton_guardar_igv->installEventFilter(this);
+    ui->pushButton_ver_igv->installEventFilter(this);
+
+    ui->pushButton_salir->installEventFilter(this);
 }
 
 Configuracion::~Configuracion()
 {
-	delete webView_tipo_cambio;
-	delete timer_cambio;
-	delete textEdit;
+    qDebug()<<"delete configuracion"<<endl;
     delete ui;
+}
+void Configuracion::set_widget_previous(QWidget *widget_previous)
+{
+    this->widget_previous = widget_previous;
 }
 
 void Configuracion::process_cambio(const QDate& date)
 {	
 	//ui->dateEdit_cambio->setDisabled(true);	          
 
-    QString str_cmp_tipo_cambio = "SELECT EXISTS (SELECT '' FROM tipo_cambio WHERE fecha = '"+date.toString("yyyy-MM-dd")+"' AND moneda_id = "+QString().setNum(moneda_items::SOL)+"), '', ''";
-    QString str_cmp_igv = "SELECT EXISTS (SELECT '' FROM igv LIMIT 1), '', ''";
+    QString str_cmp_tipo_cambio = "SELECT '' FROM tipo_cambio WHERE fecha = '"+date.toString("yyyy-MM-dd")+"' AND moneda_id = "+QString().setNum(moneda_items::DOLAR);
 
     QString columns_str_dolar = "c.num, c.fecha, c.id";
-    QString str_dolar = "SELECT "+columns_str_dolar+" FROM tipo_cambio c";
-    str_dolar += " WHERE c.moneda_id = "+QString().setNum(moneda_items::SOL)+" ORDER BY c.fecha DESC LIMIT 1";
-    QString columns_str_igv = "ig.num, ig.fecha, ig.id";
-    QString str_igv = "SELECT "+columns_str_igv+" FROM igv ig ORDER BY ig.fecha DESC LIMIT 1";
-    str_igv += "";
+    QString str_tipo_cambio = "SELECT "+columns_str_dolar+" FROM tipo_cambio c";
+    str_tipo_cambio += " WHERE c.moneda_id = "+QString().setNum(moneda_items::DOLAR)+" ORDER BY c.fecha DESC LIMIT 1";
 
-    QString str_query = "("+str_cmp_tipo_cambio+")"
-                        " UNION ALL ("+str_cmp_igv+")"
-                        " UNION ALL ("+str_dolar+")"
-                        " UNION ALL ("+str_igv+")";
+    QString str_cmp_igv = "SELECT '' FROM igv LIMIT 1";
+
+    QString columns_str_igv = "ig.num, ig.fecha, ig.id";
+    QString str_igv = "SELECT "+columns_str_igv+" FROM igv ig";
+    str_igv += " WHERE ig.moneda_id = "+QString().setNum(moneda_items::SOL)+" ORDER BY ig.fecha DESC LIMIT 1";
+
+    QString str_query = "(SELECT IF(EXISTS("+str_cmp_tipo_cambio+"), 1, 0), '', '')";
+    str_query +=  " UNION ALL (SELECT IF(EXISTS("+str_cmp_igv+"), 1, 0), '', '')";
+    str_query +=  " UNION ALL ("+str_tipo_cambio+")";
+    str_query +=  " UNION ALL ("+str_igv+")";
 
     qDebug()<<str_query<<endl;
     if(query_config.exec(str_query)){
@@ -68,296 +85,111 @@ void Configuracion::process_cambio(const QDate& date)
         llenarDatos();
     }else{
 
-    }
-
-    this->installEventFilter(this);    
+    }     
 }
 
 void Configuracion::llenarDatos()
 {    
-    QString str_dolar;
-
     query_config.seek(0);
-    str_dolar = query_config.value(0).toString();
-    if(str_dolar == "1"){
+    int exists_tipo_cambio = query_config.value(0).toInt();
+    if(exists_tipo_cambio == 1){
         query_config.seek(2);
 
-        if(query_config.value(1).toString() == QDate::currentDate().toString("yyyy-MM-dd")){
-			//timer_cambio->start(100);
-			delete ui->label_loading->movie();
-			ui->label_loading->hide();
-			ui->label_loading->show();
-        }else{
-			qDebug() << "SET CAMBIO" << endl;
-			//timer_cambio->start();
-			setCambio(ui->dateEdit_cambio->date());
-        }
-
-    }else{
-        str_dolar = "";
-		qDebug() << "SET CAMBIO" << endl;
-		//timer_cambio->start();
-		setCambio(ui->dateEdit_cambio->date());
-    }
-
-    if(str_dolar != ""){
-        ui->label_dolar_value->setText(QString().setNum(query_config.value(0).toDouble()));
+        ui->label_dolar_value->setText(QString().setNum(query_config.value(0).toDouble(), 'f', 3));
 
         if(query_config.value(1).toString() == QDate::currentDate().toString("yyyy-MM-dd")){
             ui->label_dolar_date->setText("Ingresado el día de hoy.");
         }else{
-            ui->label_dolar_date->setText(query_config.value(1).toString());
+            ui->label_dolar_date->setText("Ultima fecha, el: "+query_config.value(1).toString());
         }
-    }else{
-        ui->label_dolar_value->setText("No ingresado el día de hoy.");
-        ui->label_dolar_value->setStyleSheet("QLabel { background-color : red; color : blue; }");
-        ui->label_dolar_date->hide();
     }
-
-    QString str_igv;
 
     query_config.seek(1);
-    str_igv = query_config.value(0).toString();
-    if(str_igv == "1"){
+    int exists_igv = query_config.value(0).toInt();
+    if(exists_igv == 1){
         query_config.seek(3);
-    }else{
-        str_igv = "";
-    }
 
-    if(str_igv != ""){
-        ui->label_igv_value->setText(QString().setNum(query_config.value(0).toDouble()));
+        ui->label_igv_value->setText(QString().setNum(query_config.value(0).toDouble(), 'f', 3));
 
         if(query_config.value(1).toString() == QDate::currentDate().toString("yyyy-MM-dd")){
             ui->label_igv_date->setText("Ingresado el día de hoy.");
         }else{
-            ui->label_igv_date->setText("Ingresado el "+query_config.value(1).toString());
+            ui->label_igv_date->setText("Ultima fecha, el: "+query_config.value(1).toString());
         }
-    }else{
-        ui->label_igv_value->setText("No ingresado el día de hoy.");
-        ui->label_igv_value->setStyleSheet("QLabel { background-color : red; color : blue; }");
-        ui->label_igv_date->hide();
-    }
-
-}
-
-void Configuracion::setCambio(const QDate& date)
-{
-	if (countReload > 0) return;
-	countReload++;
-
-	QWebEngineView* view = webView_tipo_cambio;
-	QWebEnginePage* page = view->page();
-	QString strJS;
-
-	strJS = "document.getElementsByClassName('lb')[0].selectedIndex = "
-		+ QString().setNum(date.month());
-    page->runJavaScript(strJS, [=](const QVariant &v) { /*qDebug()<<"set img: "<<endl<< v.toString();*/});
-
-	strJS = "document.getElementsByClassName('lb')[1].value = "
-		+ QString().setNum(date.year());
-    page->runJavaScript(strJS, [=](const QVariant &v) { /*qDebug()<<"set canvas: "<<endl<< v.toString();*/});
-
-	strJS = "document.getElementsByClassName('button')[0].click()";
-    page->runJavaScript(strJS, [=](const QVariant &v) { /*qDebug()<<"set canvas: "<<endl<< v.toString();*/});
-
-	countDatos = 0;
-
-	timer_cambio->start(100);
-}
-
-void Configuracion::show_timeCambio()
-{
-	QWebEngineView* view = webView_tipo_cambio;
-	QWebEnginePage* page = view->page();
-	
-	QString strJS = "var mes = document.getElementById(\"mesElegido\").value;"
-					"var anio = document.getElementById(\"anioElegido\").value;"
-					"var table = document.body.getElementsByClassName('class=\"form-table\"')[0];"
-					"var length = table.rows.length;"
-					"var text = mes + \" \" + anio + \" \";"
-					"for(i = 1; i < length; i++){ text += table.rows[i].innerText + \" \"; };"
-					"text;";
-
-	qDebug() << strJS << endl;
-	QString str_file = "cambio.dat";
-
-	page->runJavaScript(strJS, [=](const QVariant &v)
-	{
-		QFile file(str_file);
-		if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-			return;
-		file.flush();
-		QTextStream out(&file);
-		out << v.toString();
-		file.close();
-	});
-	QFile file(str_file);
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-		return;	
-	QString output = QString(" ") + file.readAll();
-	file.close();
-
-	QStringList list = output.split(QRegularExpression("\\s+"), QString::SkipEmptyParts);
-
-	if (list.count() > 0)
-	{
-		int month = ui->dateEdit_cambio->date().month();
-		int year = ui->dateEdit_cambio->date().year();
-
-		if (list.count() < 2) return;
-		int mes = list[0].toInt();
-		int anio = list[1].toInt();
-
-		qDebug() << month << " !=" << mes << endl;
-		qDebug() << year << " !=" << anio << endl;
-
-		if (month != mes || year != anio) return;
-		
-		QString msg = list[2];
-		if (msg.compare("No") == 0) {
-			qDebug() << "No" << endl;
-			timer_cambio->stop();
-			//delete ui->label_loading->movie();
-			//ui->label_loading->hide();
-			//ui->label_loading->show();
-			//ui->pushButton_guardar_cambio->setEnabled(true);
-
-			int year = ui->dateEdit_cambio->date().year();
-			int month = ui->dateEdit_cambio->date().month();
-			int day = 1;
-			if (month == 1) {
-				year--;
-				month = 12;
-			}
-			else {
-				month--;
-			}
-			QDate date;
-			date.setDate(year, month, day);
-			date.setDate(year, month, date.daysInMonth());
-
-			qDebug() << date.toString() << endl;
-			ui->dateEdit_cambio->setDate(date);
-
-			return;
-		}
-
-		QString r;
-		int day = ui->dateEdit_cambio->date().day();
-		int day_hint = 0;
-		int i = 2;
-		for (; i < list.count(); i = i + 3) {
-			day_hint = list[i].toInt();
-			if (day <= day_hint) {
-				break;
-			}
-			r += " " + list[i];
-			qDebug() << list[i] << endl;
-		}
-		qDebug() << "r: " << r << endl;
-
-		double cambio_compra = 0.0;
-		if (day < day_hint) {
-			qDebug() << "day < day_hint" << endl;
-			if (i != 2) {
-				cambio_compra = list[i - 2].toDouble();
-				ui->doubleSpinBox_cambio->setValue(cambio_compra);
-				delete ui->label_loading->movie();
-				ui->label_loading->hide();
-				ui->label_loading->show();
-				//ui->pushButton_guardar_cambio->setEnabled(true);
-
-				timer_cambio->stop();
-			}
-			else {
-				delete ui->label_loading->movie();
-				ui->label_loading->hide();
-				ui->label_loading->show();
-				//ui->pushButton_guardar_cambio->setEnabled(true);
-
-				timer_cambio->stop();
-
-				int year = ui->dateEdit_cambio->date().year();
-				int month = ui->dateEdit_cambio->date().month();
-				int day = 1;
-				if (month == 1) {
-					year--;
-					month = 12;
-				}
-				else {
-					month--;
-				}
-				QDate date;
-				date.setDate(year, month, day);
-				date.setDate(year, month, date.daysInMonth());
-
-				qDebug() << date.toString() << endl;
-				ui->dateEdit_cambio->setDate(date);
-			}
-		}
-		if (day == day_hint) {
-			qDebug() << "day == day_hint" << endl;
-			cambio_compra = list[i + 1].toDouble();
-			ui->doubleSpinBox_cambio->setValue(cambio_compra);
-			delete ui->label_loading->movie();
-			ui->label_loading->hide();
-			ui->label_loading->show();
-			//ui->pushButton_guardar_cambio->setEnabled(true);
-
-			timer_cambio->stop();
-		}
-		if (day > day_hint) {
-			qDebug() << "day > day_hint" << endl;
-			cambio_compra = list[i - 2].toDouble();
-			ui->doubleSpinBox_cambio->setValue(cambio_compra);
-			delete ui->label_loading->movie();
-			ui->label_loading->hide();
-			ui->label_loading->show();
-			//ui->pushButton_guardar_cambio->setEnabled(true);
-
-			timer_cambio->stop();
-		}
-	}	
-}
-
-
-void Configuracion::loadStarted()
-{
-    QMovie *movie = new QMovie(":/new/Iconos/loading_4.gif");
-    ui->label_loading->setMovie(movie);
-    movie->start();
-    //ui->pushButton_guardar_cambio->setDisabled(true);
-}
-
-void Configuracion::loadFinished(bool b)
-{
-    if(b){		
-		//timer_cambio->stop();
-		//timer_cambio->start(100);
-		//setCambio();
-		
-		process_cambio(ui->dateEdit_cambio->date());
-    }else{
-        ui->doubleSpinBox_cambio->setValue(0.0);
-        delete ui->label_loading->movie();
-        ui->label_loading->hide();
-        ui->label_loading->show();
-        //ui->pushButton_guardar_cambio->setEnabled(true);
     }
 }
+void Configuracion::showEvent(QShowEvent* se)
+{
+    se->accept();
 
+    afterShow = true;
+
+    if(!firstShow){
+        firstShow = true;
+    }
+}
 bool Configuracion::eventFilter(QObject *obj, QEvent *e)
 {
     QWidget* w_temp;
     w_temp = this;
+    if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->lineEdit_tipo_cambio->setFocus();
+                ui->lineEdit_tipo_cambio->setCursorPosition(ui->lineEdit_tipo_cambio->text().length());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    focusWidget()->setFocus();
+                }else{
+                    ui->lineEdit_tipo_cambio->setFocus();
+                    ui->lineEdit_tipo_cambio->setCursorPosition(ui->lineEdit_tipo_cambio->text().length());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Escape:{
+                ui->pushButton_salir->click();
+                return true;
+            }break;
+            }
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_ver_internet;
     if(obj == w_temp){
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
             switch(KeyEvent->key())
             {
-            case Qt::Key_Escape:
-                ui->pushButton_salir->click();
+            case Qt::Key_Return:{
+                ui->pushButton_ver_internet->click();
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -365,56 +197,294 @@ bool Configuracion::eventFilter(QObject *obj, QEvent *e)
         }
         return false;
     }
+    w_temp = ui->lineEdit_tipo_cambio;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
 
-    if(e->type()== QEvent::FocusOut){
-        /*
-        if(obj== ui->lineEdit_cambio){
-            qDebug()<<"coño de tu madre"<<endl;
-            timer->stop();
-            ui->label_dolar->setStyleSheet("");
-            return false;
-        }*/
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->dateEdit_cambio->setFocus();
+                return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            case Qt::Key_Period:{
+                QString str = ui->lineEdit_tipo_cambio->text();
+                int periodPosition = str.indexOf('.');
+                int cursorPosition;
+                if(periodPosition == -1){
+                    cursorPosition = ui->lineEdit_tipo_cambio->cursorPosition();
+                    str.insert(cursorPosition, '.');
+                    cursorPosition += 1;
+                }else{
+                    cursorPosition = ui->lineEdit_tipo_cambio->cursorPosition();
+                    str.replace(".", " ");
+                    str.insert(ui->lineEdit_tipo_cambio->cursorPosition(), '.');
+                    str.replace(" ", "");
+                    if(periodPosition >= cursorPosition)
+                        cursorPosition += 1;
+                }
+                ui->lineEdit_tipo_cambio->setText(str);
+                ui->lineEdit_tipo_cambio->setCursorPosition(cursorPosition);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->dateEdit_cambio;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->pushButton_guardar_cambio->setFocus(Qt::TabFocusReason);
+                return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_guardar_cambio;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->pushButton_ver_cambio->setFocus(Qt::TabFocusReason);
+                return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_ver_cambio;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->lineEdit_igv->setFocus();
+                return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->lineEdit_igv;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->dateEdit_igv->setFocus();
+                return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            case Qt::Key_Period:{
+                QString str = ui->lineEdit_igv->text();
+                int periodPosition = str.indexOf('.');
+                int cursorPosition;
+                if(periodPosition == -1){
+                    cursorPosition = ui->lineEdit_igv->cursorPosition();
+                    str.insert(cursorPosition, '.');
+                    cursorPosition += 1;
+                }else{
+                    cursorPosition = ui->lineEdit_igv->cursorPosition();
+                    str.replace(".", " ");
+                    str.insert(ui->lineEdit_igv->cursorPosition(), '.');
+                    str.replace(" ", "");
+                    if(periodPosition >= cursorPosition)
+                        cursorPosition += 1;
+                }
+                ui->lineEdit_igv->setText(str);
+                ui->lineEdit_igv->setCursorPosition(cursorPosition);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->dateEdit_igv;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->pushButton_guardar_igv->setFocus(Qt::TabFocusReason);
+                return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_guardar_igv;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->pushButton_ver_igv->setFocus(Qt::TabFocusReason);
+                return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_ver_igv;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->pushButton_salir->setFocus(Qt::TabFocusReason);
+                return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_salir;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Tab:{
+                this->setFocus();
+            }break;
+            case Qt::Key_Return:{
+                ui->pushButton_salir->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
     }
     return eventFilter(obj, e);
-}
-
-void Configuracion::showEvent(QShowEvent* se)
-{
-    ui->dateEdit_cambio->setFocus(Qt::TabFocusReason);
-
 }
 bool Configuracion::update_cambio()
 {
 	QString str_query;
 	QSqlQuery query;
 
+    str_query = "SELECT IF(EXISTS(SELECT '' FROM tipo_cambio";
+    str_query += " WHERE fecha = '"+ui->dateEdit_cambio->date().toString("yyyy-MM-dd")+"'";
+    str_query += " AND moneda_id = "+QString().setNum(moneda_items::DOLAR);
+    str_query += "), 1, 0)";
+
+    int exists = 0;
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        query.next();
+        exists = query.value(0).toInt();
+    }else{
+        return false;
+    }
 	QString num;
-	num.setNum(ui->doubleSpinBox_cambio->value());
-	query_config.seek(0);
+    num = ui->lineEdit_tipo_cambio->text();
 
 	QString str_fecha = ui->dateEdit_cambio->date().toString("yyyy-MM-dd");
 
-	if (query_config.value(0).toString() == "0") {
+    if (exists == 0) {
         str_query = "INSERT INTO tipo_cambio(moneda_id, num, fecha)VALUES(";
-
-        str_query += QString().setNum(moneda_items::SOL) + ", " + num + ", '" + str_fecha + "')";
+        str_query += QString().setNum(moneda_items::DOLAR) + ", '" + num + "', '" + str_fecha + "')";
         str_query += "&&END_QUERY&&";
-	}
-	else {
+    }else{
         str_query = "UPDATE tipo_cambio";
         str_query += " SET";
-        str_query += " num = " + QString().setNum(moneda_items::SOL);
-        str_query += " WHERE moneda_id = "+QString().setNum(moneda_items::SOL)+" AND fecha = '"+str_fecha+"'";
+        str_query += " num = '" + num +"'";
+        str_query += " WHERE moneda_id = "+QString().setNum(moneda_items::DOLAR);
+        str_query += " AND fecha = '"+str_fecha+"'";
         str_query += "&&END_QUERY&&";
 	}
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
 
 	SYSTEM->multiple_query(str_query);
 
 	qDebug() << str_query << endl;
 	if (query.exec(str_query)) {
 		return true;
-	}
-	else {
+    } else {
 		return false;
 	}
 }
@@ -424,24 +494,40 @@ bool Configuracion::update_igv()
 	QString str_query;
 	QSqlQuery query;
 
+    str_query = "SELECT IF(EXISTS(SELECT '' FROM igv";
+    str_query += " WHERE fecha = '"+ui->dateEdit_igv->date().toString("yyyy-MM-dd")+"'";
+    str_query += " AND moneda_id = "+QString().setNum(moneda_items::SOL);
+    str_query += "), 1, 0)";
+
+    int exists = 0;
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        query.next();
+        exists = query.value(0).toInt();
+    }else{
+        return false;
+    }
+
 	QString num;
-	num.setNum(ui->doubleSpinBox_igv->value());
-	query_config.seek(1);
+    num = ui->lineEdit_igv->text();
 
 	QString str_fecha = ui->dateEdit_igv->date().toString("yyyy-MM-dd");
 
-	if (query_config.value(0).toString() == "0") {
+    if (exists == 0) {
         str_query = "INSERT INTO igv(moneda_id, num, fecha)VALUES(";
-        str_query += QString().setNum(moneda_items::SOL) + ", " + num + ", '" + str_fecha + "')";
+        str_query += QString().setNum(moneda_items::SOL) + ", '" + num + "', '" + str_fecha + "')";
         str_query += "&&END_QUERY&&";
 
     } else {
         str_query = "UPDATE igv";
-        str_query += "SET";
-        str_query += " num = "+num;
-        str_query += " WHERE moneda_id = "+QString().setNum(moneda_items::SOL)+" AND fecha = '"+str_fecha+"'";
+        str_query += " SET";
+        str_query += " num = '"+num+"'";
+        str_query += " WHERE moneda_id = "+QString().setNum(moneda_items::SOL);
+        str_query += " AND fecha = '"+str_fecha+"'";
         str_query += "&&END_QUERY&&";
 	}
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
 
 	SYSTEM->multiple_query(str_query);
 
@@ -454,29 +540,25 @@ bool Configuracion::update_igv()
 	}
 
 }
-QPushButton* Configuracion::get_pb_ver_cambio()
-{
-	return ui->pushButton_ver_cambio;
-}
-QPushButton* Configuracion::get_pb_ver_igv()
-{
-	return ui->pushButton_ver_igv;
-}
 void Configuracion::on_pushButton_guardar_cambio_clicked()
 {
     if(update_cambio()){
         int ret= QMessageBox::information(this, "Guardar cambio", "Transacción lista.");
         ret= ret;
 
-        ui->label_dolar_value->setText(QString().setNum(ui->doubleSpinBox_cambio->value()));
-        ui->label_dolar_date->setText("Ingresado el día de hoy.");
-        ui->label_dolar_value->setStyleSheet("");
-        ui->label_dolar_date->show();
-        /*
-        QString num;
-        num.setNum(ui->lineEdit_cambio->text().toDouble());
-        ui->lineEdit_cambio->setText(num);
-        */
+        query_config.seek(2);
+
+        if(ui->dateEdit_cambio->date() == QDate::currentDate()){
+            ui->label_dolar_value->setText(ui->lineEdit_tipo_cambio->text());
+            ui->label_dolar_date->setText("Ingresado el día de hoy.");
+        }else{
+            QDate fecha_ingreso = ui->dateEdit_cambio->date();
+            QDate fecha_ultima = query_config.value(1).toDate();
+            if(fecha_ingreso < QDate::currentDate() && fecha_ingreso >= fecha_ultima){
+                ui->label_dolar_value->setText(ui->lineEdit_tipo_cambio->text());
+                ui->label_dolar_date->setText("Ultima fecha, el: "+fecha_ingreso.toString("yyyy-MM-dd"));
+            }
+        }
     }else{
         int ret= QMessageBox::warning(this, "Guardar cambio", "Ocurrio un inconveniente.");
         ret= ret;
@@ -488,16 +570,20 @@ void Configuracion::on_pushButton_guardar_igv_clicked()
     if(update_igv()){
         int ret= QMessageBox::information(this, "Guardar IGV", "Transacción lista.");
         ret= ret;
-        ui->label_igv_value->setText(QString().setNum(ui->doubleSpinBox_igv->value()));
-        ui->label_igv_date->setText("Ingresado el día de hoy.");
-        ui->label_igv_value->setStyleSheet("");
-        ui->label_igv_date->show();
 
-        /*
-        QString num;
-        num.setNum(ui->lineEdit_igv->text().toDouble());
-        ui->lineEdit_igv->setText(num);
-        */
+        query_config.seek(3);
+
+        if(ui->dateEdit_igv->date() == QDate::currentDate()){
+            ui->label_igv_value->setText(ui->lineEdit_igv->text());
+            ui->label_igv_date->setText("Ingresado el día de hoy.");
+        }else{
+            QDate fecha_ingreso = ui->dateEdit_igv->date();
+            QDate fecha_ultima = query_config.value(1).toDate();
+            if(fecha_ingreso < QDate::currentDate() && fecha_ingreso >= fecha_ultima){
+                ui->label_igv_value->setText(ui->lineEdit_igv->text());
+                ui->label_igv_date->setText("Ultima fecha, el: "+fecha_ingreso.toString("yyyy-MM-dd"));
+            }
+        }
     }else{
         int ret= QMessageBox::warning(this, "Guardar IGV", "Ocurrio un inconveniente.");
         ret= ret;
@@ -506,18 +592,36 @@ void Configuracion::on_pushButton_guardar_igv_clicked()
 
 void Configuracion::on_pushButton_salir_clicked()
 {
-    this->close();
+    if(widget_previous){
+        setAttribute(Qt::WA_DeleteOnClose);
+        SYSTEM->change_center_w(this, widget_previous);
+    }else{
+        SYSTEM->clear_center_w(this);
+    }
 }
 
-void Configuracion::on_pushButton_ver_internet_clicked()
+void Configuracion::on_pushButton_ver_cambio_clicked()
 {
-    //webView_tipo_cambio->showMaximized();
+    VerCambio* w = new VerCambio;
+    w->set_widget_previous(widget_previous);
 
+    SYSTEM->change_center_w(this, w);
+}
+
+void Configuracion::on_pushButton_ver_igv_clicked()
+{
+    VerIGV* w = new VerIGV;
+    w->set_widget_previous(widget_previous);
+
+    SYSTEM->change_center_w(this, w);
 }
 
 void Configuracion::on_dateEdit_cambio_dateChanged(const QDate &date)
-{	
-	qDebug() << "cambio data changed" << endl;
-	countReload = 0;
-	webView_tipo_cambio->reload();
+{
+    process_cambio(date);
+}
+
+void Configuracion::on_dateEdit_igv_dateChanged(const QDate &date)
+{
+    process_cambio(date);
 }

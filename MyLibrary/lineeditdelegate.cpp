@@ -19,7 +19,7 @@ void LineEditDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 {
 
     //if (index.column() == durationColumn) {
-            QString value = index.model()->data(index, Qt::DisplayRole).toString();
+            //QString value = index.model()->data(index, Qt::DisplayRole).toString();
 
             QStyleOptionViewItem myOption = option;
             myOption.displayAlignment = Qt::AlignRight | Qt::AlignVCenter;

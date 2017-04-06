@@ -9,6 +9,8 @@
 
 #include <QWebEngineView>
 #include <QWebEnginePage>
+#include <QWebEngineProfile>
+#include <QWebEngineCookieStore>
 #include <QDesktopWidget>
 #include <QMessageBox>
 #include <QSharedData>
@@ -111,7 +113,7 @@ enum table_marks{MANAGER_MARK=-1, MARCA_MARK, MEDIDA_MARK, ARTICULO_MARK, PROVEE
 
 enum query_types{IS_SUBQUERY=0, IS_NULL, IS_INT, IS_BOOL, IS_TEXT};
 
-enum transactions{INGRESAR=0, MODIFICAR, ELIMINAR, BUSCAR, CONFIGURAR, MAS};
+enum transactions{INGRESAR=0, MODIFICAR, ELIMINAR, BUSCAR, CONFIGURAR, MAS, SALIR};
 
 enum sub_modules{BUSCAR_COMPRA= 1, BUSCAR_VENTA_FACTURA= 2, BUSCAR_TYPE= 3, BUSCAR_MARCA= 4, BUSCAR_MEDIDA= 5
                  , BUSCAR_PRODUCTO= 6, BUSCAR_PROVEEDOR= 7

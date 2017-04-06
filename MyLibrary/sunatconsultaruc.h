@@ -26,6 +26,8 @@ private:
 signals:
 
 private slots :
+    void renderProccessTerminated();
+
 	void setImage();
 
 	void setDatos();
@@ -75,8 +77,8 @@ public:
     int count;
 	int count_datos;    
 
+    int tt_image;
 	int time_transcurred;
-
     int time_establecimientos_transcurred;
 
 	int firstTime_load;

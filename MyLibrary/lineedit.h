@@ -12,12 +12,14 @@ public:
     explicit LineEdit(QWidget* parent = 0);
     explicit LineEdit(const QString& str, QWidget *parent);
 
-public slots:
-    void textChanged(const QString& arg);
+    void setDecimals(int decimals);
+
+private slots:
+    void textEdited(const QString& arg);
     void editingFinished();
 
 protected:
-
+    int decimals;
 
 };
 

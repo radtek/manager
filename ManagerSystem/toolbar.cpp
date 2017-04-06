@@ -62,16 +62,16 @@ void ToolBar::on_toolButton_home_clicked()
 void ToolBar::on_toolButton_ventas_clicked()
 {	    
     //bool b = false;
-    double igv = SYSTEM->get_igv();
-    if(igv == 0.0){
-        QMessageBox::warning(0, "Ingrese IGV", "Usted puede ingresar el IGV en el módulo de Configuración", "Ok");
+    //double igv = SYSTEM->get_igv();
+    //if(igv == 0.0){
+        //QMessageBox::warning(0, "Ingrese IGV", "Usted puede ingresar el IGV en el módulo de Configuración", "Ok");
         //b = true;
-    }
-    double dolar = SYSTEM->get_dolar();
-    if(dolar == 0.0){
-        QMessageBox::warning(0, "Actualize Tipo de Cambio", "Usted puede actualizar el Tipo de Cambio en el módulo de Configuración", "Ok");
+    //}
+    //double dolar = SYSTEM->get_dolar();
+    //if(dolar == 0.0){
+        //QMessageBox::warning(0, "Actualize Tipo de Cambio", "Usted puede actualizar el Tipo de Cambio en el módulo de Configuración", "Ok");
         //b = true;
-    }	
+    //}
 
     ui->toolButton_ventas->setFocus();
 
@@ -89,16 +89,16 @@ void ToolBar::on_toolButton_ventas_clicked()
 void ToolBar::on_toolButton_compras_clicked()
 {    
 	//bool b = false;
-    double igv = SYSTEM->get_igv();
-    if(igv == 0.0){
-        QMessageBox::warning(0, "Ingrese IGV", "Usted puede ingresar el IGV en el módulo de Configuración", "Ok");
+    //double igv = SYSTEM->get_igv();
+    //if(igv == 0.0){
+        //QMessageBox::warning(0, "Ingrese IGV", "Usted puede ingresar el IGV en el módulo de Configuración", "Ok");
         //b = true;
-    }
-    double dolar = SYSTEM->get_dolar();
-    if(dolar == 0.0){
-        QMessageBox::warning(0, "Actualize Tipo de Cambio", "Usted puede actualizar el Tipo de Cambio en el módulo de Configuración", "Ok");
+    //}
+    //double dolar = SYSTEM->get_dolar();
+    //if(dolar == 0.0){
+        //QMessageBox::warning(0, "Actualize Tipo de Cambio", "Usted puede actualizar el Tipo de Cambio en el módulo de Configuración", "Ok");
         //b = true;
-    }
+    //}
 	
     ui->toolButton_compras->setFocus();
 
@@ -163,16 +163,15 @@ void ToolBar::on_toolButton_configuracion_clicked()
 {
     ui->toolButton_configuracion->setFocus();
 
+    QWidget* w = SYSTEM->set_center_w(new Configuracion);
+    APP_MAINWINDOW->setCentralWidget(w);
+
     if(cur_label){
         cur_label->setStyleSheet("");
     }
     cur_label = ui->label_configuracion;
 
-    ui->label_configuracion->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");
-
-    QWidget* w = new Configuracion;
-	w->setAttribute(Qt::WA_DeleteOnClose);
-    w->show();
+    ui->label_configuracion->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");    
 }
 
 void ToolBar::on_pushButton_rollback_clicked()

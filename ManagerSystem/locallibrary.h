@@ -4,6 +4,8 @@
 
 #include "modules_library.h"
 
+#include "vercambio.h"
+#include "verigv.h"
 #include "configuracion.h"
 #include "opcionesdb.h"
 

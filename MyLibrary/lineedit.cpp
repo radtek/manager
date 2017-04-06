@@ -3,32 +3,64 @@
 LineEdit::LineEdit(QWidget* parent)
     :QLineEdit(parent)
 {    
-    QRegExp regExp_decimal("\\d*\\.{0,1}\\d*");
+    QRegExp regExp_decimal("(\\d*\\.{0,1}\\d*)*");
     this->setValidator(new QRegExpValidator(regExp_decimal));
 
-    connect(this, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
+    connect(this, SIGNAL(textEdited(QString)), this, SLOT(textEdited(QString)));
     connect(this, SIGNAL(editingFinished()), this, SLOT(editingFinished()));
 
     setPlaceholderText("0");
+    setText("0");
+
+    decimals = 10;
 }
 LineEdit::LineEdit(const QString& str, QWidget* parent)
     :QLineEdit(str, parent)
 {
-    QRegExp regExp_decimal("\\d*\\.{0,1}\\d*");
+    QRegExp regExp_decimal("(\\d*\\.{0,1}\\d*)*");
     this->setValidator(new QRegExpValidator(regExp_decimal));
 
-    connect(this, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
+    connect(this, SIGNAL(textEdited(QString)), this, SLOT(textEdited(QString)));
     connect(this, SIGNAL(editingFinished()), this, SLOT(editingFinished()));
 
     setPlaceholderText("0");
-}
-void LineEdit::textChanged(const QString& arg)
-{
+    setText("0");
 
+    decimals = 10;
+}
+void LineEdit::setDecimals(int decimals)
+{
+    this->decimals = decimals;
+}
+
+void LineEdit::textEdited(const QString& arg)
+{
+    qDebug()<<"textEdited"<<endl;
+    disconnect(this, SIGNAL(textEdited(QString)), this, SLOT(textEdited(QString)));
+    QString str = arg;
+    int posPeriod = this->cursorPosition()-1;
+    if(posPeriod == -1)return;
+    if(QString(str[posPeriod]).compare(".") != 0)return;
+
+    for(int i=0; i<str.length(); i++){
+        if(i == posPeriod)continue;
+        if(QString(str[i]).compare(".") == 0){
+            str.remove(i, 1);
+            this->setText(str);
+            if(i > posPeriod){
+                this->setCursorPosition(posPeriod+1);
+            }else{
+                this->setCursorPosition(posPeriod);
+            }
+            break;
+        }
+    }
+    connect(this, SIGNAL(textEdited(QString)), this, SLOT(textEdited(QString)));
 }
 void LineEdit::editingFinished()
 {
-    int count = 0;
+    qDebug()<<"editingFinished"<<endl;
+    int count = 0;    
     for(int i=0; i<this->text().length(); i++){
         if(QString(this->text()[i]).compare("0") == 0){
             count++;
@@ -46,18 +78,40 @@ void LineEdit::editingFinished()
         }
     }
     if(!hasDot){
+        if(this->text().compare("") == 0){
+            this->setText("0");
+            return;
+        }
         return;
+    }else{
+        if(QString(this->text()[0]).compare(".") == 0){
+            this->setText(this->text().insert(0, '0'));
+        }
     }
     count = 0;
     for(int i=this->text().length()-1; i>=0; i--){
         if(QString(this->text()[i]).compare("0") == 0){
             count++;
         }else{
-            if(QString(this->text()[i]).compare(".") == 0){
-                count++;
-            }
             break;
         }
     }
     this->setText(this->text().remove(this->text().length()-count, count));
+
+    count = 0;
+    for(int i=this->text().length()-1; i>=0; i--){
+        if(QString(this->text()[i]).compare(".") == 0){
+            break;
+        }else{
+            count++;
+        }
+    }
+    if(count <= decimals){
+        QString round = QString().setNum(this->text().toDouble(), 'f', count);
+        this->setText(round);
+    }else{
+        QString round = QString().setNum(this->text().toDouble(), 'f', decimals);
+        this->setText(round);
+    }
+
 }

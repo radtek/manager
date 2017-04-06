@@ -8,10 +8,13 @@
 #include "doublespinboxdelegate.h"
 #include "lineedit.h"
 #include "lineeditdelegate.h"
+#include "lineeditnumberdelegate.h"
 #include "reniecconsultadni.h"
 #include "session.h"
 #include "sistema.h"
 #include "sunatconsultaruc.h"
+#include "sunattipocambio.h"
+#include "widgetnumber.h"
 /*
 #include "db/general.h"
 

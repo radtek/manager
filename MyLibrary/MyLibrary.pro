@@ -28,34 +28,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 win32:contains(QMAKE_HOST.arch, x86_64) {
     CONFIG(debug, debug|release) {
-        DLLDESTDIR += "../build-Producto-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug"
-        DLLDESTDIR += "../build-Persona-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug"
-        DLLDESTDIR += "../build-Compra-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug"
-        DLLDESTDIR += "../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug"
+        DLLDESTDIR += "../build-Facturacion-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug"
         DLLDESTDIR += "../build-ManagerSystem-Desktop_Qt_5_8_0_MSVC2015_64bit-Debug/debug"
     }
 
     CONFIG(release, debug|release) {
-        DLLDESTDIR += "../build-Producto-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release"
-        DLLDESTDIR += "../build-Persona-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release"
-        DLLDESTDIR += "../build-Compra-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release"
-        DLLDESTDIR += "../build-Venta-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release"
+        DLLDESTDIR += "../build-Facturacion-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release"
         DLLDESTDIR += "../build-ManagerSystem-Desktop_Qt_5_8_0_MSVC2015_64bit-Release/release"
     }
 }else{
     CONFIG(debug, debug|release) {
-        DLLDESTDIR += "../build-Producto-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug"
-        DLLDESTDIR += "../build-Persona-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug"
-        DLLDESTDIR += "../build-Compra-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug"
-        DLLDESTDIR += "../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug"
+        DLLDESTDIR += "../build-Facturacion-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug"
         DLLDESTDIR += "../build-ManagerSystem-Desktop_Qt_5_8_0_MSVC2015_32bit-Debug/debug"
     }
 
     CONFIG(release, debug|release) {
-        DLLDESTDIR += "../build-Producto-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release"
-        DLLDESTDIR += "../build-Persona-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release"
-        DLLDESTDIR += "../build-Compra-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release"
-        DLLDESTDIR += "../build-Venta-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release"
+        DLLDESTDIR += "../build-Facturacion-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release"
         DLLDESTDIR += "../build-ManagerSystem-Desktop_Qt_5_8_0_MSVC2015_32bit-Release/release"
     }
 }
@@ -69,7 +57,10 @@ SOURCES += mylibrary.cpp \
     session.cpp \
     sistema.cpp \
     sunatconsultaruc.cpp \
-    lineedit.cpp
+    lineedit.cpp \
+    sunattipocambio.cpp \
+    lineeditnumberdelegate.cpp \
+    widgetnumber.cpp
 
 HEADERS += mylibrary.h \
     mylibrary_global.h \
@@ -85,7 +76,10 @@ HEADERS += mylibrary.h \
     sistema.h \
     sunatconsultaruc.h \
     doublespinboxdelegate.h \
-    lineedit.h
+    lineedit.h \
+    sunattipocambio.h \
+    lineeditnumberdelegate.h \
+    widgetnumber.h
 
 unix {
     target.path = /usr/lib
