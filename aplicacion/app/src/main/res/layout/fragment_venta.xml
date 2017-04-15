@@ -1,0 +1,175 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="55dp"
+    tools:context="layout.VentaFragment">
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="FECHA"
+                android:textStyle="bold"
+                android:id="@+id/txtFecha"
+                android:textAlignment="center"
+                android:textColor="#ff0000"
+                android:textSize="15dp"
+                android:textIsSelectable="false" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MAX/D B5(BA)"
+                android:textStyle="bold"
+                android:id="@+id/txtProducto"
+                android:textSize="20dp" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/textView_nroTicket"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:textSize="24dp"
+                    tools:text="Nro. ticket" />
+
+            </android.support.design.widget.TextInputLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <AutoCompleteTextView
+                    android:id="@+id/input_galones"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="NRO DE GALONES"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <AutoCompleteTextView
+                    android:id="@+id/input_horometro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="HOROMETRO ACTUAL"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <AutoCompleteTextView
+                    android:id="@+id/input_kilometros"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="KILOMETROS RECORRIDOS"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+
+            <TextView
+                android:id="@+id/textView_equipo"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="SELECCIONE EQUIPO"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/item_CodigoInterno"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CODIGO INTERNO"
+                    android:textSize="8pt" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="left"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/item_Centro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CENTRO"
+                        android:textSize="6pt" />
+
+                    <TextView
+                        android:id="@+id/item_Placa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PLACA"
+                        android:textSize="5pt" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="REGISTRAR"
+                android:id="@+id/btnGuardarVenta"
+                android:layout_alignParentBottom="false"
+                android:layout_centerHorizontal="true"
+                android:background="@color/accent_material_light"
+                android:textColor="@color/abc_primary_text_material_dark" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="IMPRIMIR BLUETOOTH"
+                android:visibility="gone"
+                android:id="@+id/btnImprimir"
+                android:layout_marginBottom="76dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@color/colorPrimary"
+
+                android:textColor="@color/abc_primary_text_disable_only_material_dark" />
+
+
+
+
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</RelativeLayout>

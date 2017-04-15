@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="layout.BlueToothPrinter"
+    android:paddingTop="48dp"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_alignBottom="@+id/textView_horometro"
+        android:layout_toRightOf="@+id/textView8"
+        android:layout_toEndOf="@+id/textView8">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:gravity="left"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView_titulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_x="155dp"
+        android:layout_y="38dp"
+        android:text='Concretos\n"Supermix"'
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold|italic" />
+
+    <TextView
+        android:id="@+id/textView_titulo2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/textView_titulo"
+        android:layout_alignRight="@+id/textView_titulo"
+        android:layout_below="@+id/textView_titulo"
+        android:text="PERU" />
+
+    <TextView
+        android:id="@+id/textView_nroTicket"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView_titulo"
+        android:layout_alignStart="@+id/textView_titulo"
+        android:layout_below="@+id/textView_titulo"
+        android:layout_marginTop="29dp"
+        android:layout_x="46dp"
+        android:layout_y="156dp"
+        android:text="NRO° TICKET"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textView_subtitulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_x="88dp"
+        android:layout_y="256dp"
+        android:text="AREQUIPA - PERU"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/textView_nroTicket"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/textView_fecha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView_subtitulo"
+        android:layout_marginTop="13dp"
+        android:layout_x="101dp"
+        android:layout_y="277dp"
+        android:text="FECHA: dd/MM/yy"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/textView_hora"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView_fecha"
+        android:layout_alignBottom="@+id/textView_fecha"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="63dp"
+        android:layout_marginRight="63dp"
+        android:text="  HORA: hh-mm" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="21dp"
+        android:text="EQUIPO -"
+        android:textSize="18sp"
+        android:layout_below="@+id/textView_nombreProducto"
+        android:layout_toLeftOf="@+id/textView_nombreProducto"
+        android:layout_toStartOf="@+id/textView_nombreProducto" />
+
+    <TextView
+        android:id="@+id/textView_nombreProducto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MAX/D B5(BA)"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <LinearLayout
+        android:layout_width="267dp"
+        android:layout_height="120dp"
+        android:orientation="vertical"
+        android:layout_alignTop="@+id/textView8"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/item_CodigoInterno"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CODIGO INTERNO"
+            android:textAlignment="center"
+            android:textSize="8pt" />
+
+        <TextView
+            android:id="@+id/item_Centro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CENTRO"
+            android:textSize="6pt" />
+
+        <TextView
+            android:id="@+id/item_Placa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PLACA"
+            android:textSize="5pt" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/textView_nro_kilometros"
+            android:layout_alignLeft="@+id/textView_subtitulo"
+            android:layout_alignStart="@+id/textView_subtitulo"
+            android:layout_alignTop="@+id/textView_nro_horas"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView_galones"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/textView_nro_horas"
+                android:layout_alignLeft="@+id/textView_horometro"
+                android:layout_alignStart="@+id/textView_horometro"
+                android:layout_marginBottom="15dp"
+                android:layout_weight="0.80"
+                android:text="GALONES"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView_nro_galones"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/textView_galones"
+                android:layout_alignBottom="@+id/textView_galones"
+                android:layout_alignEnd="@+id/textView_titulo2"
+                android:layout_alignRight="@+id/textView_titulo2"
+                android:layout_weight="1"
+                android:text="000"
+                android:textSize="24sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/textView_nro_horas"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/textView_horometro"
+                android:layout_width="152dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/textView_nro_horas"
+                android:layout_toLeftOf="@+id/textView_nroTicket"
+                android:layout_toStartOf="@+id/textView_nroTicket"
+                android:layout_weight="0.49"
+                android:text="HOROMETRO"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView_nro_horas"
+                android:layout_width="145dp"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/textView_nro_kilometros"
+                android:layout_alignLeft="@+id/textView_nro_kilometros"
+                android:layout_alignStart="@+id/textView_nro_kilometros"
+                android:layout_marginBottom="12dp"
+                android:text="0000.00"
+                android:textSize="24sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView_kilometraje"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/textView_horometro"
+                android:layout_alignStart="@+id/textView_horometro"
+                android:layout_below="@+id/textView8"
+                android:layout_weight="1"
+                android:text="KILOMETRAJE"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView_nro_kilometros"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/textView_kilometraje"
+                android:layout_alignLeft="@+id/textView_hora"
+                android:layout_alignStart="@+id/textView_hora"
+                android:layout_weight="1"
+                android:text="0000.00"
+                android:textSize="24sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
