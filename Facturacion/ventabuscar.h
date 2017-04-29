@@ -34,6 +34,10 @@ public:
 private slots:
     void on_compra_closing();
 
+private:
+    void set_buscar();
+
+private slots:
     void on_lineEdit_buscar_textEdited(const QString &arg1);
 
     void on_lineEdit_buscar_returnPressed();
@@ -42,7 +46,7 @@ private slots:
 
     void on_pushButton_salir_clicked();
 
-    void on_pushButton_agregar_clicked();
+    void on_pushButton_nuevo_clicked();
 
     void on_radioButton_reg_sin_doc_clicked();
 
@@ -60,6 +64,8 @@ private slots:
 
     void on_radioButton_nota_debito_clicked();
 
+    void on_pushButton_editar_clicked();
+
     void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
 
 protected:
@@ -73,9 +79,15 @@ signals:
     void closing();
 
 private:
+    void editarItem(QTableWidgetItem* item);
+
+private:
     Ui::VentaBuscar *ui;
 
     QWidget* widget_previous;
+
+    bool firstShow;
+    bool afterShow;
 
     bool modo_only_date;
 

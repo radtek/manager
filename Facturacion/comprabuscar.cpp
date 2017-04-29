@@ -18,14 +18,18 @@ CompraBuscar::CompraBuscar(QWidget *parent) :
     size_query = 10;    
 
     QDate date;
-    date.setDate(QDate::currentDate().year(), 1, 1);
+    date.setDate(QDate::currentDate().year()-4, 1, 1);
     ui->dateEdit_inicio->setDate(date);
     ui->dateEdit_fin->setDate(QDate::currentDate());
 
     ui->radioButton_factura->setChecked(true);
     tipo = compra_items::FACTURA;
 
+    ui->radioButton_reg_sin_doc->hide();
+
     //disconnect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
+    QScrollBar* bar = ui->tableWidget->verticalScrollBar();
+    connect(bar, SIGNAL(actionTriggered(int)), this, SLOT(on_verticalScrollBar_actionTriggered(int)));
 
     // INSTALL EVENT FILTERS
     this->installEventFilter(this);
@@ -35,7 +39,7 @@ CompraBuscar::CompraBuscar(QWidget *parent) :
     ui->tableWidget->installEventFilter(this);
     ui->pushButton_ok->installEventFilter(this);
     ui->pushButton_salir->installEventFilter(this);
-    ui->pushButton_agregar->installEventFilter(this);
+    ui->pushButton_nuevo->installEventFilter(this);
     ui->pushButton_editar->installEventFilter(this);
 }
 
@@ -134,6 +138,19 @@ void CompraBuscar::set_widget_previous(QWidget *w)
 {
     this->widget_previous = w;
 }
+void CompraBuscar::on_verticalScrollBar_actionTriggered(int value)
+{
+    QScrollBar* bar = ui->tableWidget->verticalScrollBar();
+
+    /*
+    qDebug()<<"activation value: "<<value<<endl;
+    qDebug()<<"activation bar maximum: "<<bar->maximum()<<endl;
+    qDebug()<<"activation bar value: "<<bar->value()<<endl;
+    */
+    if(bar->value() == bar->maximum()) {
+        set_buscar();
+    }
+}
 void CompraBuscar::set_ruc(QString ruc)
 {
     ui->lineEdit_buscar->setText(ruc);
@@ -156,52 +173,40 @@ void CompraBuscar::on_compra_closing()
         int op = w->getOp();
         switch(op){
         case INGRESAR:{
-            pos = 0;
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = w->getID();
+                    persona_id = w->getPersonaID();
+                    fecha_emision = w->getFechaEmision();
+                    serie = w->getSerie();
+                    numero = w->getNumero();
+                    codigo = w->getCodigo();
+                    nombre = w->getNombre();
 
-            ui->tableWidget->setRowCount(0);
-            ui->tableWidget->setColumnCount(0);
-            ui->tableWidget->clear();
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
 
-            int columnCount = 7;
-            ui->tableWidget->setColumnCount(columnCount);
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
 
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "PERSONA_ID" << "FECHA_EMISION"
-                                                       << "SERIE" << "NUMERO"
-                                                       << "RUC" << "RAZON SOCIAL");
-            ui->tableWidget->setColumnHidden(0, true);
-            ui->tableWidget->setColumnHidden(1, true);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-            QString id = w->getID();
-            QString persona_id = w->getPersonaID();
-            QString fecha_emision = w->getFechaEmision();
-            QString serie = w->getSerie();
-            QString numero = w->getNumero();
-            QString ruc = w->getCodigo();
-            QString razon_social = w->getNombre();
-
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
+                set_buscar();
             }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case MODIFICAR:{
             QString id = w->getID();
@@ -214,22 +219,25 @@ void CompraBuscar::on_compra_closing()
 
             QTableWidgetItem* item = ui->tableWidget->currentItem();
             int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(row, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(row, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(row, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(row, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(row, 6, new QTableWidgetItem(razon_social));
+
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(persona_id);
+            ui->tableWidget->item(row, 2)->setText(fecha_emision);
+            ui->tableWidget->item(row, 3)->setText(serie);
+            ui->tableWidget->item(row, 4)->setText(numero);
+            ui->tableWidget->item(row, 5)->setText(ruc);
+            ui->tableWidget->item(row, 6)->setText(razon_social);
 
             SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
+            pos = 0;
 
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
+
+            set_buscar();
         }break;
         }
     }break;
@@ -239,52 +247,40 @@ void CompraBuscar::on_compra_closing()
         int op = w->getOp();
         switch(op){
         case INGRESAR:{
-            pos = 0;
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = w->getID();
+                    persona_id = w->getPersonaID();
+                    fecha_emision = w->getFechaEmision();
+                    serie = w->getSerie();
+                    numero = w->getNumero();
+                    codigo = w->getCodigo();
+                    nombre = w->getNombre();
 
-            ui->tableWidget->setRowCount(0);
-            ui->tableWidget->setColumnCount(0);
-            ui->tableWidget->clear();
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
 
-            int columnCount = 7;
-            ui->tableWidget->setColumnCount(columnCount);
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
 
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "PERSONA_ID" << "FECHA_EMISION"
-                                                       << "SERIE" << "NUMERO"
-                                                       << "RUC" << "RAZON SOCIAL");
-            ui->tableWidget->setColumnHidden(0, true);
-            ui->tableWidget->setColumnHidden(1, true);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-            QString id = w->getID();
-            QString persona_id = w->getPersonaID();
-            QString fecha_emision = w->getFechaEmision();
-            QString serie = w->getSerie();
-            QString numero = w->getNumero();
-            QString ruc = w->getCodigo();
-            QString razon_social = w->getNombre();
-
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
+                set_buscar();
             }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case MODIFICAR:{
             QString id = w->getID();
@@ -297,22 +293,25 @@ void CompraBuscar::on_compra_closing()
 
             QTableWidgetItem* item = ui->tableWidget->currentItem();
             int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(row, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(row, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(row, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(row, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(row, 6, new QTableWidgetItem(razon_social));
+
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(persona_id);
+            ui->tableWidget->item(row, 2)->setText(fecha_emision);
+            ui->tableWidget->item(row, 3)->setText(serie);
+            ui->tableWidget->item(row, 4)->setText(numero);
+            ui->tableWidget->item(row, 5)->setText(ruc);
+            ui->tableWidget->item(row, 6)->setText(razon_social);
 
             SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
+            pos = 0;
 
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
+
+            set_buscar();
         }break;
         }
     }break;
@@ -322,52 +321,40 @@ void CompraBuscar::on_compra_closing()
         int op = w->getOp();
         switch(op){
         case INGRESAR:{
-            pos = 0;
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = w->getID();
+                    persona_id = w->getPersonaID();
+                    fecha_emision = w->getFechaEmision();
+                    serie = w->getSerie();
+                    numero = w->getNumero();
+                    codigo = w->getCodigo();
+                    nombre = w->getNombre();
 
-            ui->tableWidget->setRowCount(0);
-            ui->tableWidget->setColumnCount(0);
-            ui->tableWidget->clear();
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
 
-            int columnCount = 7;
-            ui->tableWidget->setColumnCount(columnCount);
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
 
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "PERSONA_ID" << "FECHA_EMISION"
-                                                       << "SERIE" << "NUMERO"
-                                                       << "RUC" << "RAZON SOCIAL");
-            ui->tableWidget->setColumnHidden(0, true);
-            ui->tableWidget->setColumnHidden(1, true);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-            QString id = w->getID();
-            QString persona_id = w->getPersonaID();
-            QString fecha_emision = w->getFechaEmision();
-            QString serie = w->getSerie();
-            QString numero = w->getNumero();
-            QString ruc = w->getCodigo();
-            QString razon_social = w->getNombre();
-
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
+                set_buscar();
             }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case MODIFICAR:{
             QString id = w->getID();
@@ -380,22 +367,25 @@ void CompraBuscar::on_compra_closing()
 
             QTableWidgetItem* item = ui->tableWidget->currentItem();
             int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(row, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(row, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(row, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(row, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(row, 6, new QTableWidgetItem(razon_social));
+
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(persona_id);
+            ui->tableWidget->item(row, 2)->setText(fecha_emision);
+            ui->tableWidget->item(row, 3)->setText(serie);
+            ui->tableWidget->item(row, 4)->setText(numero);
+            ui->tableWidget->item(row, 5)->setText(ruc);
+            ui->tableWidget->item(row, 6)->setText(razon_social);
 
             SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
+            pos = 0;
 
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
+
+            set_buscar();
         }break;
         }
     }break;
@@ -405,52 +395,40 @@ void CompraBuscar::on_compra_closing()
         int op = w->getOp();
         switch(op){
         case INGRESAR:{
-            pos = 0;
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = w->getID();
+                    persona_id = w->getPersonaID();
+                    fecha_emision = w->getFechaEmision();
+                    serie = w->getSerie();
+                    numero = w->getNumero();
+                    codigo = w->getCodigo();
+                    nombre = w->getNombre();
 
-            ui->tableWidget->setRowCount(0);
-            ui->tableWidget->setColumnCount(0);
-            ui->tableWidget->clear();
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
 
-            int columnCount = 7;
-            ui->tableWidget->setColumnCount(columnCount);
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
 
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "PERSONA_ID" << "FECHA_EMISION"
-                                                       << "SERIE" << "NUMERO"
-                                                       << "RUC" << "RAZON SOCIAL");
-            ui->tableWidget->setColumnHidden(0, true);
-            ui->tableWidget->setColumnHidden(1, true);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-            QString id = w->getID();
-            QString persona_id = w->getPersonaID();
-            QString fecha_emision = w->getFechaEmision();
-            QString serie = w->getSerie();
-            QString numero = w->getNumero();
-            QString ruc = w->getCodigo();
-            QString razon_social = w->getNombre();
-
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
+                set_buscar();
             }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case MODIFICAR:{
             QString id = w->getID();
@@ -463,22 +441,25 @@ void CompraBuscar::on_compra_closing()
 
             QTableWidgetItem* item = ui->tableWidget->currentItem();
             int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(row, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(row, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(row, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(row, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(row, 6, new QTableWidgetItem(razon_social));
+
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(persona_id);
+            ui->tableWidget->item(row, 2)->setText(fecha_emision);
+            ui->tableWidget->item(row, 3)->setText(serie);
+            ui->tableWidget->item(row, 4)->setText(numero);
+            ui->tableWidget->item(row, 5)->setText(ruc);
+            ui->tableWidget->item(row, 6)->setText(razon_social);
 
             SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
+            pos = 0;
 
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
+
+            set_buscar();
         }break;
         }
     }break;
@@ -488,52 +469,40 @@ void CompraBuscar::on_compra_closing()
         int op = w->getOp();
         switch(op){
         case INGRESAR:{
-            pos = 0;
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = w->getID();
+                    persona_id = w->getPersonaID();
+                    fecha_emision = w->getFechaEmision();
+                    serie = w->getSerie();
+                    numero = w->getNumero();
+                    codigo = w->getCodigo();
+                    nombre = w->getNombre();
 
-            ui->tableWidget->setRowCount(0);
-            ui->tableWidget->setColumnCount(0);
-            ui->tableWidget->clear();
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
 
-            int columnCount = 7;
-            ui->tableWidget->setColumnCount(columnCount);
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
 
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "PERSONA_ID" << "FECHA_EMISION"
-                                                       << "SERIE" << "NUMERO"
-                                                       << "RUC" << "RAZON SOCIAL");
-            ui->tableWidget->setColumnHidden(0, true);
-            ui->tableWidget->setColumnHidden(1, true);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-            QString id = w->getID();
-            QString persona_id = w->getPersonaID();
-            QString fecha_emision = w->getFechaEmision();
-            QString serie = w->getSerie();
-            QString numero = w->getNumero();
-            QString ruc = w->getCodigo();
-            QString razon_social = w->getNombre();
-
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
+                set_buscar();
             }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case MODIFICAR:{
             QString id = w->getID();
@@ -546,22 +515,25 @@ void CompraBuscar::on_compra_closing()
 
             QTableWidgetItem* item = ui->tableWidget->currentItem();
             int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(row, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(row, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(row, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(row, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(row, 6, new QTableWidgetItem(razon_social));
+
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(persona_id);
+            ui->tableWidget->item(row, 2)->setText(fecha_emision);
+            ui->tableWidget->item(row, 3)->setText(serie);
+            ui->tableWidget->item(row, 4)->setText(numero);
+            ui->tableWidget->item(row, 5)->setText(ruc);
+            ui->tableWidget->item(row, 6)->setText(razon_social);
 
             SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
+            pos = 0;
 
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
+
+            set_buscar();
         }break;
         }
     }break;
@@ -571,52 +543,40 @@ void CompraBuscar::on_compra_closing()
         int op = w->getOp();
         switch(op){
         case INGRESAR:{
-            pos = 0;
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = w->getID();
+                    persona_id = w->getPersonaID();
+                    fecha_emision = w->getFechaEmision();
+                    serie = w->getSerie();
+                    numero = w->getNumero();
+                    codigo = w->getCodigo();
+                    nombre = w->getNombre();
 
-            ui->tableWidget->setRowCount(0);
-            ui->tableWidget->setColumnCount(0);
-            ui->tableWidget->clear();
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
 
-            int columnCount = 7;
-            ui->tableWidget->setColumnCount(columnCount);
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
 
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "PERSONA_ID" << "FECHA_EMISION"
-                                                       << "SERIE" << "NUMERO"
-                                                       << "RUC" << "RAZON SOCIAL");
-            ui->tableWidget->setColumnHidden(0, true);
-            ui->tableWidget->setColumnHidden(1, true);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-            QString id = w->getID();
-            QString persona_id = w->getPersonaID();
-            QString fecha_emision = w->getFechaEmision();
-            QString serie = w->getSerie();
-            QString numero = w->getNumero();
-            QString ruc = w->getCodigo();
-            QString razon_social = w->getNombre();
-
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
+                set_buscar();
             }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case MODIFICAR:{
             QString id = w->getID();
@@ -629,22 +589,25 @@ void CompraBuscar::on_compra_closing()
 
             QTableWidgetItem* item = ui->tableWidget->currentItem();
             int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(row, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(row, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(row, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(row, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(row, 6, new QTableWidgetItem(razon_social));
+
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(persona_id);
+            ui->tableWidget->item(row, 2)->setText(fecha_emision);
+            ui->tableWidget->item(row, 3)->setText(serie);
+            ui->tableWidget->item(row, 4)->setText(numero);
+            ui->tableWidget->item(row, 5)->setText(ruc);
+            ui->tableWidget->item(row, 6)->setText(razon_social);
 
             SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
+            pos = 0;
 
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
+
+            set_buscar();
         }break;
         }
     }break;
@@ -654,52 +617,40 @@ void CompraBuscar::on_compra_closing()
         int op = w->getOp();
         switch(op){
         case INGRESAR:{
-            pos = 0;
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = w->getID();
+                    persona_id = w->getPersonaID();
+                    fecha_emision = w->getFechaEmision();
+                    serie = w->getSerie();
+                    numero = w->getNumero();
+                    codigo = w->getCodigo();
+                    nombre = w->getNombre();
 
-            ui->tableWidget->setRowCount(0);
-            ui->tableWidget->setColumnCount(0);
-            ui->tableWidget->clear();
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
 
-            int columnCount = 7;
-            ui->tableWidget->setColumnCount(columnCount);
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
 
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "PERSONA_ID" << "FECHA_EMISION"
-                                                       << "SERIE" << "NUMERO"
-                                                       << "RUC" << "RAZON SOCIAL");
-            ui->tableWidget->setColumnHidden(0, true);
-            ui->tableWidget->setColumnHidden(1, true);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-            QString id = w->getID();
-            QString persona_id = w->getPersonaID();
-            QString fecha_emision = w->getFechaEmision();
-            QString serie = w->getSerie();
-            QString numero = w->getNumero();
-            QString ruc = w->getCodigo();
-            QString razon_social = w->getNombre();
-
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
+                set_buscar();
             }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case MODIFICAR:{
             QString id = w->getID();
@@ -712,22 +663,25 @@ void CompraBuscar::on_compra_closing()
 
             QTableWidgetItem* item = ui->tableWidget->currentItem();
             int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(persona_id));
-            ui->tableWidget->setItem(row, 2, new QTableWidgetItem(fecha_emision));
-            ui->tableWidget->setItem(row, 3, new QTableWidgetItem(serie));
-            ui->tableWidget->setItem(row, 4, new QTableWidgetItem(numero));
-            ui->tableWidget->setItem(row, 5, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(row, 6, new QTableWidgetItem(razon_social));
+
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(persona_id);
+            ui->tableWidget->item(row, 2)->setText(fecha_emision);
+            ui->tableWidget->item(row, 3)->setText(serie);
+            ui->tableWidget->item(row, 4)->setText(numero);
+            ui->tableWidget->item(row, 5)->setText(ruc);
+            ui->tableWidget->item(row, 6)->setText(razon_social);
 
             SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
+            pos = 0;
 
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
+
+            set_buscar();
         }break;
         }
     }break;
@@ -737,39 +691,35 @@ void CompraBuscar::on_compra_closing()
         int op = w->getOp();
         switch(op){
         case INGRESAR:{
-            pos = 0;
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = w->getID();
+                    fecha_emision = w->getFechaEmision();
 
-            ui->tableWidget->setRowCount(0);
-            ui->tableWidget->setColumnCount(0);
-            ui->tableWidget->clear();
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
 
-            int columnCount = 2;
-            ui->tableWidget->setColumnCount(columnCount);
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
 
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "FECHA_EMISION");
-            ui->tableWidget->setColumnHidden(0, true);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-            QString id = w->getID();
-            QString fecha_emision = w->getFechaEmision();
-
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(fecha_emision));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
+                set_buscar();
             }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case MODIFICAR:{
             QString id = w->getID();
@@ -777,17 +727,20 @@ void CompraBuscar::on_compra_closing()
 
             QTableWidgetItem* item = ui->tableWidget->currentItem();
             int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(fecha_emision));
+
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(fecha_emision);
 
             SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
+            pos = 0;
 
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
+
+            set_buscar();
         }break;
         }
     }break;
@@ -797,39 +750,35 @@ void CompraBuscar::on_compra_closing()
         int op = w->getOp();
         switch(op){
         case INGRESAR:{
-            pos = 0;
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = w->getID();
+                    fecha_emision = w->getFechaEmision();
 
-            ui->tableWidget->setRowCount(0);
-            ui->tableWidget->setColumnCount(0);
-            ui->tableWidget->clear();
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
 
-            int columnCount = 2;
-            ui->tableWidget->setColumnCount(columnCount);
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
 
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "FECHA_EMISION");
-            ui->tableWidget->setColumnHidden(0, true);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-            QString id = w->getID();
-            QString fecha_emision = w->getFechaEmision();
-
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(fecha_emision));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
+                set_buscar();
             }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case MODIFICAR:{
             QString id = w->getID();
@@ -837,17 +786,20 @@ void CompraBuscar::on_compra_closing()
 
             QTableWidgetItem* item = ui->tableWidget->currentItem();
             int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(fecha_emision));
+
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(fecha_emision);
 
             SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
+            pos = 0;
 
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
+
+            set_buscar();
         }break;
         }
     }break;
@@ -1257,10 +1209,15 @@ void CompraBuscar::on_pushButton_ok_clicked()
     if(!item){
         return;
     }
+
     int row = item->row();
 
     switch(tipo)
     {
+    case compra_items::REG_SIN_DOC:{
+        id = tb->item(row, 0)->text();
+        fecha_emision = tb->item(row, 1)->text();
+    }break;
     case compra_items::SALDO:{
         id = tb->item(row, 0)->text();
         fecha_emision = tb->item(row, 1)->text();
@@ -1301,7 +1258,7 @@ void CompraBuscar::on_pushButton_salir_clicked()
     //}
     //}
 }
-void CompraBuscar::on_pushButton_agregar_clicked()
+void CompraBuscar::on_pushButton_nuevo_clicked()
 {    
     //int ret = QMessageBox::warning(this, "Advertencia", "¿Desea AGREGAR una COMPRA?", "Si", "No");
     //switch(ret){
@@ -1496,7 +1453,7 @@ bool CompraBuscar::eventFilter(QObject *obj, QEvent *e)
         if(e->type() == QEvent::Paint){
             if(afterShow) {
                 if(focusWidget()){
-                    if(focusWidget() == ui->pushButton_agregar){
+                    if(focusWidget() == ui->pushButton_nuevo){
                         ui->lineEdit_buscar->setFocus();
                         ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
                     }else{
@@ -1630,7 +1587,8 @@ bool CompraBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Down: {
                 int index = ui->tableWidget->currentRow();
                 if (index == ui->tableWidget->rowCount() - 1) {
-                    on_lineEdit_buscar_returnPressed();
+                    set_buscar();
+                    return true;
                 }
             }break;
             case Qt::Key_Enter:{
@@ -1692,7 +1650,7 @@ bool CompraBuscar::eventFilter(QObject *obj, QEvent *e)
         }
         return false;
     }
-    w_temp = ui->pushButton_agregar;
+    w_temp = ui->pushButton_nuevo;
     if(w_temp == obj){
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
@@ -1700,7 +1658,7 @@ bool CompraBuscar::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Return:
-                ui->pushButton_agregar->click();
+                ui->pushButton_nuevo->click();
                 return true;
             case Qt::Key_Enter:{
                 QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);

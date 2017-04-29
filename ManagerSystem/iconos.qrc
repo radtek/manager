@@ -142,5 +142,10 @@
         <file>Iconos/edit-user.png</file>
         <file>Iconos/transfer-data-between-documents.png</file>
         <file>Iconos/Data_Transfer-48.png</file>
+        <file>Iconos/exclamation.png</file>
+        <file>Iconos/successfull.png</file>
+        <file>Iconos/trash_full_onyx.png</file>
+        <file>Iconos/trash-empty-icon.png</file>
+        <file>Iconos/Show document.png</file>
     </qresource>
 </RCC>

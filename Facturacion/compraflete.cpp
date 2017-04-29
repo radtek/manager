@@ -75,6 +75,8 @@ CompraFlete::CompraFlete(QWidget *parent) :
     ui->label_igv->setText("IGV "+QString().setNum(igv, ' ', 3));
     //ui->label_cambio_dolar_value->setText(QString().setNum(dolar, ' ', 3));
 
+    ui->comboBox_id_boleta->hide();
+    ui->comboBox_id_factura->hide();
 
     // INSTALL EVENTS
     this->installEventFilter(this);
@@ -247,7 +249,7 @@ bool CompraFlete::select(QString id
         }
 
         QDateTime dt;
-        QDate date = QDate::fromString(fecha_emision, "dd-MMM-yyyy");
+        QDate date = QDate::fromString(fecha_emision, "dd-MM-yyyy");
         dt.setDate(date);
 
         ui->dateTimeEdit_emision->setDateTime(dt);
@@ -380,14 +382,15 @@ void CompraFlete::set_producto(QString producto_id
 
 bool CompraFlete::guardar()
 {
+    if(ui->dateEdit_declaracion->date().month() > ui->dateTimeEdit_emision->date().month()){
+        return false;
+    }
     if(persona_id.compare("") == 0)
     {
-        qDebug()<<"1"<<endl;
         return false;
     }
     if(ui->tableWidget->rowCount() <= 0)
     {
-        qDebug()<<"2"<<endl;
         return false;
     }
 
@@ -398,7 +401,7 @@ bool CompraFlete::guardar()
 
     if (id.compare("") == 0) {
         // DOCUMENTO
-        str_query =  "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
+        str_query += "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
         str_query += QString().setNum(tipo_documento::FLETE);
         str_query += ", 1)";
         str_query += "&&END_QUERY&&";
@@ -487,7 +490,7 @@ bool CompraFlete::guardar()
         str_query += "&&END_QUERY&&";
         */
         // ANEXO
-        str_query +=  "UPDATE anexo SET";
+        str_query += "UPDATE anexo SET";
         str_query += " fecha_emision = '"+ui->dateTimeEdit_emision->date().toString("yyyy-MM-dd")+"'";
         str_query += ", fecha_sistema = '"+ui->dateTimeEdit_sistema->dateTime().toString("yyyy-MM-dd hh:mm:ss")+"'";
         str_query += ", serie = '"+ui->lineEdit_serie->text()+"'";
@@ -581,6 +584,11 @@ bool CompraFlete::guardar()
             op = MODIFICAR;
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -588,7 +596,7 @@ bool CompraFlete::remove()
 {
     QString str_query;
 
-    str_query = "DELETE FROM documento WHERE id = "+id;
+    str_query += "DELETE FROM documento WHERE id = "+id;
     str_query += "&&END_QUERY&&";
     str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
@@ -601,6 +609,11 @@ bool CompraFlete::remove()
         id = "";
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -716,11 +729,40 @@ void CompraFlete::on_pushButton_guardar_clicked()
     switch(ret){
     case 0:{
         if(guardar()){
-            QMessageBox::information(this, "Información", "Se guardo con éxito.");
-            setAttribute(Qt::WA_DeleteOnClose);
+            //QMessageBox::information(this, "Información", "Se guardo con éxito.");
+            this->setAttribute(Qt::WA_DeleteOnClose);
             SYSTEM->change_center_w(this, widget_previous);
+
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Se guardo exitosamente.", ":/new/Iconos/successfull.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
         }else{
-            QMessageBox::critical(this, "Error", "No se pudieron guardar los datos.");
+            if(ui->dateEdit_declaracion->date().month() > ui->dateTimeEdit_emision->date().month()){
+                QMessageBox::critical(this, "Error", "El mes de declaración es mayor que el mes emisión.");
+            }else{
+                if(persona_id.compare("") == 0){
+                    QMessageBox::critical(this, "Error", "No ingresó el proveedor.");
+                }else{
+                    if(ui->tableWidget->rowCount() <= 0){
+                        QMessageBox::critical(this, "Error", "No tiene productos.");
+                    }else{
+                        QMessageBox::critical(this, "Error", "No se pudieron guardar los datos.");
+                        /*
+                        QMainWindow* mw = SYSTEM->get_mainw(this);
+                        SnackBarInfo* w = new SnackBarInfo;
+                        w->set_data("Error inesperado. Consulte al programador.", ":/new/Iconos/exclamation.png");
+                        mw->statusBar()->addWidget(w);
+                        int width = mw->width();
+                        w->setMinimumWidth(width);
+                        w->setMaximumWidth(width);
+                        */
+                    }
+                }
+            }
         }
         return;
     }break;
@@ -744,10 +786,27 @@ void CompraFlete::on_pushButton_eliminar_clicked()
             op = ELIMINAR;
             QMessageBox::information(this, "Información", "Se eliminaron los datos con éxito.");
             id = "";
-            setAttribute(Qt::WA_DeleteOnClose);
+            this->setAttribute(Qt::WA_DeleteOnClose);
             SYSTEM->change_center_w(this, widget_previous);
+
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Item eliminado con éxito.", ":/new/Iconos/trash_full_onyx.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
         }else{
             QMessageBox::critical(this, "Error", "No se pudieron eliminar los datos.");
+            /*
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Error inesperado. Consulte al programador.", ":/new/Iconos/exclamation.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
+            */
         }
         return;
     }break;
@@ -839,15 +898,15 @@ void CompraFlete::on_tableWidget_itemChanged(QTableWidgetItem *item)
 void CompraFlete::on_dateEdit_declaracion_dateChanged(const QDate &date)
 {
     if(date.month() > ui->dateTimeEdit_emision->date().month()){
-        QMessageBox::warning(this, "Advertencia", "El mes de declaración no puede ser mayor\nque la fecha de emisión.", "Ok");
+        //QMessageBox::warning(this, "Advertencia", "El mes de declaración no puede ser mayor\nque la fecha de emisión.", "Ok");
 
-        disconnect(ui->dateEdit_declaracion, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_declaracion_dateChanged(QDate)));
-        QDate date_temp;
-        date_temp.setDate(date.year(), mes_declaracion, date.day());
-        ui->dateEdit_declaracion->setDate(date_temp);
-        connect(ui->dateEdit_declaracion, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_declaracion_dateChanged(QDate)));
+        //disconnect(ui->dateEdit_declaracion, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_declaracion_dateChanged(QDate)));
+        //QDate date_temp;
+        //date_temp.setDate(date.year(), mes_declaracion, date.day());
+        //ui->dateEdit_declaracion->setDate(date_temp);
+        //connect(ui->dateEdit_declaracion, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_declaracion_dateChanged(QDate)));
     }else{
-        mes_declaracion = date.month();
+        //mes_declaracion = date.month();
     }
 }
 
@@ -870,15 +929,15 @@ void CompraFlete::on_dateTimeEdit_emision_dateChanged(const QDate &date)
     */
 
     if(date.month() < ui->dateEdit_declaracion->date().month()){
-        QMessageBox::warning(this, "Advertencia", "El mes de declaración no puede ser mayor\nque la fecha de emisión.", "Ok");
+        //QMessageBox::warning(this, "Advertencia", "El mes de declaración no puede ser mayor\nque la fecha de emisión.", "Ok");
 
-        disconnect(ui->dateTimeEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateTimeEdit_emision_dateChanged(QDate)));
-        QDate date_temp;
-        date_temp.setDate(date.year(), mes_emision, date.day());
-        ui->dateTimeEdit_emision->setDate(date_temp);
-        connect(ui->dateTimeEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateTimeEdit_emision_dateChanged(QDate)));
+        //disconnect(ui->dateTimeEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateTimeEdit_emision_dateChanged(QDate)));
+        //QDate date_temp;
+        //date_temp.setDate(date.year(), mes_emision, date.day());
+        //ui->dateTimeEdit_emision->setDate(date_temp);
+        //connect(ui->dateTimeEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateTimeEdit_emision_dateChanged(QDate)));
     }else{
-        mes_emision = date.month();
+        //mes_emision = date.month();
     }
 }
 void CompraFlete::on_lineEdit_cod_textEdited(const QString &arg1)
@@ -1720,9 +1779,15 @@ void CompraFlete::on_pushButton_borrar_clicked()
 
     SYSTEM->table_resize_to_contents(0, ui->tableWidget);
 
-    ui->lineEdit_subtotal->setText(QString().setNum(total/(1.0+igv), ' ', DECIMALS_PRECIO_TOTAL));
-    ui->lineEdit_igv->setText(QString().setNum(total-total/(1.0+igv), ' ', DECIMALS_PRECIO_TOTAL));
-    ui->lineEdit_total->setText(QString().setNum(total, ' ', DECIMALS_PRECIO_TOTAL));
+    QString str_subtotal = QString().setNum(total/(1.0+igv), ' ', DECIMALS_PRECIO_TOTAL);
+    SYSTEM->normalDecimal(str_subtotal);
+    QString str_igv = QString().setNum(total-total/(1.0+igv), ' ', DECIMALS_PRECIO_TOTAL);
+    SYSTEM->normalDecimal(str_igv);
+    QString str_total = QString().setNum(total, ' ', DECIMALS_PRECIO_TOTAL);
+    SYSTEM->normalDecimal(str_total);
+    ui->lineEdit_subtotal->setText(str_subtotal);
+    ui->lineEdit_igv->setText(str_igv);
+    ui->lineEdit_total->setText(str_total);
 }
 
 

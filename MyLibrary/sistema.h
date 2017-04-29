@@ -74,9 +74,9 @@ public:
 
     QWidget* change_center_w(QWidget* old_w = new QWidget(), QWidget* new_w = new QWidget(), bool isClose=true);
 
-    QWidget* set_center_w(QWidget* w);
+    QWidget* set_center_w(QWidget* w, QString styleSheet = "background-color: rgb(255, 255, 127)");
 
-    QWidget* get_mainw(QWidget* w);
+    QMainWindow* get_mainw(QWidget* w);
 
     QString build_argument(const QString& cmp_column, const QString& arg);
 

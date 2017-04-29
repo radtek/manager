@@ -7,6 +7,7 @@ ManagerSystem::ManagerSystem(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //ui->statusBar->addWidget(new SnackBarInfo);
     afterShow = false;
 
     //QThread* thread = new QThread;

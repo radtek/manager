@@ -155,7 +155,7 @@ bool CompraOrden::select(QString id
     qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
         QDateTime dt;
-        QDate date = QDate::fromString(fecha_emision, "dd-MMM-yyyy");
+        QDate date = QDate::fromString(fecha_emision, "dd-MM-yyyy");
         dt.setDate(date);
 
         ui->dateTimeEdit_emision->setDateTime(dt);
@@ -296,12 +296,10 @@ bool CompraOrden::guardar()
 {
     if(persona_id.compare("") == 0)
     {
-        qDebug()<<"1"<<endl;
         return false;
     }
     if(ui->tableWidget->rowCount() <= 0)
     {
-        qDebug()<<"2"<<endl;
         return false;
     }
 
@@ -312,7 +310,7 @@ bool CompraOrden::guardar()
 
     if (id.compare("") == 0) {
         // DOCUMENTO
-        str_query =  "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
+        str_query += "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
         str_query += QString().setNum(tipo_documento::ORDEN);
         str_query += ", 1)";
         str_query += "&&END_QUERY&&";
@@ -373,7 +371,7 @@ bool CompraOrden::guardar()
         str_query += "&&END_QUERY&&";
         */
         // ANEXO
-        str_query +=  "UPDATE anexo SET";
+        str_query += "UPDATE anexo SET";
         str_query += " fecha_emision = '"+ui->dateTimeEdit_emision->date().toString("yyyy-MM-dd")+"'";
         str_query += ", fecha_sistema = '"+ui->dateTimeEdit_sistema->dateTime().toString("yyyy-MM-dd hh:mm:ss")+"'";
         str_query += ", serie = '"+ui->lineEdit_serie->text()+"'";
@@ -435,6 +433,11 @@ bool CompraOrden::guardar()
             op = MODIFICAR;
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -442,7 +445,7 @@ bool CompraOrden::remove()
 {
     QString str_query;
 
-    str_query = "DELETE FROM documento WHERE id = "+id;
+    str_query += "DELETE FROM documento WHERE id = "+id;
     str_query += "&&END_QUERY&&";
     str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
@@ -455,6 +458,11 @@ bool CompraOrden::remove()
         id = "";
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -788,16 +796,41 @@ void CompraOrden::on_pushButton_amarres_clicked()
 }
 
 void CompraOrden::on_pushButton_guardar_clicked()
-{    
+{
     int ret = QMessageBox::warning(this, "Advertencia", "¿Desea guardar los datos?", "Si", "No");
     switch(ret){
     case 0:{
         if(guardar()){
-            QMessageBox::information(this, "Información", "Se guardo con éxito.");
-            setAttribute(Qt::WA_DeleteOnClose);
+            //QMessageBox::information(this, "Información", "Se guardo con éxito.");
+            this->setAttribute(Qt::WA_DeleteOnClose);
             SYSTEM->change_center_w(this, widget_previous);
+
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Se guardo exitosamente.", ":/new/Iconos/successfull.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
         }else{
-            QMessageBox::critical(this, "Error", "No se pudieron guardar los datos.");
+            if(persona_id.compare("") == 0){
+                QMessageBox::critical(this, "Error", "No ingresó el proveedor.");
+            }else{
+                if(ui->tableWidget->rowCount() <= 0){
+                    QMessageBox::critical(this, "Error", "No tiene productos.");
+                }else{
+                    QMessageBox::critical(this, "Error", "No se pudieron guardar los datos.");
+                    /*
+                    QMainWindow* mw = SYSTEM->get_mainw(this);
+                    SnackBarInfo* w = new SnackBarInfo;
+                    w->set_data("Error inesperado. Consulte al programador.", ":/new/Iconos/exclamation.png");
+                    mw->statusBar()->addWidget(w);
+                    int width = mw->width();
+                    w->setMinimumWidth(width);
+                    w->setMaximumWidth(width);
+                    */
+                }
+            }
         }
         return;
     }break;
@@ -821,10 +854,27 @@ void CompraOrden::on_pushButton_eliminar_clicked()
             op = ELIMINAR;
             QMessageBox::information(this, "Información", "Se eliminaron los datos con éxito.");
             id = "";
-            setAttribute(Qt::WA_DeleteOnClose);
+            this->setAttribute(Qt::WA_DeleteOnClose);
             SYSTEM->change_center_w(this, widget_previous);
+
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Item eliminado con éxito.", ":/new/Iconos/trash_full_onyx.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
         }else{
             QMessageBox::critical(this, "Error", "No se pudieron eliminar los datos.");
+            /*
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Error inesperado. Consulte al programador.", ":/new/Iconos/exclamation.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
+            */
         }
         return;
     }break;
@@ -859,6 +909,7 @@ void CompraOrden::on_dateTimeEdit_emision_dateChanged(const QDate &date)
     int index = ui->comboBox_moneda->currentIndex();
     // DOLARES
     if(index == 1){
+        /*
         ui->label_cambio_dolar_value->hide();
         double cambio_dolar = SYSTEM->get_dolar(date);
         ui->label_cambio_dolar_value->setText(QString().setNum(cambio_dolar, ' ', 3));
@@ -868,6 +919,7 @@ void CompraOrden::on_dateTimeEdit_emision_dateChanged(const QDate &date)
         QTimer *timer = new QTimer(this);
         connect(timer, SIGNAL(timeout()), this, SLOT(set_time_dolar_value()));
         timer->start(1000);
+        */
     }
 }
 void CompraOrden::showEvent(QShowEvent *se)
@@ -1090,96 +1142,6 @@ bool CompraOrden::eventFilter(QObject *obj, QEvent *e)
             QKeyEvent *KeyEvent = (QKeyEvent*)e;            
             switch(KeyEvent->key())
             {
-            /*
-            case Qt::Key_0:{
-                QTableWidgetItem* item = ui->tableWidget->currentItem();
-                if(item){
-                    item->setText("0");
-                    return true;
-                }
-                return false;
-            }break;
-            case Qt::Key_1:{
-                QTableWidgetItem* item = ui->tableWidget->currentItem();
-                if(item){
-                    item->setText("1");
-                    return true;
-                }
-                return false;
-            }break;
-            case Qt::Key_2:{
-                QTableWidgetItem* item = ui->tableWidget->currentItem();
-                if(item){
-                    item->setText("2");
-                    return true;
-                }
-                return false;
-            }break;
-            case Qt::Key_3:{
-                QTableWidgetItem* item = ui->tableWidget->currentItem();
-                if(item){
-                    item->setText("3");
-                    return true;
-                }
-                return false;
-            }break;
-            case Qt::Key_4:{
-                QTableWidgetItem* item = ui->tableWidget->currentItem();
-                if(item){
-                    item->setText("4");
-                    return true;
-                }
-                return false;
-            }break;
-            case Qt::Key_5:{
-                QTableWidgetItem* item = ui->tableWidget->currentItem();
-                if(item){
-                    item->setText("5");
-                    return true;
-                }
-                return false;
-            }break;
-            case Qt::Key_6:{
-                QTableWidgetItem* item = ui->tableWidget->currentItem();
-                if(item){
-                    item->setText("6");
-                    return true;
-                }
-                return false;
-            }break;
-            case Qt::Key_7:{
-                QTableWidgetItem* item = ui->tableWidget->currentItem();
-                if(item){
-                    item->setText("7");
-                    return true;
-                }
-                return false;
-            }break;
-            case Qt::Key_8:{
-                QTableWidgetItem* item = ui->tableWidget->currentItem();
-                if(item){
-                    item->setText("8");
-                    return true;
-                }
-                return false;
-            }break;
-            case Qt::Key_9:{
-                QTableWidgetItem* item = ui->tableWidget->currentItem();
-                if(item){
-                    item->setText("9");
-                    return true;
-                }
-                return false;
-            }break;
-            case Qt::Key_Period:{
-                QTableWidgetItem* item = ui->tableWidget->currentItem();
-                if(item){
-                    item->setText(".");
-                    return true;
-                }
-                return false;
-            }break;
-            */
             case Qt::Key_Return:
                 if(QString(typeid(*QApplication::focusWidget()).name()) == "18QExpandingLineEdit"){
                     QApplication::focusWidget()->parentWidget()->setFocus();
@@ -1349,13 +1311,25 @@ void CompraOrden::on_pushButton_borrar_clicked()
 
     // CON IGV
     if(ui->comboBox_modalidad->currentIndex() == 0){
-        ui->lineEdit_subtotal->setText(QString().setNum(total/(1.0+igv), ' ', DECIMALS_PRECIO_TOTAL));
-        ui->lineEdit_igv->setText(QString().setNum(total-total/(1.0+igv), ' ', DECIMALS_PRECIO_TOTAL));
-        ui->lineEdit_total->setText(QString().setNum(total, ' ', DECIMALS_PRECIO_TOTAL));
+        QString str_subtotal = QString().setNum(total/(1.0+igv), ' ', DECIMALS_PRECIO_TOTAL);
+        SYSTEM->normalDecimal(str_subtotal);
+        QString str_igv = QString().setNum(total-total/(1.0+igv), ' ', DECIMALS_PRECIO_TOTAL);
+        SYSTEM->normalDecimal(str_igv);
+        QString str_total = QString().setNum(total, ' ', DECIMALS_PRECIO_TOTAL);
+        SYSTEM->normalDecimal(str_total);
+        ui->lineEdit_subtotal->setText(str_subtotal);
+        ui->lineEdit_igv->setText(str_igv);
+        ui->lineEdit_total->setText(str_total);
     }else{
-        ui->lineEdit_subtotal->setText(QString().setNum(total, ' ', DECIMALS_PRECIO_TOTAL));
-        ui->lineEdit_igv->setText(QString().setNum(total*(1.0+igv)-total, ' ', DECIMALS_PRECIO_TOTAL));
-        ui->lineEdit_total->setText(QString().setNum(total*(1.0+igv), ' ', DECIMALS_PRECIO_TOTAL));
+        QString str_subtotal = QString().setNum(total, ' ', DECIMALS_PRECIO_TOTAL);
+        SYSTEM->normalDecimal(str_subtotal);
+        QString str_igv = QString().setNum(total*(1.0+igv)-total, ' ', DECIMALS_PRECIO_TOTAL);
+        SYSTEM->normalDecimal(str_igv);
+        QString str_total = QString().setNum(total*(1.0+igv), ' ', DECIMALS_PRECIO_TOTAL);
+        SYSTEM->normalDecimal(str_total);
+        ui->lineEdit_subtotal->setText(str_subtotal);
+        ui->lineEdit_igv->setText(str_igv);
+        ui->lineEdit_total->setText(str_total);
     }
 }
 

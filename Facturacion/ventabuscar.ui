@@ -44,17 +44,17 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_agregar">
+      <widget class="QPushButton" name="pushButton_nuevo">
        <property name="font">
         <font>
          <pointsize>10</pointsize>
         </font>
        </property>
        <property name="text">
-        <string>&amp;Nuevo</string>
+        <string>&amp;Nuevo(Alt+N)</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/Black_New-Page.png</normaloff>:/new/Iconos/Black_New-Page.png</iconset>
        </property>
        <property name="iconSize">
@@ -62,6 +62,34 @@
          <width>32</width>
          <height>32</height>
         </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_editar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Presione F2</string>
+       </property>
+       <property name="text">
+        <string>Editar(F2)</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../ManagerSystem/iconos.qrc">
+         <normaloff>:/new/Iconos/doc_edit.png</normaloff>:/new/Iconos/doc_edit.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="shortcut">
+        <string>F2</string>
        </property>
       </widget>
      </item>
@@ -404,7 +432,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>pushButton_agregar</tabstop>
   <tabstop>dateEdit_inicio</tabstop>
   <tabstop>dateEdit_fin</tabstop>
   <tabstop>tableWidget</tabstop>
@@ -413,7 +440,7 @@
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
  <resources>
-  <include location="../ManagerSystem/Iconos.qrc"/>
+  <include location="../ManagerSystem/iconos.qrc"/>
  </resources>
  <connections/>
 </ui>

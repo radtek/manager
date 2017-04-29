@@ -41,6 +41,18 @@ private slots:
 
     void on_dateEdit_igv_dateChanged(const QDate &date);
 
+    void on_pushButton_rollback_clicked();
+
+    void on_pushButton_commit_clicked();
+
+    void on_pushButton_backup_clicked();
+
+    void on_myProccess_started();
+
+    void on_myProccess_finished(int exitCode, QProcess::ExitStatus exitStatus);
+
+    void on_pushButton_restore_clicked();
+
 protected:
 	void showEvent(QShowEvent* se);
 

@@ -21,6 +21,8 @@ public:
 	void set_widget_previous(QWidget* widget_previous);
 
 private slots:
+    void on_verticalScrollBar_actionTriggered(int value);
+
 	void on_marca_closing();
 
 private:

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>982</width>
-    <height>423</height>
+    <height>439</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -164,6 +164,44 @@
       </widget>
      </item>
      <item>
+      <spacer name="horizontalSpacer_7">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_ver">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>V&amp;er(Alt+E)</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../ManagerSystem/iconos.qrc">
+         <normaloff>:/new/Iconos/Show document.png</normaloff>:/new/Iconos/Show document.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -175,18 +213,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton_modificar">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Modificar</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>
@@ -696,7 +722,6 @@
  </widget>
  <tabstops>
   <tabstop>dateEdit</tabstop>
-  <tabstop>pushButton_modificar</tabstop>
   <tabstop>tableWidget</tabstop>
   <tabstop>pushButton_ok</tabstop>
   <tabstop>pushButton_salir</tabstop>
@@ -708,6 +733,8 @@
   <tabstop>doubleSpinBox_cantidad_total</tabstop>
   <tabstop>doubleSpinBox_precio_neto</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../ManagerSystem/iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

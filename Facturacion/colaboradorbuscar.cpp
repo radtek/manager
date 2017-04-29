@@ -25,6 +25,8 @@ ColaboradorBuscar::ColaboradorBuscar(QWidget *parent) :
     //disconnect(ui->pushButton_modificar, SIGNAL(clicked()), this, SLOT(on_pushButton_modificar_clicked()));
 
     //disconnect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
+    QScrollBar* bar = ui->tableWidget->verticalScrollBar();
+    connect(bar, SIGNAL(actionTriggered(int)), this, SLOT(on_verticalScrollBar_actionTriggered(int)));
 
     // INSTALL EVENTFILTER    
     this->installEventFilter(this);
@@ -32,7 +34,7 @@ ColaboradorBuscar::ColaboradorBuscar(QWidget *parent) :
     ui->tableWidget->installEventFilter(this);
     ui->pushButton_ok->installEventFilter(this);
     ui->pushButton_salir->installEventFilter(this);
-    ui->pushButton_agregar->installEventFilter(this);
+    ui->pushButton_nuevo->installEventFilter(this);
     ui->pushButton_editar->installEventFilter(this);
 }
 
@@ -45,10 +47,22 @@ void ColaboradorBuscar::set_tipo(int tipo)
 {
     this->tipo = tipo;    
 }
-
 void ColaboradorBuscar::set_widget_previous(QWidget *widget_previous)
 {
     this->widget_previous = widget_previous;
+}
+void ColaboradorBuscar::on_verticalScrollBar_actionTriggered(int value)
+{
+    QScrollBar* bar = ui->tableWidget->verticalScrollBar();
+
+    /*
+    qDebug()<<"activation value: "<<value<<endl;
+    qDebug()<<"activation bar maximum: "<<bar->maximum()<<endl;
+    qDebug()<<"activation bar value: "<<bar->value()<<endl;
+    */
+    if(bar->value() == bar->maximum()) {
+        set_buscar();
+    }
 }
 QString ColaboradorBuscar::get_ID()
 {
@@ -121,43 +135,37 @@ void ColaboradorBuscar::on_colaborador_closing()
         int op = widget->getOp();
         switch(op){
         case INGRESAR:{
-            pos = 0;
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = widget->get_ID();
+                    codigo = widget->get_ruc();
+                    nombre = widget->get_razon_social();
+                    direccion = widget->get_direccion();
 
-            ui->tableWidget->setRowCount(0);
-            ui->tableWidget->setColumnCount(0);
-            ui->tableWidget->clear();
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
 
-            int columnCount = 4;
-            ui->tableWidget->setColumnCount(columnCount);
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
 
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "RUC" << "RAZON SOCIAL"
-                                                       << "DIRECCION");
-            ui->tableWidget->setColumnHidden(0, true);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-            QString id = widget->get_ID();
-            QString ruc = widget->get_ruc();
-            QString razon_social = widget->get_razon_social();
-            QString direccion = widget->get_direccion();
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(razon_social));
-            ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(direccion));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
+                set_buscar();
             }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case MODIFICAR:{
             QString id = widget->get_ID();
@@ -167,19 +175,21 @@ void ColaboradorBuscar::on_colaborador_closing()
 
             QTableWidgetItem* item = ui->tableWidget->currentItem();
             int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(row, 2, new QTableWidgetItem(razon_social));
-            ui->tableWidget->setItem(row, 3, new QTableWidgetItem(direccion));
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(ruc);
+            ui->tableWidget->item(row, 2)->setText(razon_social);
+            ui->tableWidget->item(row, 3)->setText(direccion);
 
             SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
+            pos = 0;
 
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
+
+            set_buscar();
         }break;
         }
     }break;
@@ -189,43 +199,37 @@ void ColaboradorBuscar::on_colaborador_closing()
         int op = widget->getOp();
         switch(op){
         case INGRESAR:{
-            pos = 0;
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = widget->get_ID();
+                    codigo = widget->get_ruc();
+                    nombre = widget->get_razon_social();
+                    direccion = widget->get_direccion();
 
-            ui->tableWidget->setRowCount(0);
-            ui->tableWidget->setColumnCount(0);
-            ui->tableWidget->clear();
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
 
-            int columnCount = 4;
-            ui->tableWidget->setColumnCount(columnCount);
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
 
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "RUC" << "RAZON SOCIAL"
-                                                       << "DIRECCION");
-            ui->tableWidget->setColumnHidden(0, true);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-            QString id = widget->get_ID();
-            QString ruc = widget->get_ruc();
-            QString razon_social = widget->get_razon_social();
-            QString direccion = widget->get_direccion();
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(razon_social));
-            ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(direccion));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
+                set_buscar();
             }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case MODIFICAR:{
             QString id = widget->get_ID();
@@ -235,19 +239,21 @@ void ColaboradorBuscar::on_colaborador_closing()
 
             QTableWidgetItem* item = ui->tableWidget->currentItem();
             int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(row, 2, new QTableWidgetItem(razon_social));
-            ui->tableWidget->setItem(row, 3, new QTableWidgetItem(direccion));
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(ruc);
+            ui->tableWidget->item(row, 2)->setText(razon_social);
+            ui->tableWidget->item(row, 3)->setText(direccion);
 
             SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
+            pos = 0;
 
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
+
+            set_buscar();
         }break;
         }
     }break;
@@ -257,43 +263,37 @@ void ColaboradorBuscar::on_colaborador_closing()
         int op = widget->getOp();
         switch(op){
         case INGRESAR:{
-            pos = 0;
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = widget->get_ID();
+                    codigo = widget->get_ruc();
+                    nombre = widget->get_razon_social();
+                    direccion = widget->get_direccion();
 
-            ui->tableWidget->setRowCount(0);
-            ui->tableWidget->setColumnCount(0);
-            ui->tableWidget->clear();
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
 
-            int columnCount = 4;
-            ui->tableWidget->setColumnCount(columnCount);
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
 
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "RUC" << "RAZON SOCIAL"
-                                                       << "DIRECCION");
-            ui->tableWidget->setColumnHidden(0, true);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-            QString id = widget->get_ID();
-            QString ruc = widget->get_ruc();
-            QString razon_social = widget->get_razon_social();
-            QString direccion = widget->get_direccion();
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(razon_social));
-            ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(direccion));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
+                set_buscar();
             }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case MODIFICAR:{
             QString id = widget->get_ID();
@@ -303,19 +303,21 @@ void ColaboradorBuscar::on_colaborador_closing()
 
             QTableWidgetItem* item = ui->tableWidget->currentItem();
             int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(ruc));
-            ui->tableWidget->setItem(row, 2, new QTableWidgetItem(razon_social));
-            ui->tableWidget->setItem(row, 3, new QTableWidgetItem(direccion));
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(ruc);
+            ui->tableWidget->item(row, 2)->setText(razon_social);
+            ui->tableWidget->item(row, 3)->setText(direccion);
 
             SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
+            pos = 0;
 
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
+
+            set_buscar();
         }break;
         }
     }break;
@@ -325,65 +327,61 @@ void ColaboradorBuscar::on_colaborador_closing()
         int op = widget->getOp();
         switch(op){
         case INGRESAR:{
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = widget->get_ID();
+                    codigo = widget->get_DNI();
+                    nombre = widget->get_nombre();
+                    direccion = widget->get_direccion();
+
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
+
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
+
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
+
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
+
+                set_buscar();
+            }
+        }break;
+        case MODIFICAR:{
+            QString id = widget->get_ID();
+            QString ruc = widget->get_DNI();
+            QString razon_social = widget->get_nombre();
+            QString direccion = widget->get_direccion();
+
+            QTableWidgetItem* item = ui->tableWidget->currentItem();
+            int row = item->row();
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(ruc);
+            ui->tableWidget->item(row, 2)->setText(razon_social);
+            ui->tableWidget->item(row, 3)->setText(direccion);
+
+            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
+        }break;
+        case ELIMINAR:{
             pos = 0;
 
             ui->tableWidget->setRowCount(0);
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
-
-            int columnCount = 4;
-            ui->tableWidget->setColumnCount(columnCount);
-
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "DNI" << "NOMBRE"
-                                                       << "DIRECCION");
-            ui->tableWidget->setColumnHidden(0, true);
-
-            QString id = widget->get_ID();
-            QString dni = widget->get_DNI();
-            QString nombre = widget->get_nombre();
-            QString direccion = widget->get_direccion();
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(dni));
-            ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(nombre));
-            ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(direccion));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
-            }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
-        }break;
-        case MODIFICAR:{
-            QString id = widget->get_ID();
-            QString dni = widget->get_DNI();
-            QString nombre = widget->get_nombre();
-            QString direccion = widget->get_direccion();
-
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(dni));
-            ui->tableWidget->setItem(row, 2, new QTableWidgetItem(nombre));
-            ui->tableWidget->setItem(row, 3, new QTableWidgetItem(direccion));
-
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
-        }break;
-        case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
-
+            set_buscar();
         }break;
         }
     }break;
@@ -393,49 +391,36 @@ void ColaboradorBuscar::on_colaborador_closing()
         int op = widget->getOp();
         switch(op){
         case INGRESAR:{
-            pos = 0;
+            if (widget_previous) {
+                int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+                switch(ret){
+                case 0:{
+                    id = widget->get_ID();
+                    codigo = widget->get_DNI();
+                    nombre = widget->get_usuario();
 
-            ui->tableWidget->setRowCount(0);
-            ui->tableWidget->setColumnCount(0);
-            ui->tableWidget->clear();
+                    setAttribute(Qt::WA_DeleteOnClose);
+                    SYSTEM->change_center_w(this, widget_previous);
+                }break;
+                case 1:{
+                    pos = 0;
 
-            int rowCount = 1;
-            ui->tableWidget->setRowCount(rowCount);
+                    ui->tableWidget->setRowCount(0);
+                    ui->tableWidget->setColumnCount(0);
+                    ui->tableWidget->clear();
 
-            int columnCount = 6;
-            ui->tableWidget->setColumnCount(columnCount);
+                    set_buscar();
+                }break;
+                }
+            }else{
+                pos = 0;
 
-            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
-                                                       << "ID_ROL"
-                                                       << "ROL" << "USUARIO"
-                                                       << "DNI" << "NOMBRE");
-            ui->tableWidget->setColumnHidden(0, true);
-            ui->tableWidget->setColumnHidden(1, true);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-            QString id = widget->get_ID();
-            QString id_rol = widget->get_ID_rol();
-            QString rol = widget->get_rol();
-            QString usuario = widget->get_usuario();
-            QString dni = widget->get_DNI();
-            QString nombre = widget->get_nombre();
-            ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(id_rol));
-            ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(rol));
-            ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(usuario));
-            ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(dni));
-            ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(nombre));
-
-            for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                             | Qt::ItemIsSelectable);
-
-            pos++;
-            ui->tableWidget->setFocus();
-            ui->tableWidget->selectRow(0);
-            for(int j=0; j<ui->tableWidget->columnCount(); j++){
-                ui->tableWidget->item(0, j)->setSelected(true);
+                set_buscar();
             }
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case MODIFICAR:{
             QString id = widget->get_ID();
@@ -447,21 +432,23 @@ void ColaboradorBuscar::on_colaborador_closing()
 
             QTableWidgetItem* item = ui->tableWidget->currentItem();
             int row = item->row();
-            ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-            ui->tableWidget->setItem(row, 1, new QTableWidgetItem(id_rol));
-            ui->tableWidget->setItem(row, 2, new QTableWidgetItem(rol));
-            ui->tableWidget->setItem(row, 3, new QTableWidgetItem(usuario));
-            ui->tableWidget->setItem(row, 4, new QTableWidgetItem(dni));
-            ui->tableWidget->setItem(row, 5, new QTableWidgetItem(nombre));
+            ui->tableWidget->item(row, 0)->setText(id);
+            ui->tableWidget->item(row, 1)->setText(id_rol);
+            ui->tableWidget->item(row, 2)->setText(rol);
+            ui->tableWidget->item(row, 3)->setText(usuario);
+            ui->tableWidget->item(row, 4)->setText(dni);
+            ui->tableWidget->item(row, 5)->setText(nombre);
 
             SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
         }break;
         case ELIMINAR:{
-            QTableWidgetItem* item = ui->tableWidget->currentItem();
-            ui->tableWidget->removeRow(item->row());
-        }break;
-        case SALIR:{
+            pos = 0;
 
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
+
+            set_buscar();
         }break;
         }
     }break;
@@ -722,7 +709,6 @@ void ColaboradorBuscar::on_lineEdit_buscar_textChanged(const QString& arg)
 
 void ColaboradorBuscar::on_lineEdit_buscar_returnPressed()
 {
-    qDebug()<<"retun preseed"<<endl;
     pos = 0;
 
     ui->tableWidget->setRowCount(0);
@@ -797,7 +783,7 @@ void ColaboradorBuscar::on_pushButton_salir_clicked()
     //}
     //}
 }
-void ColaboradorBuscar::on_pushButton_agregar_clicked()
+void ColaboradorBuscar::on_pushButton_nuevo_clicked()
 {
     //int ret = QMessageBox::warning(this, "Advertencia", "¿Desea agregar un colaborador?", "Si", "No");
     //switch(ret){
@@ -945,7 +931,7 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
         if(e->type() == QEvent::Paint){
             if(afterShow) {
                 if(focusWidget()){
-                    if(focusWidget() == ui->pushButton_agregar){
+                    if(focusWidget() == ui->pushButton_nuevo){
                         ui->lineEdit_buscar->setFocus();
                         ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
                     }else{
@@ -1029,7 +1015,7 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Down:{
                 int index = ui->tableWidget->currentRow();
                 if (index == ui->tableWidget->rowCount() - 1) {
-                    on_lineEdit_buscar_returnPressed();
+                    set_buscar();
                     return true;
                 }
             }break;
@@ -1096,7 +1082,7 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
         }
         return false;
     }
-    w_temp = ui->pushButton_agregar;
+    w_temp = ui->pushButton_nuevo;
     if(obj == w_temp){
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
@@ -1104,7 +1090,7 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Return:{
-                ui->pushButton_agregar->click();
+                ui->pushButton_nuevo->click();
                 return true;
             }break;
             case Qt::Key_Enter:{

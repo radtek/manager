@@ -16,6 +16,8 @@ public:
     explicit CompraBoleta(QWidget *parent = 0);
     ~CompraBoleta();    
 
+    void setVer();
+
     enum{INDEX_ID = 0, INDEX_CANTIDAD, INDEX_UNIDAD, INDEX_DESCRIPCION, INDEX_P_UNIT
           , INDEX_P_TOTAL};
 

@@ -53,6 +53,8 @@ public:
     void set_ruc(QString ruc);
 
 private slots:
+    void on_verticalScrollBar_actionTriggered(int value);
+
     void on_compra_closing();
 
 private:
@@ -67,7 +69,7 @@ private slots:
 
     void on_pushButton_salir_clicked();
 
-    void on_pushButton_agregar_clicked(); 
+    void on_pushButton_nuevo_clicked();
 
     void on_radioButton_orden_clicked();
 

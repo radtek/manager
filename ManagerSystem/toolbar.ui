@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>951</width>
-    <height>168</height>
+    <height>127</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -81,8 +81,8 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
-                <normaloff>:/new/Iconos/Google_Sketchup.png</normaloff>:/new/Iconos/Google_Sketchup.png</iconset>
+               <iconset resource="iconos.qrc">
+                <normaloff>:/new/Iconos/Home.png</normaloff>:/new/Iconos/Home.png</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -248,7 +248,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/Android_Market.png</normaloff>:/new/Iconos/Android_Market.png</iconset>
               </property>
               <property name="iconSize">
@@ -405,7 +405,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/Windows_Marketplace (1).png</normaloff>:/new/Iconos/Windows_Marketplace (1).png</iconset>
               </property>
               <property name="iconSize">
@@ -556,7 +556,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/Tune-Up_Utilities.png</normaloff>:/new/Iconos/Tune-Up_Utilities.png</iconset>
               </property>
               <property name="iconSize">
@@ -707,7 +707,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/myspace_alt.png</normaloff>:/new/Iconos/myspace_alt.png</iconset>
               </property>
               <property name="iconSize">
@@ -855,7 +855,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/Journal.png</normaloff>:/new/Iconos/Journal.png</iconset>
               </property>
               <property name="iconSize">
@@ -1019,7 +1019,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/Services.png</normaloff>:/new/Iconos/Services.png</iconset>
               </property>
               <property name="iconSize">
@@ -1125,236 +1125,6 @@
         </item>
        </layout>
       </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_8">
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton_rollback">
-          <property name="minimumSize">
-           <size>
-            <width>30</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>30</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>deshacer</string>
-          </property>
-          <property name="statusTip">
-           <string/>
-          </property>
-          <property name="whatsThis">
-           <string/>
-          </property>
-          <property name="accessibleName">
-           <string/>
-          </property>
-          <property name="accessibleDescription">
-           <string/>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset resource="Iconos.qrc">
-            <normaloff>:/new/Iconos/rollback.jpg</normaloff>:/new/Iconos/rollback.jpg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="flat">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_32">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Fixed</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton_commit">
-          <property name="minimumSize">
-           <size>
-            <width>30</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>30</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>comitear</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset resource="Iconos.qrc">
-            <normaloff>:/new/Iconos/commit.jpg</normaloff>:/new/Iconos/commit.jpg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="flat">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_34">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Fixed</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton_backup">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>9999999</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>backup</string>
-          </property>
-          <property name="text">
-           <string>Backup</string>
-          </property>
-          <property name="icon">
-           <iconset resource="Iconos.qrc">
-            <normaloff>:/new/Iconos/backup.png</normaloff>:/new/Iconos/backup.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="flat">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_35">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Fixed</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButton_restore">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>9999999</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>restaurar</string>
-          </property>
-          <property name="text">
-           <string>Restaurar</string>
-          </property>
-          <property name="icon">
-           <iconset resource="Iconos.qrc">
-            <normaloff>:/new/Iconos/restore_2.jpg</normaloff>:/new/Iconos/restore_2.jpg</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="flat">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_31">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
      </layout>
     </widget>
    </item>
@@ -1369,6 +1139,8 @@
   <tabstop>toolButton_reportes</tabstop>
   <tabstop>toolButton_configuracion</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

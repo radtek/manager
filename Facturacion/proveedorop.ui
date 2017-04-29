@@ -899,7 +899,7 @@ DIPONIBLE</string>
         <string>&amp;Eliminar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/delete_32.png</normaloff>:/new/Iconos/delete_32.png</iconset>
        </property>
        <property name="iconSize">
@@ -937,7 +937,7 @@ DIPONIBLE</string>
         <string>&amp;Guardar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/colaborador_32.png</normaloff>:/new/Iconos/colaborador_32.png</iconset>
        </property>
        <property name="iconSize">
@@ -959,7 +959,7 @@ DIPONIBLE</string>
         <string>&amp;Salir</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/salir_32.png</normaloff>:/new/Iconos/salir_32.png</iconset>
        </property>
        <property name="iconSize">
@@ -1010,6 +1010,8 @@ DIPONIBLE</string>
   <tabstop>pushButton_guardar</tabstop>
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../ManagerSystem/iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

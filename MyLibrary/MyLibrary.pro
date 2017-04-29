@@ -60,7 +60,8 @@ SOURCES += mylibrary.cpp \
     lineedit.cpp \
     sunattipocambio.cpp \
     lineeditnumberdelegate.cpp \
-    widgetnumber.cpp
+    widgetnumber.cpp \
+    snackbarinfo.cpp
 
 HEADERS += mylibrary.h \
     mylibrary_global.h \
@@ -79,14 +80,16 @@ HEADERS += mylibrary.h \
     lineedit.h \
     sunattipocambio.h \
     lineeditnumberdelegate.h \
-    widgetnumber.h
+    widgetnumber.h \
+    snackbarinfo.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
 
-FORMS +=
+FORMS += \
+    snackbarinfo.ui
 
 
 win32:contains(QMAKE_HOST.arch, x86_64) {

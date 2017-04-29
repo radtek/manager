@@ -16,7 +16,6 @@ public:
     void run();
 
 public slots:
-    void on_pb_login_aceptar();
 
 private slots:
 

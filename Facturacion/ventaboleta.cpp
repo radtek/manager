@@ -7,6 +7,9 @@ VentaBoleta::VentaBoleta(QWidget *parent) :
 {    
     ui->setupUi(this);
 
+    afterShow = false;
+    op = -1;
+
     anulado = 0;
 
     QRegExp regExp_ruc("[0-9]{11,11}");
@@ -57,6 +60,16 @@ VentaBoleta::VentaBoleta(QWidget *parent) :
     ui->tableWidget->setItemDelegateForColumn(INDEX_P_TOTAL, dSpinBoxDelegate);
 
     ui->tableWidget->hideColumn(INDEX_ID);
+
+    ui->label_serie_numero_registroSinDoc->hide();
+    ui->comboBox_id_registroSinDoc->hide();
+    ui->comboBox_serie_numero_registroSinDoc->hide();
+    ui->pushButton_quitar_registroSinDoc->hide();
+    ui->pushButton_jalar_registroSinDoc->hide();
+
+    ui->comboBox_id_cotizacion->hide();
+    ui->comboBox_id_notaPedido->hide();
+    ui->comboBox_id_guiarr->hide();
 
     this->installEventFilter(this);
     ui->dateEdit_declaracion->installEventFilter(this);
@@ -109,7 +122,14 @@ VentaBoleta::~VentaBoleta()
     qDebug()<<"delete venta boleta";
     delete ui;
 }
-
+void VentaBoleta::setVer()
+{
+    ui->pushButton_amarres->hide();
+    ui->pushButton_anular->hide();
+    ui->pushButton_imprimir->hide();
+    ui->pushButton_eliminar->hide();
+    ui->pushButton_guardar->hide();
+}
 void VentaBoleta::set_widget_previous(QWidget *widget_previous)
 {
     this->widget_previous = widget_previous;
@@ -194,7 +214,8 @@ bool VentaBoleta::select(QString id
     str_query += " WHERE boleta.comprobante_documento_id = "+id+")";
     str_query += " UNION ALL";
     str_query += "(SELECT producto.id, d_h_prod.cantidad, unidad.unidad";
-    str_query += ", concat(producto.descripcion,' ',marca.marca), d_h_prod.precio FROM documento";
+    //str_query += ", concat(producto.descripcion,' ',IF(marca.marca IS NULL, '', concat(' ', marca.marca))), d_h_prod.precio FROM documento";
+    str_query += ", producto.descripcion, d_h_prod.precio FROM documento";
     str_query += " JOIN documento_h_producto d_h_prod ON documento.id = d_h_prod.documento_id";
     str_query += " JOIN producto ON producto.id = d_h_prod.producto_id";
     str_query += " LEFT JOIN marca ON marca.id = producto.marca_id";
@@ -248,7 +269,7 @@ bool VentaBoleta::select(QString id
             ui->comboBox_id_guiarr->addItem(id);
             ui->comboBox_serie_numero_guiarr->addItem(sn);
         }
-        QDate date = QDate::fromString(fecha_emision, "dd-MMM-yyyy");
+        QDate date = QDate::fromString(fecha_emision, "dd-MM-yyyy");
 
         ui->dateEdit_emision->setDate(date);
 
@@ -439,14 +460,15 @@ void VentaBoleta::set_data(int tipo, QString id, QString persona_id, QString tip
 
 bool VentaBoleta::guardar()
 {
+    if(ui->dateEdit_declaracion->date().month() > ui->dateEdit_emision->date().month()){
+        return false;
+    }
     if(persona_id.compare("") == 0)
-    {
-        qDebug()<<"1"<<endl;
+    {        
         return false;
     }
     if(ui->tableWidget->rowCount() <= 0)
     {
-        qDebug()<<"2"<<endl;
         return false;
     }
 
@@ -457,7 +479,7 @@ bool VentaBoleta::guardar()
 
     if (id.compare("") == 0) {
         // DOCUMENTO
-        str_query =  "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
+        str_query += "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
         str_query += QString().setNum(tipo_documento::BOLETA);
         str_query += ", 1)";
         str_query += "&&END_QUERY&&";
@@ -565,6 +587,8 @@ bool VentaBoleta::guardar()
             str_query_2.remove(0,1);
             str_query += str_query_2+"&&END_QUERY&&";
         }
+        str_query += "SELECT MAX(id) FROM documento";
+        str_query += "&&END_QUERY&&";
     }else{
         // COMPROBANTE
         /*
@@ -574,7 +598,7 @@ bool VentaBoleta::guardar()
         */
 
         // ANEXO
-        str_query +=  "UPDATE anexo SET";
+        str_query += "UPDATE anexo SET";
         str_query += " fecha_emision = '"+ui->dateEdit_emision->date().toString("yyyy-MM-dd")+"'";
         str_query += ", fecha_sistema = '"+ui->dateTimeEdit_sistema->dateTime().toString("yyyy-MM-dd hh:mm:ss")+"'";
         str_query += ", serie = '"+ui->lineEdit_serie->text()+"'";
@@ -676,6 +700,8 @@ bool VentaBoleta::guardar()
             str_query += str_query_2+"&&END_QUERY&&";
         }
     }
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
 
     ui->dateEdit_emision->setDisplayFormat("dd-MM-yyyy");
     ui->dateTimeEdit_sistema->setDisplayFormat("dd-MM-yyyy hh:mm:ss");
@@ -684,8 +710,19 @@ bool VentaBoleta::guardar()
     SYSTEM->multiple_query(str_query);
     qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
+        if(this->id.compare("") == 0){
+            op = INGRESAR;
+            query.next();
+            this->id = query.value(0).toString();
+        }else
+            op = MODIFICAR;
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -693,7 +730,9 @@ bool VentaBoleta::remove()
 {
     QString str_query;
 
-    str_query = "DELETE FROM documento WHERE id = "+id;
+    str_query += "DELETE FROM documento WHERE id = "+id;
+    str_query += "&&END_QUERY&&";
+    str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
 
     QSqlQuery query;
@@ -704,6 +743,11 @@ bool VentaBoleta::remove()
         id = "";
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -711,265 +755,6 @@ bool VentaBoleta::remove()
 void VentaBoleta::set_time()
 {
     ui->dateTimeEdit_sistema->setDateTime(QDateTime::currentDateTime());
-}
-
-void VentaBoleta::on_pushButton_transformar_clicked()
-{
-    int tipo = ui->comboBox_transformar->currentIndex();
-
-    switch(tipo){
-    case 0:{
-        tipo = tipo_documento::BOLETA;
-
-        VentaBoleta* w = new VentaBoleta;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(venta_items::BOLETA, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    case 1:{
-        tipo = tipo_documento::FACTURA;
-
-        VentaFactura* w = new VentaFactura;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(venta_items::BOLETA, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    case 2:{
-        tipo = tipo_documento::GUIA_REMISION_REMITENTE;
-
-        VentaGuiaRR* w = new VentaGuiaRR;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-            }
-            w->set_data(venta_items::BOLETA, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);            
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    case 3:{
-        tipo = tipo_documento::NOTA_CREDITO;
-
-        VentaNotaCredito* w = new VentaNotaCredito;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(venta_items::BOLETA, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    case 4:{
-        tipo = tipo_documento::NOTA_DEBITO;
-
-        VentaNotaDebito* w = new VentaNotaDebito;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(venta_items::BOLETA, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    }
 }
 
 void VentaBoleta::on_cliente_closing()
@@ -1009,6 +794,14 @@ void VentaBoleta::on_pushButton_cliente_clicked()
 {
     VentaCliente* w = new VentaCliente;
     w->set_widget_previous(this);
+
+    w->hideOptProveedor();
+    w->hideOptTransportista();
+
+    w->setTipoClienteDNI();
+
+    w->hideOptClienteRUC();
+    w->hideOptUsuario();
 
     w->set_tipo(persona_items::CLIENTE_DNI);
 
@@ -1281,12 +1074,11 @@ void VentaBoleta::on_pushButton_salir_clicked()
 }
 void VentaBoleta::showEvent(QShowEvent *se)
 {
-    if(focusWidget()){
-        focusWidget()->setFocus();
-    }else{
-        ui->dateEdit_declaracion->setFocus(Qt::TabFocusReason);
-    }
+    emit showing();
+
     se->accept();
+
+    afterShow = true;
 }
 void VentaBoleta::hideEvent(QHideEvent *he)
 {
@@ -1303,6 +1095,33 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->dateEdit_declaracion->setFocus();
+                ui->dateEdit_declaracion->setCurrentSectionIndex(ui->dateEdit_declaracion->currentSectionIndex());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    focusWidget()->setFocus();
+                }else{
+                    ui->dateEdit_declaracion->setFocus();
+                    ui->dateEdit_declaracion->setCurrentSectionIndex(ui->dateEdit_declaracion->currentSectionIndex());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
             switch(KeyEvent->key())
@@ -1315,6 +1134,7 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
         }
         return false;
     }
+
     w_temp = ui->dateEdit_declaracion;
     if(obj == w_temp){
         if(e->type() == QEvent::KeyPress){
@@ -2266,6 +2086,7 @@ void VentaBoleta::on_pushButton_anular_clicked()
 void VentaBoleta::on_dateEdit_declaracion_dateChanged(const QDate &date)
 {
     if(date.month() > ui->dateEdit_emision->date().month()){
+        /*
         QMessageBox::warning(this, "Advertencia", "El mes de declaración no puede ser mayor\nque la fecha de emisión.", "Ok");
 
         disconnect(ui->dateEdit_declaracion, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_declaracion_dateChanged(QDate)));
@@ -2273,6 +2094,7 @@ void VentaBoleta::on_dateEdit_declaracion_dateChanged(const QDate &date)
         date_temp.setDate(date.year(), mes_declaracion, date.day());
         ui->dateEdit_declaracion->setDate(date_temp);
         connect(ui->dateEdit_declaracion, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_declaracion_dateChanged(QDate)));
+        */
     }else{
         mes_declaracion = date.month();
     }
@@ -2281,6 +2103,7 @@ void VentaBoleta::on_dateEdit_declaracion_dateChanged(const QDate &date)
 void VentaBoleta::on_dateEdit_emision_dateChanged(const QDate &date)
 {
     if(date.month() < ui->dateEdit_declaracion->date().month()){
+        /*
         QMessageBox::warning(this, "Advertencia", "El mes de declaración no puede ser mayor\nque la fecha de emisión.", "Ok");
 
         disconnect(ui->dateEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_emision_dateChanged(QDate)));
@@ -2288,6 +2111,7 @@ void VentaBoleta::on_dateEdit_emision_dateChanged(const QDate &date)
         date_temp.setDate(date.year(), mes_emision, date.day());
         ui->dateEdit_emision->setDate(date_temp);
         connect(ui->dateEdit_emision, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_emision_dateChanged(QDate)));
+        */
     }else{
         mes_emision = date.month();
     }

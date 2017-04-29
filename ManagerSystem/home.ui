@@ -26,7 +26,7 @@
       <bool>false</bool>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgb(170, 255, 255);</string>
+      <string notr="true">background-color: rgb(216, 216, 216);</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -147,7 +147,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="Iconos.qrc">
+             <iconset resource="iconos.qrc">
               <normaloff>:/new/Iconos/Personal.png</normaloff>:/new/Iconos/Personal.png</iconset>
             </property>
             <property name="iconSize">
@@ -381,7 +381,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/Android_Market.png</normaloff>:/new/Iconos/Android_Market.png</iconset>
               </property>
               <property name="iconSize">
@@ -467,7 +467,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/Windows_Marketplace.png</normaloff>:/new/Iconos/Windows_Marketplace.png</iconset>
               </property>
               <property name="iconSize">
@@ -529,7 +529,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/Tune-Up_Utilities.png</normaloff>:/new/Iconos/Tune-Up_Utilities.png</iconset>
               </property>
               <property name="iconSize">
@@ -591,7 +591,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/myspace_alt.png</normaloff>:/new/Iconos/myspace_alt.png</iconset>
               </property>
               <property name="iconSize">
@@ -653,7 +653,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/Journal.png</normaloff>:/new/Iconos/Journal.png</iconset>
               </property>
               <property name="iconSize">
@@ -709,7 +709,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/Services.png</normaloff>:/new/Iconos/Services.png</iconset>
               </property>
               <property name="iconSize">
@@ -806,7 +806,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/Facebook_alt_5.png</normaloff>:/new/Iconos/Facebook_alt_5.png</iconset>
               </property>
               <property name="iconSize">
@@ -853,7 +853,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/Twitter_alt_1.png</normaloff>:/new/Iconos/Twitter_alt_1.png</iconset>
               </property>
               <property name="iconSize">
@@ -900,7 +900,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="Iconos.qrc">
+               <iconset resource="iconos.qrc">
                 <normaloff>:/new/Iconos/Gmail.png</normaloff>:/new/Iconos/Gmail.png</iconset>
               </property>
               <property name="iconSize">
@@ -986,6 +986,8 @@
   <tabstop>pushButton</tabstop>
   <tabstop>pushButton_usuario</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

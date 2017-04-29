@@ -54,7 +54,7 @@ private slots:
 
     void on_dateEdit_dateChanged(const QDate &date);
 
-    void on_pushButton_modificar_clicked();
+    void on_pushButton_ver_clicked();
 
 protected:
     void showEvent(QShowEvent* se);

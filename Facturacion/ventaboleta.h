@@ -15,6 +15,8 @@ public:
     explicit VentaBoleta(QWidget *parent = 0);
     ~VentaBoleta();
 
+    void setVer();
+
     QString getID(){ return id; }
     QString getPersonaID(){ return persona_id; }
     QString getTipoPersonaID(){ return tipo_persona_id; }
@@ -66,8 +68,6 @@ private:
 
 private slots:
     void set_time();
-
-    void on_pushButton_transformar_clicked();    
 
     void on_cliente_closing();
 
@@ -145,6 +145,8 @@ protected:
     bool eventFilter(QObject *obj, QEvent *e);
 
 signals:
+    void showing();
+
     void hiding();
 
     void closing();
@@ -153,6 +155,9 @@ private:
     Ui::VentaBoleta *ui;
 
     QWidget* widget_previous;
+
+    int op;
+    bool afterShow;
 
     QSqlQuery query;
 

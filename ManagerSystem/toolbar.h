@@ -44,19 +44,7 @@ public slots:
 
     void on_toolButton_colaboradores_clicked();
 
-    void on_toolButton_configuracion_clicked();
-
-	void on_pushButton_rollback_clicked();
-
-	void on_pushButton_commit_clicked();
-
-	void on_pushButton_backup_clicked();
-
-	void on_myProccess_started();
-
-	void on_myProccess_finished(int exitCode, QProcess::ExitStatus exitStatus);
-
-	void on_pushButton_restore_clicked();
+    void on_toolButton_configuracion_clicked();	
 	
 private:
     Ui::ToolBar *ui;

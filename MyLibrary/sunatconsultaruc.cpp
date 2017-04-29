@@ -85,6 +85,7 @@ void SunatConsultaRUC::set_data(QLabel* label_captcha
             , this, SLOT(renderProccessTerminated()));
 
     view_consultaRuc->setUrl(tr("http://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias"));
+    label_captcha->show();
     //qDebug()<<QDir::currentPath()<<endl;
     //qDebug()<<QApplication::applicationDirPath()<<endl;
     //qDebug()<<QApplication::applicationFilePath()<<endl;
@@ -100,7 +101,10 @@ void SunatConsultaRUC::set_data(QLabel* label_captcha
     view_consultaRuc->load(tr("http://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias"));
     //view_consultaRuc->reload(tr("http://www.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias"));
 
-    //view_consultaRuc->show();
+    view_consultaRuc->show();
+    view_consultaRuc->lower();
+    //SYSTEM->get_mainw(this).show();
+    //view_consultaRuc->hide();
 }
 void SunatConsultaRUC::consultar_anexos()
 {
@@ -153,7 +157,7 @@ void SunatConsultaRUC::show_time_establecimientos()
 
 void SunatConsultaRUC::loadFinished(bool b)
 {
-    isLoad = b;
+    //isLoad = b;
 
 	if (firstTime_load == 0) {
 		firstTime_load++;
@@ -162,7 +166,7 @@ void SunatConsultaRUC::loadFinished(bool b)
     qDebug()<<"BEGIN"<<endl;
 
     if(b){
-		timer_image->start(100);		
+        timer_image->start(300);
     }
 
 }
@@ -177,11 +181,11 @@ void SunatConsultaRUC::on_le_consulta_ruc_textEdited()
     if (ruc.length() == 11 && captcha.length() == 4){        
 		QWebEngineView* view = view_consultaRuc;
 		
-        if (isLoad) {
-            loadFinished(true);
-        } else {
+        //if (isLoad) {
+            //loadFinished(true);
+        //} else {
             view->reload();
-        }
+        //}
 
     }    		
 }
@@ -194,12 +198,15 @@ void SunatConsultaRUC::setImage()
 {			
 	//if (isImageRead) return;	
 	qDebug() << "Read Image" << endl;
-    
+        
+    /*
     if(tt_image > 2500){
         tt_image = 0;
         timer_image->stop();
     }
     tt_image += 100;
+    */
+
 	QWebEngineView* view = view_consultaRuc;
 	QWebEnginePage* page = view->page();
 
@@ -275,9 +282,11 @@ void SunatConsultaRUC::setImage()
             count++;
             return;
         }
+
         tt_image = 0;
         timer_image->stop();
         count = 0;
+
 
         label_captcha->setPixmap(QPixmap::fromImage(img_2));
 
@@ -394,6 +403,7 @@ void SunatConsultaRUC::setDatos()
 		time_transcurred = 0;
 		timer_datos->stop();
 
+        /*
         QWebEngineView* view = view_consultaRuc;
         QWebEnginePage* page = view->page();
 
@@ -404,6 +414,7 @@ void SunatConsultaRUC::setDatos()
         });
 
         on_le_consulta_ruc_textEdited();
+        */
 		return;
 	}
 	

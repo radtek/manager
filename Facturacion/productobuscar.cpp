@@ -42,6 +42,10 @@ ProductoBuscar::ProductoBuscar(QWidget *parent) :
     disconnect(ui->lineEdit_unidad_buscar, SIGNAL(returnPressed())
                 , this, SLOT(on_lineEdit_unidad_buscar_returnPressed()));
 */
+    QScrollBar* bar = ui->tableWidget->verticalScrollBar();
+    connect(bar, SIGNAL(valueChanged(int)), this, SLOT(on_verticalScrollBar_valueChanged(int)));
+    connect(bar, SIGNAL(actionTriggered(int)), this, SLOT(on_verticalScrollBar_actionTriggered(int)));
+
 	this->installEventFilter(this);
 
 	ui->lineEdit_codigo->installEventFilter(this);
@@ -112,68 +116,73 @@ void ProductoBuscar::set_widget_previous(QWidget *widget_previous)
 {
     this->widget_previous = widget_previous;
 }
+void ProductoBuscar::on_verticalScrollBar_actionTriggered(int value)
+{
+    QScrollBar* bar = ui->tableWidget->verticalScrollBar();
 
+    /*
+    qDebug()<<"activation value: "<<value<<endl;
+    qDebug()<<"activation bar maximum: "<<bar->maximum()<<endl;
+    qDebug()<<"activation bar value: "<<bar->value()<<endl;
+    */
+    if(bar->value() == bar->maximum()) {
+        set_buscar();
+    }
+}
+void ProductoBuscar::on_verticalScrollBar_valueChanged(int value)
+{
+    /*
+    QScrollBar* bar = ui->tableWidget->verticalScrollBar();
+
+    if(value == bar->maximum())
+        set_buscar();
+*/
+}
 void ProductoBuscar::on_productoFormTransaction_closing()
 {
 	ProductoFormTransaction* widget_prod = (ProductoFormTransaction*)QObject::sender();
 
     int op = widget_prod->getOp();
     switch(op){
-    case INGRESAR:{
-        pos = 0;
+    case INGRESAR:{        
+        if (widget_previous) {
+            int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+            switch(ret){
+            case 0:{
+                id = widget_prod->get_ID();
+                id_tipo = widget_prod->get_IDTipo();
+                id_marca = widget_prod->get_IDMarca();
+                id_unidad = widget_prod->get_IDUnidad();
+                codigo = widget_prod->get_codigo();
+                tipo = widget_prod->get_tipo();
+                descripcion = widget_prod->get_descripcion();
+                marca = widget_prod->get_marca();
+                unidad = widget_prod->get_unidad();
+                precio = widget_prod->get_precio();
+                cantidad = widget_prod->get_cantidad();
 
-        ui->tableWidget->setRowCount(0);
-        ui->tableWidget->setColumnCount(0);
-        ui->tableWidget->clear();
+                setAttribute(Qt::WA_DeleteOnClose);
+                SYSTEM->change_center_w(this, widget_previous);
+            }break;
+            case 1:{
+                pos = 0;
 
-        int rowCount = 1;
-        ui->tableWidget->setRowCount(rowCount);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-        int columnCount = 11;
-        ui->tableWidget->setColumnCount(columnCount);
+                set_buscar();
+            }break;
+            }
+        }else{
+            pos = 0;
 
-        ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID" << "tipo_id" << "marca_id" << "unidad_id"
-            << "Codigo" << "Tipo" << "Descripción" << "Marca" << "Unidad" << "Precio" << "Cantidad");
-        ui->tableWidget->setColumnHidden(0, true);
-        ui->tableWidget->setColumnHidden(1, true);
-        ui->tableWidget->setColumnHidden(2, true);
-        ui->tableWidget->setColumnHidden(3, true);
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
 
-        QString id = widget_prod->get_ID();
-        QString tipo_id = widget_prod->get_IDTipo();
-        QString marca_id = widget_prod->get_IDMarca();
-        QString unidad_id = widget_prod->get_IDUnidad();
-        QString codigo = widget_prod->get_codigo();
-        QString tipo = widget_prod->get_tipo();
-        QString descripcion = widget_prod->get_descripcion();
-        QString marca = widget_prod->get_marca();
-        QString unidad = widget_prod->get_unidad();
-        QString precio = widget_prod->get_precio();
-        QString cantidad = widget_prod->get_cantidad();
-
-        ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-        ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(tipo_id));
-        ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(marca_id));
-        ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(unidad_id));
-        ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(codigo));
-        ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(tipo));
-        ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(descripcion));
-        ui->tableWidget->setItem(pos, 7, new QTableWidgetItem(marca));
-        ui->tableWidget->setItem(pos, 8, new QTableWidgetItem(unidad));
-        ui->tableWidget->setItem(pos, 9, new QTableWidgetItem(precio));
-        ui->tableWidget->setItem(pos, 10, new QTableWidgetItem(cantidad));
-
-        for(int j=0; j<ui->tableWidget->columnCount(); j++)
-            ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                         | Qt::ItemIsSelectable);
-
-        pos++;
-        ui->tableWidget->setFocus();
-        ui->tableWidget->selectRow(0);
-        for(int j=0; j<ui->tableWidget->columnCount(); j++){
-            ui->tableWidget->item(0, j)->setSelected(true);
+            set_buscar();
         }
-        SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
     }break;
     case MODIFICAR:{
         QString id = widget_prod->get_ID();
@@ -190,23 +199,28 @@ void ProductoBuscar::on_productoFormTransaction_closing()
 
         QTableWidgetItem* item = ui->tableWidget->currentItem();
         int row = item->row();
-        ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-        ui->tableWidget->setItem(row, 1, new QTableWidgetItem(tipo_id));
-        ui->tableWidget->setItem(row, 2, new QTableWidgetItem(marca_id));
-        ui->tableWidget->setItem(row, 3, new QTableWidgetItem(unidad_id));
-        ui->tableWidget->setItem(row, 4, new QTableWidgetItem(codigo));
-        ui->tableWidget->setItem(row, 5, new QTableWidgetItem(tipo));
-        ui->tableWidget->setItem(row, 6, new QTableWidgetItem(descripcion));
-        ui->tableWidget->setItem(row, 7, new QTableWidgetItem(marca));
-        ui->tableWidget->setItem(row, 8, new QTableWidgetItem(unidad));
-        ui->tableWidget->setItem(row, 9, new QTableWidgetItem(precio));
-        ui->tableWidget->setItem(row, 10, new QTableWidgetItem(cantidad));
+        ui->tableWidget->item(row, 0)->setText(id);
+        ui->tableWidget->item(row, 1)->setText(tipo_id);
+        ui->tableWidget->item(row, 2)->setText(marca_id);
+        ui->tableWidget->item(row, 3)->setText(unidad_id);
+        ui->tableWidget->item(row, 4)->setText(codigo);
+        ui->tableWidget->item(row, 5)->setText(tipo);
+        ui->tableWidget->item(row, 6)->setText(descripcion);
+        ui->tableWidget->item(row, 7)->setText(marca);
+        ui->tableWidget->item(row, 8)->setText(unidad);
+        ui->tableWidget->item(row, 9)->setText(precio);
+        ui->tableWidget->item(row, 10)->setText(cantidad);
 
         SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
     }break;
     case ELIMINAR:{
-        QTableWidgetItem* item = ui->tableWidget->currentItem();
-        ui->tableWidget->removeRow(item->row());
+        pos = 0;
+
+        ui->tableWidget->setRowCount(0);
+        ui->tableWidget->setColumnCount(0);
+        ui->tableWidget->clear();
+
+        set_buscar();
     }break;
     case SALIR:{
 
@@ -246,7 +260,10 @@ void ProductoBuscar::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
 void ProductoBuscar::on_pushButton_ok_clicked()
 {
     QTableWidgetItem* item = ui->tableWidget->currentItem();
-
+    if(!item){
+        QMessageBox::warning(this, "Advertencia", "Selecciona un item de la tabla.", "Ok");
+        return;
+    }
 	if (widget_previous) {
 		int row = item->row();
 		QTableWidget* tb = ui->tableWidget;
@@ -580,7 +597,7 @@ bool ProductoBuscar::eventFilter(QObject *obj, QEvent *e)
 			case Qt::Key_Down: {
 				int index = ui->tableWidget->currentRow();
 				if (index == ui->tableWidget->rowCount() - 1) {
-                    on_lineEdit_descripcion_buscar_returnPressed();
+                    set_buscar();
                     return true;
 				}
             }break;

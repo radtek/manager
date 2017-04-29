@@ -37,6 +37,8 @@ public:
     void hideOptUsuario();
 
 public slots:
+    void on_verticalScrollBar_actionTriggered(int value);
+
     void on_colaborador_closing();
 
 private:
@@ -51,7 +53,7 @@ public slots:
 
     void on_pushButton_salir_clicked();
 
-    void on_pushButton_agregar_clicked();
+    void on_pushButton_nuevo_clicked();
 
     void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
 

@@ -18,6 +18,8 @@ public:
     explicit VentaFactura(QWidget *parent = 0);
     ~VentaFactura();
 
+    void setVer();
+
     QString getID(){ return id; }
     QString getPersonaID(){ return persona_id; }
     QString getTipoPersonaID(){ return tipo_persona_id; }
@@ -69,8 +71,6 @@ private:
 
 private slots:
     void set_time();
-
-    void on_pushButton_transformar_clicked();
 
     void on_cliente_closing();
 
@@ -148,6 +148,8 @@ protected:
     bool eventFilter(QObject *obj, QEvent *e);
 
 signals:
+    void showing();
+
     void hiding();
 
     void closing();
@@ -161,6 +163,9 @@ private:
     int mes_emision;
 
     QWidget* widget_previous;
+
+    int op;
+    bool afterShow;
 
     QSqlQuery query;
 

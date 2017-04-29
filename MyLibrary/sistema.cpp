@@ -482,8 +482,8 @@ void Sistema::v_normalized_strings_for_cb(QVector<QString> &v)
 QString Sistema::replace_quotes(const QString &str)
 {
     QString s= str;
-    s = s.replace(QString("\""), QString("\\\""));
-    s = s.replace(QString("'"), QString("\\'"));
+    s = s.replace(QString("\""), QString("\\\\\\\""));
+    s = s.replace(QString("'"), QString("\\\\'"));
     //qDebug()<<s<<endl;
     return s;
 }
@@ -513,8 +513,10 @@ QWidget* Sistema::change_center_w(QWidget* old_w, QWidget* new_w, bool isClose)
     }
 
     QWidget* temp = old_w->parentWidget();
-    if(temp){
 
+    if(temp){        
+        //QMainWindow* mw = (QMainWindow*)temp->parentWidget()->parentWidget()->parentWidget();
+        //mw->statusBar()->addWidget(new QLabel("HOLA MAINWINDOW"));
     }
 
     QGridLayout* gridLayout = 0;
@@ -547,7 +549,7 @@ QWidget* Sistema::change_center_w(QWidget* old_w, QWidget* new_w, bool isClose)
 
     return new_w;
 }
-QWidget* Sistema::set_center_w(QWidget* w)
+QWidget* Sistema::set_center_w(QWidget* w, QString styleSheet)
 {
     QWidget* widget= new QWidget;
 
@@ -555,7 +557,7 @@ QWidget* Sistema::set_center_w(QWidget* w)
     grid->setHorizontalSpacing(0);
     grid->setVerticalSpacing(0);
 
-        QString ss = "background-color: rgb(255, 255, 127)";
+        QString ss = styleSheet;
         QWidget* widget_00 = new QWidget;
         widget_00->setStyleSheet(ss);
         QSpacerItem* horizontalSpacer= new QSpacerItem(0, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -609,13 +611,13 @@ QWidget* Sistema::set_center_w(QWidget* w)
 
     return area;
 }
-QWidget* Sistema::get_mainw(QWidget *w)
+QMainWindow* Sistema::get_mainw(QWidget *w)
 {
-    QWidget* gridLayout = w->parentWidget();
-    QWidget* scrollArea = gridLayout->parentWidget();
+    QWidget* widget = w->parentWidget();
+    QWidget* scrollArea = widget->parentWidget();
     QWidget* centralWidget = scrollArea->parentWidget();
 
-    return centralWidget->parentWidget();
+    return (QMainWindow*)centralWidget->parentWidget();
 }
 
 QString Sistema::build_argument(const QString& cmp_column, const QString &arg)

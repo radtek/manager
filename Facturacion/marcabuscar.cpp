@@ -25,6 +25,9 @@ MarcaBuscar::MarcaBuscar(QWidget *parent) :
 
     //disconnect(ui->lineEdit_marca_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_marca_buscar_returnPressed()));
 
+    QScrollBar* bar = ui->tableWidget->verticalScrollBar();
+    connect(bar, SIGNAL(actionTriggered(int)), this, SLOT(on_verticalScrollBar_actionTriggered(int)));
+
 	// INSTALL FILTERS
 	this->installEventFilter(this);
 	ui->lineEdit_marca_buscar->installEventFilter(this);
@@ -52,6 +55,19 @@ void MarcaBuscar::set_widget_previous(QWidget *widget_previous)
 {
 	this->widget_previous = widget_previous;
 }
+void MarcaBuscar::on_verticalScrollBar_actionTriggered(int value)
+{
+    QScrollBar* bar = ui->tableWidget->verticalScrollBar();
+
+    /*
+    qDebug()<<"activation value: "<<value<<endl;
+    qDebug()<<"activation bar maximum: "<<bar->maximum()<<endl;
+    qDebug()<<"activation bar value: "<<bar->value()<<endl;
+    */
+    if(bar->value() == bar->maximum()) {
+        set_buscar();
+    }
+}
 void MarcaBuscar::on_marca_closing()
 {
 	Marca* widget_marca= (Marca*)QObject::sender();
@@ -59,38 +75,35 @@ void MarcaBuscar::on_marca_closing()
     int op = widget_marca->getOp();
     switch(op){
     case INGRESAR:{
-        pos = 0;
+        if (widget_previous) {
+            int ret = QMessageBox::information(this, "Consulta", "Tiene un item disponible para ingresar.", "Si", "No");
+            switch(ret){
+            case 0:{
+                id = widget_marca->getID();
+                marca = widget_marca->getMarca();
 
-        ui->tableWidget->setRowCount(0);
-        ui->tableWidget->setColumnCount(0);
-        ui->tableWidget->clear();
+                setAttribute(Qt::WA_DeleteOnClose);
+                SYSTEM->change_center_w(this, widget_previous);
+            }break;
+            case 1:{
+                pos = 0;
 
-        int rowCount = 1;
-        ui->tableWidget->setRowCount(rowCount);
+                ui->tableWidget->setRowCount(0);
+                ui->tableWidget->setColumnCount(0);
+                ui->tableWidget->clear();
 
-        int columnCount = 2;
-        ui->tableWidget->setColumnCount(columnCount);
+                set_buscar();
+            }break;
+            }
+        }else{
+            pos = 0;
 
-        ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID" << "Marca");
-        ui->tableWidget->setColumnHidden(0, true);
+            ui->tableWidget->setRowCount(0);
+            ui->tableWidget->setColumnCount(0);
+            ui->tableWidget->clear();
 
-        QString id = widget_marca->getID();
-        QString marca = widget_marca->getMarca();
-
-        ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
-        ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(marca));
-
-        for(int j=0; j<ui->tableWidget->columnCount(); j++)
-            ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                         | Qt::ItemIsSelectable);
-
-        pos++;
-        ui->tableWidget->setFocus();
-        ui->tableWidget->selectRow(0);
-        for(int j=0; j<ui->tableWidget->columnCount(); j++){
-            ui->tableWidget->item(0, j)->setSelected(true);
+            set_buscar();
         }
-        SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
     }break;
     case MODIFICAR:{
         QString id = widget_marca->getID();
@@ -98,14 +111,19 @@ void MarcaBuscar::on_marca_closing()
 
         QTableWidgetItem* item = ui->tableWidget->currentItem();
         int row = item->row();
-        ui->tableWidget->setItem(row, 0, new QTableWidgetItem(id));
-        ui->tableWidget->setItem(row, 1, new QTableWidgetItem(marca));
+        ui->tableWidget->item(row, 0)->setText(id);
+        ui->tableWidget->item(row, 1)->setText(marca);
 
         SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
     }break;
     case ELIMINAR:{
-        QTableWidgetItem* item = ui->tableWidget->currentItem();
-        ui->tableWidget->removeRow(item->row());
+        pos = 0;
+
+        ui->tableWidget->setRowCount(0);
+        ui->tableWidget->setColumnCount(0);
+        ui->tableWidget->clear();
+
+        set_buscar();
     }break;
     case SALIR:{
 
@@ -360,7 +378,7 @@ bool MarcaBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Down: {
                 int index = ui->tableWidget->currentRow();
                 if (index == ui->tableWidget->rowCount() - 1) {
-                    on_lineEdit_marca_buscar_returnPressed();
+                    set_buscar();
                     return true;
                 }
             }break;

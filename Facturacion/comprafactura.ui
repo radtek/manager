@@ -401,7 +401,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/Search_1.png</normaloff>:/new/Iconos/Search_1.png</iconset>
        </property>
        <property name="flat">
@@ -499,7 +499,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/Search_1.png</normaloff>:/new/Iconos/Search_1.png</iconset>
        </property>
       </widget>
@@ -510,7 +510,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/edit_find.png</normaloff>:/new/Iconos/edit_find.png</iconset>
        </property>
        <property name="flat">
@@ -524,7 +524,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/doc_delete.png</normaloff>:/new/Iconos/doc_delete.png</iconset>
        </property>
        <property name="flat">
@@ -626,7 +626,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/Search_1.png</normaloff>:/new/Iconos/Search_1.png</iconset>
        </property>
       </widget>
@@ -637,7 +637,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/edit_find.png</normaloff>:/new/Iconos/edit_find.png</iconset>
        </property>
        <property name="flat">
@@ -651,7 +651,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/doc_delete.png</normaloff>:/new/Iconos/doc_delete.png</iconset>
        </property>
        <property name="flat">
@@ -892,7 +892,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/playback_reload.png</normaloff>:/new/Iconos/playback_reload.png</iconset>
        </property>
       </widget>
@@ -955,7 +955,7 @@
         <string>Ingresar producto</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/SEARCH (1).png</normaloff>:/new/Iconos/SEARCH (1).png</iconset>
        </property>
        <property name="flat">
@@ -990,7 +990,7 @@
         <string>Bajar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/br_down.png</normaloff>:/new/Iconos/br_down.png</iconset>
        </property>
        <property name="shortcut">
@@ -1015,7 +1015,7 @@
         <string>Subir</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/br_up.png</normaloff>:/new/Iconos/br_up.png</iconset>
        </property>
        <property name="shortcut">
@@ -1040,7 +1040,7 @@
         <string>Quitar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/sq_minus.png</normaloff>:/new/Iconos/sq_minus.png</iconset>
        </property>
        <property name="shortcut">
@@ -1313,7 +1313,7 @@
         <string>&amp;ELIMINAR</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/eliminar.png</normaloff>:/new/Iconos/eliminar.png</iconset>
        </property>
        <property name="iconSize">
@@ -1351,7 +1351,7 @@
         <string>CAN&amp;JEAR</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/Data_Transfer-48.png</normaloff>:/new/Iconos/Data_Transfer-48.png</iconset>
        </property>
        <property name="iconSize">
@@ -1373,7 +1373,7 @@
         <string>&amp;AMARRES</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/amarres.png</normaloff>:/new/Iconos/amarres.png</iconset>
        </property>
        <property name="iconSize">
@@ -1395,7 +1395,7 @@
         <string>&amp;GUARDAR</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/guardar.png</normaloff>:/new/Iconos/guardar.png</iconset>
        </property>
        <property name="iconSize">
@@ -1417,7 +1417,7 @@
         <string>&amp;SALIR</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/salir.png</normaloff>:/new/Iconos/salir.png</iconset>
        </property>
        <property name="iconSize">
@@ -1433,16 +1433,6 @@
   </layout>
   <zorder>tableWidget</zorder>
   <zorder></zorder>
-  <zorder>label_3</zorder>
-  <zorder>lineEdit_2</zorder>
-  <zorder>label_title_guia</zorder>
-  <zorder>pushButton_jalar_guia</zorder>
-  <zorder>pushButton_quitar_guia</zorder>
-  <zorder>comboBox_serie_numero_guia</zorder>
-  <zorder>pushButton_buscar_guia</zorder>
-  <zorder>label_5</zorder>
-  <zorder>comboBox_id_guia</zorder>
-  <zorder>horizontalSpacer_2</zorder>
  </widget>
  <customwidgets>
   <customwidget>
@@ -1465,6 +1455,12 @@
   <tabstop>pushButton_buscar_orden</tabstop>
   <tabstop>pushButton_jalar_orden</tabstop>
   <tabstop>pushButton_quitar_orden</tabstop>
+  <tabstop>comboBox_id_guia</tabstop>
+  <tabstop>comboBox_serie_numero_guia</tabstop>
+  <tabstop>pushButton_buscar_guia</tabstop>
+  <tabstop>pushButton_jalar_guia</tabstop>
+  <tabstop>pushButton_quitar_guia</tabstop>
+  <tabstop>doubleSpinBox_percepcion</tabstop>
   <tabstop>comboBox_modalidad</tabstop>
   <tabstop>comboBox_moneda</tabstop>
   <tabstop>lineEdit_id_dolar</tabstop>
@@ -1489,7 +1485,7 @@
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
  <resources>
-  <include location="../ManagerSystem/Iconos.qrc"/>
+  <include location="../ManagerSystem/iconos.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -67,8 +67,6 @@ private:
 private slots:
     void set_time();
 
-    void on_pushButton_transformar_clicked();
-
     void on_cliente_closing();
 
     void on_producto_closing();
@@ -131,6 +129,8 @@ protected:
     bool eventFilter(QObject *obj, QEvent *e);
 
 signals:
+    void showing();
+
     void hiding();
 
     void closing();
@@ -139,6 +139,9 @@ private:
     Ui::VentaNotaDebito *ui;
 
     QWidget* widget_previous;
+
+    int op;
+    bool afterShow;
 
     double igv;
 

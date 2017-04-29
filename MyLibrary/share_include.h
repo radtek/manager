@@ -12,6 +12,7 @@
 #include "reniecconsultadni.h"
 #include "session.h"
 #include "sistema.h"
+#include "snackbarinfo.h"
 #include "sunatconsultaruc.h"
 #include "sunattipocambio.h"
 #include "widgetnumber.h"

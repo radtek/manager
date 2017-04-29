@@ -9,18 +9,23 @@ VentaBuscar::VentaBuscar(QWidget *parent) :
 
     widget_previous = NULL;
 
+    firstShow = false;
+    afterShow = false;
+
     modo_only_date = false;
 
     pos = 0;
     size_query = 10;
 
     QDate date;
-    date.setDate(QDate::currentDate().year(), 1, 1);
+    date.setDate(QDate::currentDate().year()-4, 1, 1);
     ui->dateEdit_inicio->setDate(date);
     ui->dateEdit_fin->setDate(QDate::currentDate());
 
     ui->radioButton_boleta->setChecked(true);
     tipo = venta_items::BOLETA;
+
+    //ui->radioButton_reg_sin_doc->hide();
 
     // INSTALL EVENT FILTERS
     this->installEventFilter(this);
@@ -30,7 +35,8 @@ VentaBuscar::VentaBuscar(QWidget *parent) :
     ui->tableWidget->installEventFilter(this);
     ui->pushButton_ok->installEventFilter(this);
     ui->pushButton_salir->installEventFilter(this);
-    ui->pushButton_agregar->installEventFilter(this);
+    ui->pushButton_nuevo->installEventFilter(this);
+    ui->pushButton_editar->installEventFilter(this);
 }
 
 VentaBuscar::~VentaBuscar()
@@ -54,7 +60,7 @@ void VentaBuscar::set_ruc(QString ruc)
 
     modo_only_date = true;
 
-    ui->pushButton_agregar->hide();
+    ui->pushButton_nuevo->hide();
 
     on_lineEdit_buscar_returnPressed();
 }
@@ -173,19 +179,8 @@ void VentaBuscar::on_compra_closing()
     }break;
     }
 }
-void VentaBuscar::on_lineEdit_buscar_textEdited(const QString &arg1)
+void VentaBuscar::set_buscar()
 {
-    //connect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
-    pos = 0;
-
-    ui->tableWidget->setRowCount(0);
-    ui->tableWidget->setColumnCount(0);
-    ui->tableWidget->clear();
-}
-
-void VentaBuscar::on_lineEdit_buscar_returnPressed()
-{
-    //disconnect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
     QString str_query;
 
     QString arg = ui->lineEdit_buscar->text();
@@ -716,6 +711,30 @@ void VentaBuscar::on_lineEdit_buscar_returnPressed()
     } else {
     }
 }
+
+void VentaBuscar::on_lineEdit_buscar_textEdited(const QString &arg1)
+{
+    //connect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
+    pos = 0;
+
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setColumnCount(0);
+    ui->tableWidget->clear();
+
+    set_buscar();
+}
+
+void VentaBuscar::on_lineEdit_buscar_returnPressed()
+{
+    //disconnect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
+    pos = 0;
+
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setColumnCount(0);
+    ui->tableWidget->clear();
+
+    set_buscar();
+}
 void VentaBuscar::on_pushButton_ok_clicked()
 {
     QTableWidget* tb = ui->tableWidget;
@@ -746,26 +765,26 @@ void VentaBuscar::on_pushButton_ok_clicked()
 
 void VentaBuscar::on_pushButton_salir_clicked()
 {
-    int ret = QMessageBox::warning(this, "Advertencia", "¿Esta seguro que desea salir?", "Si", "No");
-    switch(ret){
-    case 0:{        
+    //int ret = QMessageBox::warning(this, "Advertencia", "¿Esta seguro que desea salir?", "Si", "No");
+    //switch(ret){
+    //case 0:{
         if(widget_previous){
             this->setAttribute(Qt::WA_DeleteOnClose);
             SYSTEM->change_center_w(this, widget_previous);
         }else{
             SYSTEM->clear_center_w(this);
         }
-    }break;
-    case 1:{
+    //}break;
+    //case 1:{
 
-    }
-    }    
+    //}
+    //}
 }
-void VentaBuscar::on_pushButton_agregar_clicked()
+void VentaBuscar::on_pushButton_nuevo_clicked()
 {
-    int ret = QMessageBox::warning(this, "Advertencia", "¿Desea AGREGAR una COMPRA?", "Si", "No");
-    switch(ret){
-    case 0:{        
+    //int ret = QMessageBox::warning(this, "Advertencia", "¿Desea abrir el documento?", "Si", "No");
+    //switch(ret){
+    //case 0:{
         switch(tipo)
         {
         case venta_items::REGISTRO_SIN_DOCUMENTO:{
@@ -773,21 +792,21 @@ void VentaBuscar::on_pushButton_agregar_clicked()
             w->set_widget_previous(this);            
             connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
             SYSTEM->change_center_w(this, w);
-            w->next_serie_numero();
+            //w->next_serie_numero();
         }break;
         case venta_items::BOLETA:{
             VentaBoleta* w = new VentaBoleta;
             w->set_widget_previous(this);
             connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
             SYSTEM->change_center_w(this, w);
-            w->next_serie_numero();
+            //w->next_serie_numero();
         }break;
         case venta_items::FACTURA:{
             VentaFactura* w = new VentaFactura;
             w->set_widget_previous(this);
             connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
             SYSTEM->change_center_w(this, w);
-            w->next_serie_numero();
+            //w->next_serie_numero();
         }break;
 
         case venta_items::NOTA_PEDIDO:{
@@ -795,43 +814,43 @@ void VentaBuscar::on_pushButton_agregar_clicked()
             w->set_widget_previous(this);
             connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
             SYSTEM->change_center_w(this, w);
-            w->next_serie_numero();
+            //w->next_serie_numero();
         }break;
         case venta_items::GUIA_REMISION_REMITENTE:{
             VentaGuiaRR* w = new VentaGuiaRR;
             w->set_widget_previous(this);
             connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
             SYSTEM->change_center_w(this, w);
-            w->next_serie_numero();
+            //w->next_serie_numero();
         }break;
         case venta_items::COTIZACION:{
             VentaCotizacion* w = new VentaCotizacion;
             w->set_widget_previous(this);
             connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
             SYSTEM->change_center_w(this, w);
-            w->next_serie_numero();
+            //w->next_serie_numero();
         }break;
         case venta_items::NOTA_CREDITO:{
             VentaNotaCredito* w = new VentaNotaCredito;
             w->set_widget_previous(this);
             connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
             SYSTEM->change_center_w(this, w);
-            w->next_serie_numero();
+            //w->next_serie_numero();
         }break;
         case venta_items::NOTA_DEBITO:{
             VentaNotaDebito* w = new VentaNotaDebito;
             w->set_widget_previous(this);
             connect(w, SIGNAL(closing()), this, SLOT(on_compra_closing()));
             SYSTEM->change_center_w(this, w);
-            w->next_serie_numero();
+            //w->next_serie_numero();
         }break;
 
         }
-    }break;
-    case 1:{
+    //}break;
+    //case 1:{
 
-    }break;
-    }
+    //}break;
+    //}
 }
 
 void VentaBuscar::on_radioButton_reg_sin_doc_clicked()
@@ -897,7 +916,245 @@ void VentaBuscar::on_radioButton_nota_debito_clicked()
     on_lineEdit_buscar_textEdited("");
     on_lineEdit_buscar_returnPressed();
 }
+void VentaBuscar::on_pushButton_editar_clicked()
+{
+    QTableWidgetItem* item = ui->tableWidget->currentItem();
+    editarItem(item);
+}
 void VentaBuscar::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
+{
+    if(widget_previous){
+        on_pushButton_ok_clicked();
+    }else{
+        editarItem(item);
+    }
+}
+void VentaBuscar::showEvent(QShowEvent *event)
+{
+    event->accept();
+
+    afterShow = true;
+
+    if(!firstShow){
+        on_lineEdit_buscar_textEdited(ui->lineEdit_buscar->text());
+        //on_lineEdit_buscar_returnPressed();
+        firstShow = true;
+    }
+}
+void VentaBuscar::closeEvent(QCloseEvent *event)
+{
+    event->accept();
+    emit closing();
+}
+
+bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
+{
+    QWidget* w_temp;
+    w_temp = this;
+    if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->lineEdit_buscar->setFocus();
+                ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    if(focusWidget() == ui->pushButton_nuevo){
+                        ui->lineEdit_buscar->setFocus();
+                        ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                    }else{
+                        focusWidget()->setFocus();
+                    }
+                }else{
+                    ui->lineEdit_buscar->setFocus();
+                    ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Escape:
+                ui->pushButton_salir->click();
+                return true;
+            case Qt::Key_Up: {
+                if (this->focusWidget() != ui->tableWidget) {
+                    ui->tableWidget->setFocus(Qt::TabFocusReason);
+                    if (ui->tableWidget->currentItem())
+                        ui->tableWidget->currentItem()->setSelected(true);
+                }
+            }break;
+            case Qt::Key_Down: {
+                if (this->focusWidget() != ui->tableWidget) {
+                    ui->tableWidget->setFocus(Qt::TabFocusReason);
+                    if (ui->tableWidget->currentItem())
+                        ui->tableWidget->currentItem()->setSelected(true);
+                }
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->dateEdit_inicio;
+    if(w_temp == obj){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->dateEdit_fin->setFocus(Qt::TabFocusReason);
+                return true;
+            }
+
+        }else{
+
+        }
+        if(e->type() == QEvent::FocusOut){
+            //ui->dateEdit_inicio->setFo
+        }
+        return false;
+    }
+    w_temp = ui->dateEdit_fin;
+    if(w_temp == obj){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                if(modo_only_date){
+                    on_lineEdit_buscar_textEdited(ui->lineEdit_buscar->text());
+                    //on_lineEdit_buscar_returnPressed();
+                    ui->tableWidget->setFocus(Qt::TabFocusReason);
+                }else{
+                    ui->lineEdit_buscar->setFocus(Qt::TabFocusReason);
+                }
+
+                return true;
+            }
+
+        }else{
+
+        }
+        if(e->type() == QEvent::FocusOut){
+
+        }
+        return false;
+    }
+    w_temp = ui->lineEdit_buscar;
+    if(w_temp == obj){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:{
+                on_lineEdit_buscar_returnPressed();
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->tableWidget;
+    if(w_temp == obj){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->pushButton_ok->click();
+                return true;
+            case Qt::Key_Down: {
+                int index = ui->tableWidget->currentRow();
+                if (index == ui->tableWidget->rowCount() - 1) {
+                    on_lineEdit_buscar_returnPressed();
+                }
+            }
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_ok;
+    if(w_temp == obj){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->pushButton_ok->click();
+                return true;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_salir;
+    if(w_temp == obj){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->pushButton_salir->click();
+                return true;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_nuevo;
+    if(w_temp == obj){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->pushButton_nuevo->click();
+                return true;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    return eventFilter(obj, e);
+}
+void VentaBuscar::editarItem(QTableWidgetItem *item)
 {
     QTableWidget* tb = ui->tableWidget;
 
@@ -1053,200 +1310,4 @@ void VentaBuscar::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
         SYSTEM->change_center_w(this, w);
     }break;
     }
-}
-void VentaBuscar::showEvent(QShowEvent *event)
-{
-    event->accept();
-    //if(focusWidget()){
-        //focusWidget()->setFocus();
-    //}else{
-    if(modo_only_date){
-        ui->tableWidget->setFocus(Qt::TabFocusReason);
-    }else{
-        ui->dateEdit_inicio->setFocus(Qt::TabFocusReason);
-    }
-
-    on_lineEdit_buscar_textEdited(ui->lineEdit_buscar->text());
-    on_lineEdit_buscar_returnPressed();
-}
-void VentaBuscar::closeEvent(QCloseEvent *event)
-{
-    event->accept();
-    emit closing();
-}
-
-bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
-{
-    QWidget* w_temp;
-    w_temp = this;
-    if(obj == w_temp){
-        if(e->type() == QEvent::KeyPress){
-            QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
-            switch(KeyEvent->key())
-            {
-            case Qt::Key_Escape:
-                ui->pushButton_salir->click();
-                return true;
-            case Qt::Key_Up: {
-                if (this->focusWidget() != ui->tableWidget) {
-                    ui->tableWidget->setFocus(Qt::TabFocusReason);
-                    if (ui->tableWidget->currentItem())
-                        ui->tableWidget->currentItem()->setSelected(true);
-                }
-            }break;
-            case Qt::Key_Down: {
-                if (this->focusWidget() != ui->tableWidget) {
-                    ui->tableWidget->setFocus(Qt::TabFocusReason);
-                    if (ui->tableWidget->currentItem())
-                        ui->tableWidget->currentItem()->setSelected(true);
-                }
-            }break;
-            }
-
-        }else{
-
-        }
-        return false;
-    }
-    w_temp = ui->dateEdit_inicio;
-    if(w_temp == obj){
-        if(e->type() == QEvent::KeyPress){
-            QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
-            switch(KeyEvent->key())
-            {
-            case Qt::Key_Return:
-                ui->dateEdit_fin->setFocus(Qt::TabFocusReason);
-                return true;
-            }
-
-        }else{
-
-        }
-        if(e->type() == QEvent::FocusOut){
-            //ui->dateEdit_inicio->setFo
-        }
-        return false;
-    }
-    w_temp = ui->dateEdit_fin;
-    if(w_temp == obj){
-        if(e->type() == QEvent::KeyPress){
-            QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
-            switch(KeyEvent->key())
-            {
-            case Qt::Key_Return:
-                if(modo_only_date){
-                    on_lineEdit_buscar_textEdited(ui->lineEdit_buscar->text());
-                    on_lineEdit_buscar_returnPressed();
-                    ui->tableWidget->setFocus(Qt::TabFocusReason);
-                }else{
-                    ui->lineEdit_buscar->setFocus(Qt::TabFocusReason);
-                }
-
-                return true;
-            }
-
-        }else{
-
-        }
-        if(e->type() == QEvent::FocusOut){
-
-        }
-        return false;
-    }
-    w_temp = ui->lineEdit_buscar;
-    if(w_temp == obj){
-        if(e->type() == QEvent::KeyPress){
-            QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
-            switch(KeyEvent->key())
-            {
-            case Qt::Key_Return:{
-                on_lineEdit_buscar_returnPressed();
-                return true;
-            }break;
-            }
-
-        }else{
-
-        }
-        return false;
-    }
-    w_temp = ui->tableWidget;
-    if(w_temp == obj){
-        if(e->type() == QEvent::KeyPress){
-            QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
-            switch(KeyEvent->key())
-            {
-            case Qt::Key_Return:
-                ui->pushButton_ok->click();
-                return true;
-            case Qt::Key_Down: {
-                int index = ui->tableWidget->currentRow();
-                if (index == ui->tableWidget->rowCount() - 1) {
-                    on_lineEdit_buscar_returnPressed();
-                }
-            }
-            }
-
-        }else{
-
-        }
-        return false;
-    }
-    w_temp = ui->pushButton_ok;
-    if(w_temp == obj){
-        if(e->type() == QEvent::KeyPress){
-            QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
-            switch(KeyEvent->key())
-            {
-            case Qt::Key_Return:
-                ui->pushButton_ok->click();
-                return true;
-            }
-
-        }else{
-
-        }
-        return false;
-    }
-    w_temp = ui->pushButton_salir;
-    if(w_temp == obj){
-        if(e->type() == QEvent::KeyPress){
-            QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
-            switch(KeyEvent->key())
-            {
-            case Qt::Key_Return:
-                ui->pushButton_salir->click();
-                return true;
-            }
-
-        }else{
-
-        }
-        return false;
-    }
-    w_temp = ui->pushButton_agregar;
-    if(w_temp == obj){
-        if(e->type() == QEvent::KeyPress){
-            QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
-            switch(KeyEvent->key())
-            {
-            case Qt::Key_Return:
-                ui->pushButton_agregar->click();
-                return true;
-            }
-
-        }else{
-
-        }
-        return false;
-    }
-    return eventFilter(obj, e);
 }

@@ -4,7 +4,7 @@
 ClienteDNI::ClienteDNI(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ClienteDNI)
-{
+{    
     ui->setupUi(this);
 
     afterShow = false;
@@ -106,8 +106,8 @@ bool ClienteDNI::guardar()
     QString direccion = ui->lineEdit_direccion->text().simplified();
 
     if (id.compare("") == 0) {
-        QString id = "NULL";
-        str_query = "INSERT INTO persona(id, tipo_persona_id, habilitado)VALUES";
+        QString id = "NULL";        
+        str_query += "INSERT INTO persona(id, tipo_persona_id, habilitado)VALUES";
         str_query += "("+id;
         str_query += ", "+QString().setNum(tipo_persona::CLIENTE_DNI);
         str_query += ", 1)";
@@ -127,8 +127,7 @@ bool ClienteDNI::guardar()
         str_query += "SELECT MAX(id) FROM persona";
         str_query += "&&END_QUERY&&";
     }else{
-
-        str_query = "UPDATE naturales";
+        str_query += "UPDATE naturales";
         str_query += " SET dni = '"+dni+"'";
         str_query += ", nombre = '"+nombre+"'";
         str_query += ", direccion = '"+direccion+"'";
@@ -151,6 +150,11 @@ bool ClienteDNI::guardar()
             op = MODIFICAR;
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -158,7 +162,7 @@ bool ClienteDNI::remove()
 {
     QString str_query;
 
-    str_query = "DELETE FROM persona WHERE id = "+id;
+    str_query += "DELETE FROM persona WHERE id = "+id;
     str_query += "&&END_QUERY&&";
     str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
@@ -171,6 +175,11 @@ bool ClienteDNI::remove()
         id = "";
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -180,11 +189,28 @@ void ClienteDNI::on_pushButton_guardar_clicked()
     switch(ret){
     case 0:{
         if(guardar()){
-            QMessageBox::information(this, "Información", "Se guardo con éxito.");
+            //QMessageBox::information(this, "Información", "Se guardaron los datos con éxito.");
             setAttribute(Qt::WA_DeleteOnClose);
             SYSTEM->change_center_w(this, widget_previous);
+
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Se guardo exitosamente.", ":/new/Iconos/successfull.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
         }else{
-            QMessageBox::critical(this, "Error", "No se pudieron eliminar los datos.");
+            QMessageBox::critical(this, "Error", "No se pudieron guardar los datos.");
+            /*
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Error inesperado. Consulte al programador.", ":/new/Iconos/exclamation.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
+            */
         }
         return;
     }break;
@@ -193,6 +219,7 @@ void ClienteDNI::on_pushButton_guardar_clicked()
     }
     }
 }
+
 void ClienteDNI::on_pushButton_eliminar_clicked()
 {
     if(id.compare("") == 0) {
@@ -205,12 +232,29 @@ void ClienteDNI::on_pushButton_eliminar_clicked()
     case 0:{
         if(remove()){
             op = ELIMINAR;
-            QMessageBox::information(this, "Información", "Se eliminaron los datos con éxito.");
+            //QMessageBox::information(this, "Información", "Se eliminaron los datos con éxito.");
             id = "";
             setAttribute(Qt::WA_DeleteOnClose);
             SYSTEM->change_center_w(this, widget_previous);
+
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Item eliminado con éxito.", ":/new/Iconos/trash_full_onyx.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
         }else{
             QMessageBox::critical(this, "Error", "No se pudieron eliminar los datos.");
+            /*
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Error inesperado. Consulte al programador.", ":/new/Iconos/exclamation.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
+            */
         }
         return;
     }break;

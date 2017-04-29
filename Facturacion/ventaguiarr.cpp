@@ -7,6 +7,9 @@ VentaGuiaRR::VentaGuiaRR(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    afterShow = false;
+    op = -1;
+
     anulado = 0;
 
     QRegExp regExp_ruc("[0-9]{11,11}");
@@ -35,6 +38,9 @@ VentaGuiaRR::VentaGuiaRR(QWidget *parent) :
     ui->tableWidget->setItemDelegateForColumn(INDEX_DESCRIPCION, lineEditDelegate);
 
     ui->tableWidget->hideColumn(INDEX_ID);
+
+    ui->comboBox_id_boleta->hide();
+    ui->comboBox_id_factura->hide();
 
     this->installEventFilter(this);
 
@@ -109,11 +115,30 @@ bool VentaGuiaRR::select(QString id
 
     QString str_query;
 
+    str_query = "(SELECT COUNT(*), '', '', '', '', '', '' FROM documento_h_documento";
+    str_query += " JOIN factura ON documento_h_documento.documento_id1 = factura.comprobante_documento_id";
+    str_query += " WHERE documento_h_documento.documento_id = "+id+")";
+    str_query += " UNION ALL";
+    str_query += "(SELECT documento_h_documento.documento_id1, anexo.serie, anexo.numero, '', '', '', '' FROM documento_h_documento";
+    str_query += " JOIN factura ON documento_h_documento.documento_id1 = factura.comprobante_documento_id";
+    str_query += " JOIN anexo ON documento_h_documento.documento_id1 = anexo.documento_id";
+    str_query += " WHERE documento_h_documento.documento_id = "+id+")";
+    str_query += " UNION ALL";
+    str_query += "(SELECT COUNT(*), '', '', '', '', '', '' FROM documento_h_documento";
+    str_query += " JOIN boleta ON documento_h_documento.documento_id1 = boleta.comprobante_documento_id";
+    str_query += " WHERE documento_h_documento.documento_id = "+id+")";
+    str_query += " UNION ALL";
+    str_query += "(SELECT documento_h_documento.documento_id1, anexo.serie, anexo.numero, '', '', '', '' FROM documento_h_documento";
+    str_query += " JOIN boleta ON documento_h_documento.documento_id1 = boleta.comprobante_documento_id";
+    str_query += " JOIN anexo ON documento_h_documento.documento_id1 = anexo.documento_id";
+    str_query += " WHERE documento_h_documento.documento_id = "+id+")";
+    str_query += " UNION ALL";
     str_query = "(SELECT guia_remision_remitente.anulado, '', '', '', '' FROM guia_remision_remitente";
     str_query += " WHERE guia_remision_remitente.comprobante_documento_id = "+id+")";
     str_query += " UNION ALL";
     str_query += "(SELECT producto.id, d_h_prod.cantidad, unidad.unidad";
-    str_query += ", concat(producto.descripcion,' ',marca.marca), d_h_prod.precio FROM documento";
+    //str_query += ", concat(producto.descripcion,' ',IF(marca.marca IS NULL, '', concat(' ', marca.marca))), d_h_prod.precio, '', '' FROM documento";
+    str_query += ", producto.descripcion, d_h_prod.precio FROM documento";
     str_query += " JOIN documento_h_producto d_h_prod ON documento.id = d_h_prod.documento_id";
     str_query += " JOIN producto ON producto.id = d_h_prod.producto_id";
     str_query += " LEFT JOIN marca ON marca.id = producto.marca_id";
@@ -123,8 +148,30 @@ bool VentaGuiaRR::select(QString id
     QSqlQuery query;
 
     qDebug()<<str_query<<endl;
-    if(query.exec(str_query)){        
-        QDate date = QDate::fromString(fecha_emision, "dd-MMM-yyyy");
+    if(query.exec(str_query)){
+        query.next();
+        int countFactura = query.value(0).toInt();
+        for(int i=0; i<countFactura; i++){
+            query.next();
+            QString id = query.value(0).toString();
+            QString serie = query.value(1).toString();
+            QString numero = query.value(2).toString();
+            QString sn = serie + " - " + numero;
+            ui->comboBox_id_factura->addItem(id);
+            ui->comboBox_serie_numero_factura->addItem(sn);
+        }
+        query.next();
+        int countBoleta = query.value(0).toInt();
+        for(int i=0; i<countBoleta; i++){
+            query.next();
+            QString id = query.value(0).toString();
+            QString serie = query.value(1).toString();
+            QString numero = query.value(2).toString();
+            QString sn = serie + " - " + numero;
+            ui->comboBox_id_boleta->addItem(id);
+            ui->comboBox_serie_numero_boleta->addItem(sn);
+        }
+        QDate date = QDate::fromString(fecha_emision, "dd-MM-yyyy");
 
         ui->dateEdit_emision->setDate(date);
 
@@ -281,7 +328,7 @@ bool VentaGuiaRR::guardar()
 
     if (id.compare("") == 0) {
         // DOCUMENTO
-        str_query =  "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
+        str_query += "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
         str_query += QString().setNum(tipo_documento::GUIA_REMISION_REMITENTE);
         str_query += ", 1)";
         str_query += "&&END_QUERY&&";
@@ -332,6 +379,8 @@ bool VentaGuiaRR::guardar()
         str_query += ", '"+QString().setNum(anulado)+"')";
         str_query += "&&END_QUERY&&";
 
+        str_query += "SELECT MAX(id) FROM documento";
+        str_query += "&&END_QUERY&&";
     }else{
         // COMPROBANTE
         /*
@@ -341,7 +390,7 @@ bool VentaGuiaRR::guardar()
         */
 
         // ANEXO
-        str_query +=  "UPDATE anexo SET";
+        str_query += "UPDATE anexo SET";
         str_query += " fecha_emision = '"+ui->dateEdit_emision->date().toString("yyyy-MM-dd")+"'";
         str_query += ", fecha_sistema = '"+ui->dateTimeEdit_sistema->dateTime().toString("yyyy-MM-dd hh:mm:ss")+"'";
         str_query += ", serie = '"+ui->lineEdit_serie->text()+"'";
@@ -384,6 +433,8 @@ bool VentaGuiaRR::guardar()
         str_query += " WHERE comprobante_documento_id = "+id;
         str_query += "&&END_QUERY&&";        
     }
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
 
     ui->dateEdit_emision->setDisplayFormat("dd-MM-yyyy");
     ui->dateTimeEdit_sistema->setDisplayFormat("dd-MM-yyyy hh:mm:ss");
@@ -392,8 +443,19 @@ bool VentaGuiaRR::guardar()
     SYSTEM->multiple_query(str_query);
     qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
+        if(this->id.compare("") == 0){
+            op = INGRESAR;
+            query.next();
+            this->id = query.value(0).toString();
+        }else
+            op = MODIFICAR;
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -401,7 +463,9 @@ bool VentaGuiaRR::remove()
 {
     QString str_query;
 
-    str_query = "DELETE FROM documento WHERE id = "+id;
+    str_query += "DELETE FROM documento WHERE id = "+id;
+    str_query += "&&END_QUERY&&";
+    str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
 
     QSqlQuery query;
@@ -412,6 +476,11 @@ bool VentaGuiaRR::remove()
         id = "";
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -419,163 +488,6 @@ bool VentaGuiaRR::remove()
 void VentaGuiaRR::set_time()
 {
     ui->dateTimeEdit_sistema->setDateTime(QDateTime::currentDateTime());
-}
-
-void VentaGuiaRR::on_pushButton_transformar_clicked()
-{
-    int tipo = ui->comboBox_transformar->currentIndex();
-
-    switch(tipo){
-    case 0:{
-        tipo = tipo_documento::BOLETA;
-
-        VentaBoleta* w = new VentaBoleta;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = "0.000";
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = "0.000";
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(venta_items::GUIA_REMISION_REMITENTE, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    case 1:{
-        tipo = tipo_documento::FACTURA;
-
-        VentaFactura* w = new VentaFactura;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = "0.000";
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = "0.000";
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(venta_items::GUIA_REMISION_REMITENTE, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    case 2:{
-        tipo = tipo_documento::GUIA_REMISION_REMITENTE;
-
-        VentaGuiaRR* w = new VentaGuiaRR;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-            }
-            w->set_data(venta_items::GUIA_REMISION_REMITENTE, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    }
 }
 
 void VentaGuiaRR::on_cliente_closing()
@@ -618,6 +530,15 @@ void VentaGuiaRR::on_pushButton_cliente_clicked()
 {
     VentaCliente* w = new VentaCliente;
     w->set_widget_previous(this);
+
+    w->hideOptProveedor();
+    w->hideOptTransportista();
+
+    w->setTipoClienteDNI();
+    w->setTipoClienteRUC();
+
+    w->hideOptUsuario();
+
     if(ui->radioButton_tipo->isChecked()){
         w->set_tipo(persona_items::CLIENTE_RUC);
     }else{
@@ -889,12 +810,11 @@ void VentaGuiaRR::on_pushButton_salir_clicked()
 }
 void VentaGuiaRR::showEvent(QShowEvent *se)
 {
-    if(focusWidget()){
-        focusWidget()->setFocus();
-    }else{
-        ui->dateEdit_emision->setFocus(Qt::TabFocusReason);
-    }
+    emit showing();
+
     se->accept();
+
+    afterShow = true;
 }
 void VentaGuiaRR::hideEvent(QHideEvent *he)
 {
@@ -911,6 +831,33 @@ bool VentaGuiaRR::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->dateEdit_emision->setFocus();
+                ui->dateEdit_emision->setCurrentSectionIndex(ui->dateEdit_emision->currentSectionIndex());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    focusWidget()->setFocus();
+                }else{
+                    ui->dateEdit_emision->setFocus();
+                    ui->dateEdit_emision->setCurrentSectionIndex(ui->dateEdit_emision->currentSectionIndex());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
             switch(KeyEvent->key())
@@ -1424,5 +1371,184 @@ void VentaGuiaRR::on_pushButton_anular_clicked()
 
     }else{
 
+    }
+}
+void VentaGuiaRR::on_boleta_buscar_closing()
+{
+    VentaBuscar* w = (VentaBuscar*)sender();
+
+    if(w->getID().compare("")==0)return;
+
+    QString id = w->getID();
+    QString sn = w->getSerie() + " - " + w->getNumero();
+
+    ui->comboBox_id_boleta->addItem(id);
+    ui->comboBox_serie_numero_boleta->addItem(sn);
+}
+
+void VentaGuiaRR::on_pushButton_buscar_boleta_clicked()
+{
+    if(persona_id.compare("") == 0){
+        QMessageBox::warning(this, "Advertencia", "No ha ingresado el cliente.", "Ok");
+        return;
+    }
+
+    VentaBuscar* w = new VentaBuscar;
+    w->set_widget_previous(this);
+    w->set_tipo(venta_items::BOLETA);
+    connect(w, SIGNAL(closing()), this, SLOT(on_boleta_buscar_closing()));
+
+    SYSTEM->change_center_w(this, w);
+}
+
+void VentaGuiaRR::on_pushButton_jalar_boleta_clicked()
+{
+    if(ui->comboBox_serie_numero_boleta->currentText().compare("") == 0){
+        return;
+    }else{
+    }
+    QString sn = ui->comboBox_serie_numero_boleta->currentText();
+    QStringList list = sn.split(QRegExp("\\s|-"), QString::SkipEmptyParts);
+    QString serie = list[0];
+    QString numero = list[1];
+    if (serie.length() == A_Venta::SERIE_N_DIGITS && numero.length() == A_Venta::NUMERO_N_DIGITS) {
+        ui->comboBox_id_boleta->setCurrentIndex(ui->comboBox_serie_numero_boleta->currentIndex());
+        QString id = ui->comboBox_id_boleta->currentText();
+        QString str_query = "";
+        str_query += "SELECT producto.id, documento_h_producto.cantidad, unidad.unidad";
+        str_query += ", concat(producto.descripcion, ' ', marca.marca), documento_h_producto.precio";
+        str_query += " FROM boleta";
+        str_query += " JOIN documento ON documento.id = boleta.comprobante_documento_id";
+        str_query += " JOIN documento_h_producto ON documento.id = documento_h_producto.documento_id";
+        str_query += " JOIN producto ON producto.id = documento_h_producto.producto_id";
+        str_query += " LEFT JOIN tipo ON tipo.id = producto.tipo_id";
+        str_query += " LEFT JOIN marca ON marca.id = producto.marca_id";
+        str_query += " LEFT JOIN unidad ON unidad.id = producto.unidad_id";
+        str_query += " WHERE documento.id = "+id;
+        str_query += " GROUP BY documento_h_producto.id";
+
+        QSqlQuery query;
+        qDebug()<<str_query<<endl;
+        if(query.exec(str_query)){
+            while(query.next()){
+                QString producto_id = query.value(0).toString();
+                QString cantidad = query.value(1).toString();
+                QString unidad = query.value(2).toString();
+                QString descripcion = query.value(3).toString();
+                QString p_total = query.value(4).toString();
+                QString desc_cantidad = "0.0000";
+                QString desc_p_total = "0.000";
+
+                set_producto(producto_id, cantidad, unidad, descripcion);
+            }
+        }else{
+
+        }
+    }
+}
+
+void VentaGuiaRR::on_pushButton_quitar_boleta_clicked()
+{
+    if(ui->comboBox_serie_numero_boleta->currentIndex() == -1)
+        return;
+    int ret = QMessageBox::warning(this, "Advertencia", "¿Esta seguro de quitar el documento?", "Si", "No");
+    switch(ret){
+    case 0:{
+        ui->comboBox_id_boleta->removeItem(ui->comboBox_serie_numero_boleta->currentIndex());
+        ui->comboBox_serie_numero_boleta->removeItem(ui->comboBox_serie_numero_boleta->currentIndex());
+    }break;
+    case 1:{
+
+    }break;
+    }
+}
+
+void VentaGuiaRR::on_factura_buscar_closing()
+{
+    VentaBuscar* w = (VentaBuscar*)sender();
+
+    if(w->getID().compare("")==0)return;
+
+    QString id = w->getID();
+    QString sn = w->getSerie() + " - " + w->getNumero();
+
+    ui->comboBox_id_factura->addItem(id);
+    ui->comboBox_serie_numero_factura->addItem(sn);
+}
+
+void VentaGuiaRR::on_pushButton_buscar_factura_clicked()
+{
+    if(persona_id.compare("") == 0){
+        QMessageBox::warning(this, "Advertencia", "No ha ingresado el cliente.", "Ok");
+        return;
+    }
+
+    VentaBuscar* w = new VentaBuscar;
+    w->set_widget_previous(this);
+    w->set_tipo(venta_items::FACTURA);
+    connect(w, SIGNAL(closing()), this, SLOT(on_factura_buscar_closing()));
+
+    SYSTEM->change_center_w(this, w);
+}
+
+void VentaGuiaRR::on_pushButton_jalar_factura_clicked()
+{
+    if(ui->comboBox_serie_numero_factura->currentText().compare("") == 0){
+        return;
+    }else{
+    }
+    QString sn = ui->comboBox_serie_numero_factura->currentText();
+    QStringList list = sn.split(QRegExp("\\s|-"), QString::SkipEmptyParts);
+    QString serie = list[0];
+    QString numero = list[1];
+    if (serie.length() == A_Venta::SERIE_N_DIGITS && numero.length() == A_Venta::NUMERO_N_DIGITS) {
+        ui->comboBox_id_factura->setCurrentIndex(ui->comboBox_serie_numero_factura->currentIndex());
+        QString id = ui->comboBox_id_factura->currentText();
+        QString str_query = "";
+        str_query += "SELECT producto.id, documento_h_producto.cantidad, unidad.unidad";
+        str_query += ", concat(producto.descripcion, ' ', marca.marca), documento_h_producto.precio";
+        str_query += " FROM factura";
+        str_query += " JOIN documento ON documento.id = factura.comprobante_documento_id";
+        str_query += " JOIN documento_h_producto ON documento.id = documento_h_producto.documento_id";
+        str_query += " JOIN producto ON producto.id = documento_h_producto.producto_id";
+        str_query += " LEFT JOIN tipo ON tipo.id = producto.tipo_id";
+        str_query += " LEFT JOIN marca ON marca.id = producto.marca_id";
+        str_query += " LEFT JOIN unidad ON unidad.id = producto.unidad_id";
+        str_query += " WHERE documento.id = "+id;
+        str_query += " GROUP BY documento_h_producto.id";
+
+        QSqlQuery query;
+        qDebug()<<str_query<<endl;
+        if(query.exec(str_query)){
+            while(query.next()){
+                QString producto_id = query.value(0).toString();
+                QString cantidad = query.value(1).toString();
+                QString unidad = query.value(2).toString();
+                QString descripcion = query.value(3).toString();
+                QString p_total = query.value(4).toString();
+                QString desc_cantidad = "0.0000";
+                QString desc_p_total = "0.000";
+
+                set_producto(producto_id, cantidad, unidad, descripcion);
+            }
+        }else{
+
+        }
+    }
+}
+
+void VentaGuiaRR::on_pushButton_quitar_factura_clicked()
+{
+    if(ui->comboBox_serie_numero_factura->currentIndex() == -1)
+        return;
+    int ret = QMessageBox::warning(this, "Advertencia", "¿Esta seguro de quitar el documento?", "Si", "No");
+    switch(ret){
+    case 0:{
+        ui->comboBox_id_factura->removeItem(ui->comboBox_serie_numero_factura->currentIndex());
+        ui->comboBox_serie_numero_factura->removeItem(ui->comboBox_serie_numero_factura->currentIndex());
+    }break;
+    case 1:{
+
+    }break;
     }
 }

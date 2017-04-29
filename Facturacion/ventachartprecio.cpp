@@ -701,8 +701,8 @@ bool VentaChartPrecio::eventFilter(QObject *watched, QEvent *event)
                 }
             }break;
             case Qt::Key_F4: {
-                ui->pushButton_modificar->setFocus(Qt::TabFocusReason);
-                ui->pushButton_modificar->click();
+                ui->pushButton_ver->setFocus(Qt::TabFocusReason);
+                ui->pushButton_ver->click();
                 return true;
             }break;
             }
@@ -819,7 +819,7 @@ void VentaChartPrecio::on_dateEdit_dateChanged(const QDate &date)
     llenar_tabla();
 }
 
-void VentaChartPrecio::on_pushButton_modificar_clicked()
+void VentaChartPrecio::on_pushButton_ver_clicked()
 {    
     QTableWidget* tb = ui->tableWidget;
     QTableWidgetItem* item = tb->currentItem();
@@ -837,6 +837,7 @@ void VentaChartPrecio::on_pushButton_modificar_clicked()
         case tipo_documento::FACTURA:{
             VentaFactura* w = new VentaFactura;
             w->set_widget_previous(this);
+            w->setVer();
             QString id = tb->item(item->row(), 0)->text();
             QString persona_id = tb->item(item->row(), 12)->text();
             QString fecha_emision = tb->item(item->row(), 3)->text();
@@ -853,6 +854,7 @@ void VentaChartPrecio::on_pushButton_modificar_clicked()
         case tipo_documento::BOLETA:{
             VentaBoleta* w = new VentaBoleta;
             w->set_widget_previous(this);
+            w->setVer();
             QString id = tb->item(item->row(), 0)->text();
             QString persona_id = tb->item(item->row(), 12)->text();
             QString fecha_emision = tb->item(item->row(), 3)->text();

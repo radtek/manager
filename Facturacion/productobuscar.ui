@@ -60,7 +60,7 @@
         <string>&amp;Nuevo(Alt+N)</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/iconos.qrc">
+        <iconset>
          <normaloff>:/new/Iconos/agregar_32.png</normaloff>:/new/Iconos/agregar_32.png</iconset>
        </property>
        <property name="iconSize">
@@ -85,7 +85,7 @@
         <string>Editar(F2)</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/iconos.qrc">
+        <iconset>
          <normaloff>:/new/Iconos/edit (2).png</normaloff>:/new/Iconos/edit (2).png</iconset>
        </property>
        <property name="iconSize">
@@ -110,6 +110,12 @@
      </property>
      <property name="toolTip">
       <string>PRESIONE F3 Y F4 PARA COMPRAS Y VENTAS.</string>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOn</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAsNeeded</enum>
      </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::ExtendedSelection</enum>
@@ -469,8 +475,6 @@
   <tabstop>pushButton_ok</tabstop>
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
- <resources>
-  <include location="../ManagerSystem/iconos.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

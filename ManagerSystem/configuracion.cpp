@@ -12,6 +12,9 @@ Configuracion::Configuracion(QWidget *parent) :
 
     widget_previous = NULL;
 
+    ui->pushButton_rollback->hide();
+    ui->pushButton_commit->hide();
+
     disconnect(ui->dateEdit_igv, SIGNAL(dateChanged(QDate))
                , this, SLOT(on_dateEdit_igv_dateChanged(QDate)));
 
@@ -485,6 +488,11 @@ bool Configuracion::update_cambio()
 	if (query.exec(str_query)) {
 		return true;
     } else {
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
 		return false;
 	}
 }
@@ -534,8 +542,12 @@ bool Configuracion::update_igv()
 	qDebug() << str_query << endl;
 	if (query.exec(str_query)) {
 		return true;
-	}
-	else {
+    }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
 		return false;
 	}
 
@@ -624,4 +636,199 @@ void Configuracion::on_dateEdit_cambio_dateChanged(const QDate &date)
 void Configuracion::on_dateEdit_igv_dateChanged(const QDate &date)
 {
     process_cambio(date);
+}
+void Configuracion::on_pushButton_rollback_clicked()
+{
+    QString str_query = "ROLLBACK";
+    str_query += "&&END_QUERY&&";
+    SYSTEM->multiple_query(str_query);
+
+    QSqlQuery query;
+    if (query.exec(str_query)) {
+        QMessageBox::warning(this, "Información", "Se deshizo la previa con éxito.");
+    } else {
+        QMessageBox::critical(this, "Error", "No está disponible la base de datos.");
+    }
+}
+
+void Configuracion::on_pushButton_commit_clicked()
+{
+    QString str_query = "COMMIT";
+    str_query += "&&END_QUERY&&";
+    SYSTEM->multiple_query(str_query);
+
+    QSqlQuery query;
+    if (query.exec(str_query)) {
+        QMessageBox::information(this, "Información", "Se comitearon las transacciones.");
+    } else {
+        QMessageBox::critical(this, "Error", "No está disponible la base de datos.");
+    }
+}
+
+void Configuracion::on_pushButton_backup_clicked()
+{
+    QString curPath = QDir::currentPath();
+    QFileDialog dialog(this, "Guardar Archivo", curPath);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setNameFilter(tr("Archivo sql (*.sql)"));
+
+    QString fileName = "";
+
+    if (dialog.exec()) {
+        //QDateTime dt = QDateTime::currentDateTime();
+        //QString str_dt = dt.toString("dd-MM-yyyy");
+        fileName = dialog.selectedFiles().front();
+        /*
+        if (fileName.compare("") == 0) {
+            fileName += str_dt + ".sql";
+        }
+        */
+    } else {
+        return;
+    }
+    qDebug() << fileName << endl;
+    QProcess *myProcess = new QProcess(this);
+    QString command = "\"C:/Program Files/MySQL/MySQL Server 5.7/bin/mysqldump\"";
+    //command += " -u root -p1234 --add-drop-database --routines --databases managersystem >";
+    //command += " C:/Users/lorda/Desktop/programa/ManagerSystem/db.sql";
+    QStringList arguments = QStringList() << "--host=127.0.0.1" << "--user=root" << "--password=1234"
+        //<< "--add-drop-database" << "--routines"
+        << "--no-create-db"
+        << "--no-create-info"
+        << "--no-set-names"
+        << "--no-tablespaces"
+        << "--skip-add-locks"
+        << "--skip-disable-keys"
+        << "--databases" << "managersystem"
+        << QString()+"--result-file="+""+fileName+"";
+
+    connect(myProcess, SIGNAL(finished(int, QProcess::ExitStatus))
+        , this, SLOT(on_myProccess_finished(int, QProcess::ExitStatus)));
+
+    qDebug() << command << " " << arguments << endl;
+    //myProcess->setProgram(command);
+    //myProcess->setStandardOutputFile("C:/Users/lorda/Desktop/programa/ManagerSystem");
+    myProcess->start(command, arguments);
+}
+void Configuracion::on_myProccess_started()
+{
+    qDebug() << "START" << endl;
+
+}
+void Configuracion::on_myProccess_finished(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    qDebug() << "Exit Code: " << exitCode;
+    qDebug() << "Exit Status: " << exitStatus;
+
+    if (exitCode == 0) {
+        QMessageBox::information(this, "Información", "Felicidades. Finalizo la operacion sin errores.", "Ok");
+    } else {
+        QMessageBox::critical(this, "Error", "No finalizo corretamente.");
+    }
+
+    delete sender();
+    //QProcess* p = (QProcess*)QObject::sender();
+
+    //qDebug() << p->errorString() << endl;
+}
+void Configuracion::on_pushButton_restore_clicked()
+{
+    int ret = QMessageBox::warning(this, "ATENCION", "Va restaurar una copia anterior.\n"
+                                   "¿Esta seguro de realizar esta operación?", "Si", "No");
+    switch (ret) {
+    case 0: {
+
+
+    }break;
+    case 1: {
+        return;
+    }
+    }
+
+    QString curPath = QDir::currentPath();
+    QFileDialog dialog(this, "Abrir Archivo", curPath);
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setNameFilter(tr("Archivo sql (*.sql)"));
+
+    QString fileName = "";
+    if (dialog.exec()) {
+        fileName = dialog.selectedFiles().front();
+    }
+    else {
+        return;
+    }
+    qDebug() << fileName << endl;
+
+    if (fileName.compare("") == 0)
+        return;
+    QString str_query = "DELETE FROM documento";
+    str_query += "&&END_QUERY&&";
+    str_query += "DELETE FROM producto";
+    str_query += "&&END_QUERY&&";
+    str_query += "DELETE FROM persona";
+    str_query += "&&END_QUERY&&";
+    str_query += "DELETE FROM marca";
+    str_query += "&&END_QUERY&&";
+    str_query += "DELETE FROM unidad";
+    str_query += "&&END_QUERY&&";
+    str_query += "DELETE FROM tipo";
+    str_query += "&&END_QUERY&&";
+
+    str_query += "DELETE FROM delimitador";
+    str_query += "&&END_QUERY&&";
+    str_query += "DELETE FROM moneda";
+    str_query += "&&END_QUERY&&";
+    str_query += "DELETE FROM igv";
+    str_query += "&&END_QUERY&&";
+    str_query += "DELETE FROM tipo_cambio";
+    str_query += "&&END_QUERY&&";
+
+    str_query += "DELETE FROM operacion";
+    str_query += "&&END_QUERY&&";
+
+    str_query += "DELETE FROM tipo_documento";
+    str_query += "&&END_QUERY&&";
+
+    str_query += "DELETE FROM series";
+    str_query += "&&END_QUERY&&";
+
+    str_query += "DELETE FROM tipo_persona";
+    str_query += "&&END_QUERY&&";
+
+    str_query += "DELETE FROM amplitud";
+    str_query += "&&END_QUERY&&";
+
+    str_query += "DELETE FROM rol";
+    str_query += "&&END_QUERY&&";
+
+    QSqlQuery query;
+
+    SYSTEM->multiple_query(str_query);
+
+    qDebug() << str_query << endl;
+    if (query.exec(str_query)) {
+
+    } else {
+        QMessageBox::critical(this, "Error", "No finalizo corretamente.");
+        return;
+    }
+
+    QProcess *myProcess = new QProcess(this);
+    QString command = "\"C:/Program Files/MySQL/MySQL Server 5.7/bin/mysql.exe\"";
+    QStringList arguments = QStringList()
+            << "--host=127.0.0.1" << "--user=root" << "--password=1234"
+            << "--database=managersystem";
+
+        //<< "--execute=\"source " + fileName + "\"";
+    myProcess->waitForFinished(100000);
+    myProcess->setStandardInputFile(fileName);
+    connect(myProcess, SIGNAL(started())
+        , this, SLOT(on_myProccess_started()));
+    connect(myProcess, SIGNAL(finished(int, QProcess::ExitStatus))
+        , this, SLOT(on_myProccess_finished(int, QProcess::ExitStatus)));
+
+    qDebug() << command << endl;//<< arguments << endl;
+    myProcess->start(command, arguments);
 }

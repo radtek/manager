@@ -44,7 +44,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_agregar">
+      <widget class="QPushButton" name="pushButton_nuevo">
        <property name="font">
         <font>
          <pointsize>10</pointsize>
@@ -314,7 +314,7 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>pushButton_agregar</tabstop>
+  <tabstop>pushButton_nuevo</tabstop>
   <tabstop>pushButton_editar</tabstop>
   <tabstop>radioButton_proveedor</tabstop>
   <tabstop>radioButton_transportista</tabstop>

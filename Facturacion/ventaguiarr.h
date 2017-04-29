@@ -67,8 +67,6 @@ private:
 private slots:
     void set_time();
 
-    void on_pushButton_transformar_clicked();
-
     void on_cliente_closing();
 
     void on_producto_closing();
@@ -99,6 +97,22 @@ private slots:
 
     void on_pushButton_anular_clicked();
 
+    void on_boleta_buscar_closing();
+
+    void on_pushButton_buscar_boleta_clicked();
+
+    void on_pushButton_jalar_boleta_clicked();
+
+    void on_pushButton_quitar_boleta_clicked();
+
+    void on_factura_buscar_closing();
+
+    void on_pushButton_buscar_factura_clicked();
+
+    void on_pushButton_jalar_factura_clicked();
+
+    void on_pushButton_quitar_factura_clicked();
+
 protected:
     void showEvent(QShowEvent *se);
 
@@ -109,6 +123,8 @@ protected:
     bool eventFilter(QObject *obj, QEvent *e);
 
 signals:
+    void showing();
+
     void hiding();
 
     void closing();
@@ -117,6 +133,9 @@ private:
     Ui::VentaGuiaRR *ui;
 
     QWidget* widget_previous;
+
+    int op;
+    bool afterShow;
 
     int mes_declaracion;
     int mes_emision;

@@ -279,7 +279,7 @@ void ReniecConsultaDNI::setDatos()
         time_transcurred = 0;
         timer_datos->stop();
 
-        on_le_consulta_dni_textEdited();
+        //on_le_consulta_dni_textEdited();
         return;
     }
 

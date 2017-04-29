@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>895</width>
+    <width>935</width>
     <height>378</height>
    </rect>
   </property>
@@ -44,7 +44,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_agregar">
+      <widget class="QPushButton" name="pushButton_nuevo">
        <property name="font">
         <font>
          <pointsize>10</pointsize>
@@ -479,7 +479,7 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>pushButton_agregar</tabstop>
+  <tabstop>pushButton_nuevo</tabstop>
   <tabstop>pushButton_editar</tabstop>
   <tabstop>radioButton_orden</tabstop>
   <tabstop>radioButton_factura</tabstop>
@@ -497,6 +497,8 @@
   <tabstop>pushButton_ok</tabstop>
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../ManagerSystem/iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

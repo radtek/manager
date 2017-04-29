@@ -34,6 +34,10 @@ public:
     void set_widget_previous(QWidget* widget_previous);    
 
 public slots:
+    void on_verticalScrollBar_actionTriggered(int value);
+
+    void on_verticalScrollBar_valueChanged(int value);
+
 	void on_productoFormTransaction_closing();
 
     void on_pushButton_ok_clicked();

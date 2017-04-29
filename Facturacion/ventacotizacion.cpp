@@ -7,6 +7,9 @@ VentaCotizacion::VentaCotizacion(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    afterShow = false;
+    op = -1;
+
     QRegExp regExp_ruc("[0-9]{11,11}");
     ui->lineEdit_codigo->setValidator(new QRegExpValidator(regExp_ruc));
 
@@ -123,7 +126,8 @@ bool VentaCotizacion::select(QString id
     QString str_query;
 
     str_query += "SELECT producto.id, d_h_prod.cantidad, unidad.unidad";
-    str_query += ", concat(producto.descripcion,' ',marca.marca), d_h_prod.precio FROM documento";
+    //str_query += ", concat(producto.descripcion,' ',IF(marca.marca IS NULL, '', concat(' ', marca.marca))), d_h_prod.precio FROM documento";
+    str_query += ", producto.descripcion, d_h_prod.precio FROM documento";
     str_query += " JOIN documento_h_producto d_h_prod ON documento.id = d_h_prod.documento_id";
     str_query += " JOIN producto ON producto.id = d_h_prod.producto_id";
     str_query += " LEFT JOIN marca ON marca.id = producto.marca_id";
@@ -132,7 +136,7 @@ bool VentaCotizacion::select(QString id
 
     qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
-        QDate date = QDate::fromString(fecha_emision, "dd-MMM-yyyy");
+        QDate date = QDate::fromString(fecha_emision, "dd-MM-yyyy");
 
         ui->dateEdit_emision->setDate(date);
 
@@ -310,7 +314,7 @@ bool VentaCotizacion::guardar()
 
     if (id.compare("") == 0) {
         // DOCUMENTO
-        str_query =  "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
+        str_query += "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
         str_query += QString().setNum(tipo_documento::COTIZACION);
         str_query += ", 1)";
         str_query += "&&END_QUERY&&";
@@ -359,6 +363,8 @@ bool VentaCotizacion::guardar()
         str_query += "(SELECT MAX(documento.id) FROM documento))";
         str_query += "&&END_QUERY&&";
 
+        str_query += "SELECT MAX(id) FROM documento";
+        str_query += "&&END_QUERY&&";
     }else{
         // COMPROBANTE
         /*
@@ -368,7 +374,7 @@ bool VentaCotizacion::guardar()
         */
 
         // ANEXO
-        str_query +=  "UPDATE anexo SET";
+        str_query += "UPDATE anexo SET";
         str_query += " fecha_emision = '"+ui->dateEdit_emision->date().toString("yyyy-MM-dd")+"'";
         str_query += ", fecha_sistema = '"+ui->dateTimeEdit_sistema->dateTime().toString("yyyy-MM-dd hh:mm:ss")+"'";
         str_query += ", serie = '"+ui->lineEdit_serie->text()+"'";
@@ -406,6 +412,8 @@ bool VentaCotizacion::guardar()
         str_query += ", precio=VALUES(precio_id)";*/
         str_query += "&&END_QUERY&&";
     }
+    str_query += "COMMIT";
+    str_query += "&&END_QUERY&&";
 
     ui->dateEdit_emision->setDisplayFormat("dd-MM-yyyy");
     ui->dateTimeEdit_sistema->setDisplayFormat("dd-MM-yyyy hh:mm:ss");
@@ -414,8 +422,19 @@ bool VentaCotizacion::guardar()
     SYSTEM->multiple_query(str_query);
     qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
+        if(this->id.compare("") == 0){
+            op = INGRESAR;
+            query.next();
+            this->id = query.value(0).toString();
+        }else
+            op = MODIFICAR;
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -423,7 +442,9 @@ bool VentaCotizacion::remove()
 {
     QString str_query;
 
-    str_query = "DELETE FROM documento WHERE id = "+id;
+    str_query += "DELETE FROM documento WHERE id = "+id;
+    str_query += "&&END_QUERY&&";
+    str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
 
     QSqlQuery query;
@@ -434,6 +455,11 @@ bool VentaCotizacion::remove()
         id = "";
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -443,315 +469,6 @@ void VentaCotizacion::set_time()
     ui->dateTimeEdit_sistema->setDateTime(QDateTime::currentDateTime());
 }
 
-void VentaCotizacion::on_pushButton_transformar_clicked()
-{
-    int tipo = ui->comboBox_transformar->currentIndex();
-
-    switch(tipo){
-    case 0:{
-        tipo = tipo_documento::REGISTRO_SIN_DOCUMENTO;
-
-        VentaRegistroSinDoc* w = new VentaRegistroSinDoc;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(venta_items::COTIZACION, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    case 1:{
-        tipo = tipo_documento::BOLETA;
-
-        VentaBoleta* w = new VentaBoleta;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(venta_items::COTIZACION, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    case 2:{
-        tipo = tipo_documento::FACTURA;
-
-        VentaFactura* w = new VentaFactura;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(venta_items::COTIZACION, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    case 3:{
-        tipo = tipo_documento::NOTA_PEDIDO;
-
-        VentaNotaPedido* w = new VentaNotaPedido;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(venta_items::COTIZACION, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    case 4:{
-        tipo = tipo_documento::GUIA_REMISION_REMITENTE;
-
-        VentaGuiaRR* w = new VentaGuiaRR;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-            }
-            w->set_data(venta_items::COTIZACION, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    case 5:{
-        tipo = tipo_documento::COTIZACION;
-
-        VentaCotizacion* w = new VentaCotizacion;
-        w->set_widget_previous(this);
-
-        if(id.compare("") == 0){
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(persona_id, tipo_persona_id
-            , ui->dateEdit_emision->dateTime(), ui->dateTimeEdit_sistema->dateTime()
-            , ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-            , ui->lineEdit_codigo->text(), ui->lineEdit_nombre->text()
-            , ui->lineEdit_direccion->text(), productos);
-        }else{
-            QVector<QVector<QString>> productos;
-            for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                productos.push_back(QVector<QString>());
-                QString id = ui->tableWidget->item(i, 0)->text();
-                QString cantidad = ui->tableWidget->item(i, 1)->text();
-                QString unidad = ui->tableWidget->item(i, 2)->text();
-                QString descripcion = ui->tableWidget->item(i, 3)->text();
-                QString p_total = ui->tableWidget->item(i, 4)->text();
-                productos[i].push_back(id);
-                productos[i].push_back(cantidad);
-                productos[i].push_back(unidad);
-                productos[i].push_back(descripcion);
-                productos[i].push_back(p_total);
-            }
-            w->set_data(venta_items::COTIZACION, id, persona_id, tipo_persona_id
-            , fecha_emision, ""
-            , serie, numero
-            , codigo, nombre
-            , direccion, productos);
-        }
-
-        SYSTEM->change_center_w(this, w);
-        w->next_serie_numero();
-    }break;
-    }
-}
 
 void VentaCotizacion::on_dateEdit_emision_dateChanged(const QDate &date)
 {
@@ -798,6 +515,15 @@ void VentaCotizacion::on_pushButton_cliente_clicked()
 {
     VentaCliente* w = new VentaCliente;
     w->set_widget_previous(this);
+
+    w->hideOptProveedor();
+    w->hideOptTransportista();
+
+    w->setTipoClienteDNI();
+    w->setTipoClienteRUC();
+
+    w->hideOptUsuario();
+
     if(ui->radioButton_tipo->isChecked()){
         w->set_tipo(persona_items::CLIENTE_RUC);
     }else{
@@ -1068,12 +794,11 @@ void VentaCotizacion::on_pushButton_salir_clicked()
 }
 void VentaCotizacion::showEvent(QShowEvent *se)
 {
-    if(focusWidget()){
-        focusWidget()->setFocus();
-    }else{
-        ui->dateEdit_emision->setFocus(Qt::TabFocusReason);
-    }
+    emit showing();
+
     se->accept();
+
+    afterShow = true;
 }
 void VentaCotizacion::hideEvent(QHideEvent *he)
 {
@@ -1090,6 +815,33 @@ bool VentaCotizacion::eventFilter(QObject *obj, QEvent *e)
     QWidget* w_temp;
     w_temp = this;
     if(obj == w_temp){
+        if(e->type() == QEvent::MouseButtonPress){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }else{
+                ui->dateEdit_emision->setFocus();
+                ui->dateEdit_emision->setCurrentSectionIndex(ui->dateEdit_emision->currentSectionIndex());
+            }
+            return true;
+        }
+        if(e->type() == QEvent::MouseButtonDblClick){
+            if(focusWidget()){
+                focusWidget()->setFocus();
+            }
+            return true;
+        }
+        if(e->type() == QEvent::Paint){
+            if(afterShow) {
+                if(focusWidget()){
+                    focusWidget()->setFocus();
+                }else{
+                    ui->dateEdit_emision->setFocus();
+                    ui->dateEdit_emision->setCurrentSectionIndex(ui->dateEdit_emision->currentSectionIndex());
+                }
+                afterShow = false;
+            }
+            return true;
+        }
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
             switch(KeyEvent->key())

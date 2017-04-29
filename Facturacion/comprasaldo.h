@@ -16,6 +16,8 @@ public:
     explicit CompraSaldo(QWidget *parent = 0);
     ~CompraSaldo();
 
+    void setVer();
+
     QString getID();
     QString getFechaEmision();
 

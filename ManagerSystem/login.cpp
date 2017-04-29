@@ -12,6 +12,8 @@ Login::Login(QWidget *parent) :
 
     afterShow = false;
 
+    opciones = NULL;
+    /*
     QString text;
     foreach(QNetworkInterface interfac, QNetworkInterface::allInterfaces())
     {
@@ -23,6 +25,7 @@ Login::Login(QWidget *parent) :
         if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
              qDebug() << address.toString();
     }
+    */
 
     online = false;
 
@@ -44,6 +47,19 @@ QPushButton* Login::pb_aceptar(){ return ui->pushButton_aceptar; }
 
 void Login::on_pushButton_aceptar_clicked()
 {
+    DATABASE_CONFIG(C_DB_FILE_CONFIG_NAME);
+    if(!DATABASE_CONNECT)// Se conecto a la base de datos.
+    {
+        if(!opciones){
+            opciones = new OpcionesDB;
+            opciones->setAttribute(Qt::WA_DeleteOnClose);
+            opciones->show();
+        }else{
+            opciones->raise();
+        }
+        return;
+    }
+
     QString user = ui->lineEdit_usuario->text();
     QString pass = ui->lineEdit_contrasenia->text();
 
@@ -60,7 +76,22 @@ void Login::on_pushButton_aceptar_clicked()
         qDebug()<<str_query<<" ok :)"<<endl;
         query.next();
         if(query.isValid()){
-            online = true;
+            qDebug()<<"ONLINE"<<endl;
+            if(query.exec("SET autocommit=0;")){
+                APP_LOGIN->close();
+
+                APP_MAINWINDOW->setAttribute(Qt::WA_DeleteOnClose);
+
+                APP_MAINWINDOW->set_toolBar(APP_TOOLBAR);
+
+                APP_TOOLBAR->setContextMenuPolicy(Qt::PreventContextMenu);
+
+                APP_MAINWINDOW->showMaximized();
+
+                APP_MAINWINDOW->setCentralWidget(new Home);
+            }else{
+                this->close();
+            }
         }else{
             QMessageBox::warning(this, "Advertencia", "El usuario no es válido.", "Ok");
         }

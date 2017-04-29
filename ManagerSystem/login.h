@@ -3,6 +3,8 @@
 
 #include "locallibrary.h"
 
+class OpcionesDB;
+
 namespace Ui {
 class Login;
 }
@@ -31,6 +33,8 @@ protected:
 
 private:
     Ui::Login *ui;
+
+    OpcionesDB *opciones;
 
     bool afterShow;
 };

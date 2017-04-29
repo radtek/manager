@@ -7,6 +7,7 @@
 #include <QWidget>
 #include <QApplication>
 
+#include <QStatusBar>
 #include <QWebEngineView>
 #include <QWebEnginePage>
 #include <QWebEngineProfile>

@@ -60,16 +60,17 @@ bool Unidad::guardar()
 
     QString str_query;
     QString id = this->id;
+
     if (id.compare("") == 0) {
         id = "NULL";
 
-        str_query = "INSERT INTO unidad(id, unidad)VALUES";
+        str_query += "INSERT INTO unidad(id, unidad)VALUES";
         str_query += "(" + id + ", '" + unidad + "')";
         str_query += "&&END_QUERY&&";
         str_query += "SELECT MAX(id) FROM unidad";
         str_query += "&&END_QUERY&&";
     }else{
-        str_query = "UPDATE tipo SET unidad = '" + unidad + "'";
+        str_query += "UPDATE tipo SET unidad = '" + unidad + "'";
         str_query += " WHERE id = "+id;
         str_query += "&&END_QUERY&&";
     }
@@ -87,8 +88,12 @@ bool Unidad::guardar()
             op = MODIFICAR;
         }
 		return true;
-	}
-	else {
+    }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
 		return false;
 	}
 }
@@ -96,7 +101,9 @@ bool Unidad::remove()
 {
 	QSqlQuery query;
 
-    QString str_query = "DELETE FROM unidad WHERE id = " + id;
+    QString str_query;
+
+    str_query += "DELETE FROM unidad WHERE id = " + id;
     str_query += "&&END_QUERY&&";
     str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
@@ -106,8 +113,12 @@ bool Unidad::remove()
 	if (query.exec(str_query)) {
 		id = "";
 		return true;
-	}
-	else {
+    }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
 		return false;
 	}
 }
@@ -118,17 +129,28 @@ void Unidad::on_pushButton_guardar_clicked()
 	switch (ret) {
 	case 0: {
 		if (guardar()) {
-			QMessageBox::information(this, "Información", "Se guardaron los datos con éxito.", "Ok");
+            //QMessageBox::information(this, "Información", "Se guardaron los datos con éxito.", "Ok");
+            setAttribute(Qt::WA_DeleteOnClose);
+            SYSTEM->change_center_w(this, widget_previous);
 
-			if (widget_previous) {
-                setAttribute(Qt::WA_DeleteOnClose);
-				SYSTEM->change_center_w(this, widget_previous);
-			} else {
-				SYSTEM->clear_center_w(this);
-			}
-		}
-		else {
-			QMessageBox::critical(this, "Error", "No se pudieron guardar los datos.");
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Se guardo exitosamente.", ":/new/Iconos/successfull.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
+        }else{
+            QMessageBox::critical(this, "Error", "No se pudieron guardar los datos.");
+            /*-
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Error inesperado. Consulte al programador.", ":/new/Iconos/exclamation.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
+            */
 		}
 		return;
 	}break;
@@ -150,19 +172,29 @@ void Unidad::on_pushButton_eliminar_clicked()
 	case 0: {
 		if (remove()) {
             op = ELIMINAR;
-			QMessageBox::information(this, "Información", "Se eliminaron los datos con éxito.");
+            //QMessageBox::information(this, "Información", "Se eliminaron los datos con éxito.");
+            id = "";
+            setAttribute(Qt::WA_DeleteOnClose);
+            SYSTEM->change_center_w(this, widget_previous);
 
-			if (widget_previous) {
-                id = "";
-                setAttribute(Qt::WA_DeleteOnClose);
-				SYSTEM->change_center_w(this, widget_previous);
-			}
-			else {
-				SYSTEM->clear_center_w(this);
-			}
-		}
-		else {
-			QMessageBox::critical(this, "Error", "No se pudieron eliminar los datos.");
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Item eliminado con éxito.", ":/new/Iconos/trash_full_onyx.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
+        }else{
+            QMessageBox::critical(this, "Error", "No se pudieron eliminar los datos.");
+            /*
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Error inesperado. Consulte al programador.", ":/new/Iconos/exclamation.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
+            */
 		}
 		return;
 	}break;

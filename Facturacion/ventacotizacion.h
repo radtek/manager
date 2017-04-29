@@ -68,8 +68,6 @@ private:
 private slots:
     void set_time();
 
-    void on_pushButton_transformar_clicked();
-
     void on_dateEdit_emision_dateChanged(const QDate &date);
 
     void on_cliente_closing();
@@ -110,6 +108,8 @@ protected:
     bool eventFilter(QObject *obj, QEvent *e);
 
 signals:
+    void showing();
+
     void hiding();
 
     void closing();
@@ -118,6 +118,9 @@ private:
     Ui::VentaCotizacion *ui;
 
     QWidget* widget_previous;
+
+    int op;
+    bool afterShow;
 
     QSqlQuery query;
 

@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);    
 
-    //![0]
+    /*
         QXlsx::Document xlsx;
         //![0]
 
@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
         QXlsx::Document("Test1.xlsx");
         xlsx.saveAs("Test2.xlsx");
 
+        */
     _StartProgram* s = new _StartProgram;
     s->run();
 

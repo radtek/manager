@@ -16,6 +16,8 @@ public:
     explicit CompraFactura(QWidget *parent = 0);
     ~CompraFactura();
 
+    void setVer();
+
     QString getID();
     QString getPersonaID();
     QString getFechaDeclaracion();

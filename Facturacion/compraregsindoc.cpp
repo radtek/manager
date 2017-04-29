@@ -99,7 +99,7 @@ bool CompraRegSinDoc::select(QString id, QString fecha_emision)
     qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
         QDateTime dt;
-        QDate date = QDate::fromString(fecha_emision, "dd-MMM-yyyy");
+        QDate date = QDate::fromString(fecha_emision, "dd-MM-yyyy");
         dt.setDate(date);
 
         ui->dateTimeEdit_emision->setDateTime(dt);
@@ -199,7 +199,6 @@ bool CompraRegSinDoc::guardar()
 {
     if(ui->tableWidget->rowCount() <= 0)
     {
-        qDebug()<<"2"<<endl;
         return false;
     }
 
@@ -210,7 +209,7 @@ bool CompraRegSinDoc::guardar()
 
     if (id.compare("") == 0) {
         // DOCUMENTO
-        str_query =  "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
+        str_query += "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
         str_query += QString().setNum(tipo_documento::REGISTRO_SIN_DOCUMENTO);
         str_query += ", 1)";
         str_query += "&&END_QUERY&&";
@@ -261,7 +260,7 @@ bool CompraRegSinDoc::guardar()
         */
 
         // ANEXO
-        str_query +=  "UPDATE anexo SET";
+        str_query += "UPDATE anexo SET";
         str_query += " fecha_emision = '"+ui->dateTimeEdit_emision->date().toString("yyyy-MM-dd")+"'";
         str_query += ", fecha_sistema = '"+ui->dateTimeEdit_sistema->dateTime().toString("yyyy-MM-dd hh:mm:ss")+"'";
         str_query += " WHERE documento_id = "+id;
@@ -302,6 +301,11 @@ bool CompraRegSinDoc::guardar()
             op = MODIFICAR;
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -309,7 +313,7 @@ bool CompraRegSinDoc::remove()
 {
     QString str_query;
 
-    str_query = "DELETE FROM documento WHERE id = "+id;
+    str_query += "DELETE FROM documento WHERE id = "+id;
     str_query += "&&END_QUERY&&";
     str_query += "COMMIT";
     str_query += "&&END_QUERY&&";
@@ -322,6 +326,11 @@ bool CompraRegSinDoc::remove()
         id = "";
         return true;
     }else{
+        if(query.exec("ROLLBACK")){
+
+        }else{
+
+        }
         return false;
     }
 }
@@ -444,11 +453,32 @@ void CompraRegSinDoc::on_pushButton_guardar_clicked()
     switch(ret){
     case 0:{
         if(guardar()){
-            QMessageBox::information(this, "Información", "Se guardo con éxito.");
+            //QMessageBox::information(this, "Información", "Se guardo con éxito.");
             this->setAttribute(Qt::WA_DeleteOnClose);
             SYSTEM->change_center_w(this, widget_previous);
+
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Se guardo exitosamente.", ":/new/Iconos/successfull.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
         }else{
-            QMessageBox::critical(this, "Error", "No se pudieron guardar los datos.");
+            if(ui->tableWidget->rowCount() <= 0){
+                QMessageBox::critical(this, "Error", "No tiene productos.");
+            }else{
+                QMessageBox::critical(this, "Error", "No se pudieron guardar los datos.");
+                /*
+                QMainWindow* mw = SYSTEM->get_mainw(this);
+                SnackBarInfo* w = new SnackBarInfo;
+                w->set_data("Error inesperado. Consulte al programador.", ":/new/Iconos/exclamation.png");
+                mw->statusBar()->addWidget(w);
+                int width = mw->width();
+                w->setMinimumWidth(width);
+                w->setMaximumWidth(width);
+                */
+            }
         }
         return;
     }break;
@@ -457,7 +487,6 @@ void CompraRegSinDoc::on_pushButton_guardar_clicked()
     }
     }
 }
-
 
 void CompraRegSinDoc::on_pushButton_eliminar_clicked()
 {
@@ -475,8 +504,25 @@ void CompraRegSinDoc::on_pushButton_eliminar_clicked()
             id = "";
             this->setAttribute(Qt::WA_DeleteOnClose);
             SYSTEM->change_center_w(this, widget_previous);
+
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Item eliminado con éxito.", ":/new/Iconos/trash_full_onyx.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
         }else{
             QMessageBox::critical(this, "Error", "No se pudieron eliminar los datos.");
+            /*
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Error inesperado. Consulte al programador.", ":/new/Iconos/exclamation.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
+            */
         }
         return;
     }break;
@@ -735,7 +781,9 @@ void CompraRegSinDoc::on_pushButton_borrar_clicked()
         total += p_total;
     }
 
-    ui->lineEdit_total->setText(QString().setNum(total, ' ', DECIMALS_PRECIO_TOTAL));
+    QString str_total = QString().setNum(total, ' ', DECIMALS_PRECIO_TOTAL);
+    SYSTEM->normalDecimal(str_total);
+    ui->lineEdit_total->setText(str_total);
 }
 
 void CompraRegSinDoc::on_pushButton_down_clicked()

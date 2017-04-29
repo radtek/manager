@@ -16,11 +16,12 @@ database_connection::database_connection()
 
     if(!file.exists())
     {
-        if(file.open(QIODevice::WriteOnly | QIODevice::Text))
-            qDebug()<<"File created."<<endl;
-    }else
-        qDebug()<<"File Exist"<<endl;
-
+        if(file.open(QIODevice::WriteOnly | QIODevice::Text)){
+            //qDebug()<<"File created."<<endl;
+        }
+    }else{
+        //qDebug()<<"File Exist"<<endl;
+    }
 
 }
 
@@ -124,12 +125,12 @@ void database_connection::mf_load_configuration(QString file_config)
 {
 	QString name_file_cfg = QString() + file_config + DB_FILE_NAME_EXTENSION;
 
-    qDebug()<<name_file_cfg<<endl;
+    //qDebug()<<name_file_cfg<<endl;
     QFile file(name_file_cfg);
 
 
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug()<<"open file"<<endl;
+        //qDebug()<<"open file"<<endl;
 
         QString str = file.readAll().toStdString().c_str();
 
@@ -161,11 +162,11 @@ bool database_connection::mf_connect()
     }
     if(my_database.open())
     {
-        qDebug()<<"Conection success...";
+        //qDebug()<<"Conection success...";
         return true;
 
     }else{
-        qDebug()<<"Conection error...";
+        //qDebug()<<"Conection error...";
         return false;
     }
 
