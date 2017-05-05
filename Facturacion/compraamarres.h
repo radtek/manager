@@ -25,6 +25,10 @@ private slots:
 
     void on_pushButton_editar_clicked();
 
+private:
+    void editarItem(QTableWidgetItem* item);
+
+private slots:
     void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
 
     void on_pushButton_salir_clicked();        

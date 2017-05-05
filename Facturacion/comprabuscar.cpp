@@ -35,7 +35,8 @@ CompraBuscar::CompraBuscar(QWidget *parent) :
     this->installEventFilter(this);
     ui->dateEdit_inicio->installEventFilter(this);
     ui->dateEdit_fin->installEventFilter(this);
-    ui->lineEdit_buscar->installEventFilter(this);
+    ui->lineEdit_buscarNombre->installEventFilter(this);
+    ui->lineEdit_buscarCodigo->installEventFilter(this);
     ui->tableWidget->installEventFilter(this);
     ui->pushButton_ok->installEventFilter(this);
     ui->pushButton_salir->installEventFilter(this);
@@ -52,46 +53,127 @@ void CompraBuscar::setTipoOrden()
 {
     tipo = compra_items::ORDEN;
     ui->radioButton_orden->setChecked(true);
+
+    hideOptGuiaRR();
+    hideOptBoleta();
+    hideOptFactura();
+    hideOptFlete();
+    hideOptNotaCredito();
+    hideOptNotaDebito();
+    hideOptRegSinDoc();
+    hideOptSaldo();
 }
 void CompraBuscar::setTipoBoleta()
 {
     tipo = compra_items::BOLETA;
     ui->radioButton_boleta->setChecked(true);
+
+    hideOptGuiaRR();
+    hideOptFactura();
+    hideOptFlete();
+    hideOptNotaCredito();
+    hideOptNotaDebito();
+    hideOptOrden();
+    hideOptRegSinDoc();
+    hideOptSaldo();
 }
 void CompraBuscar::setTipoFactura()
 {
     tipo = compra_items::FACTURA;
     ui->radioButton_factura->setChecked(true);
+
+    hideOptGuiaRR();
+    hideOptBoleta();
+    hideOptFlete();
+    hideOptNotaCredito();
+    hideOptNotaDebito();
+    hideOptOrden();
+    hideOptRegSinDoc();
+    hideOptSaldo();
 }
 void CompraBuscar::setTipoGuiaRR()
 {
     tipo = compra_items::GUIA_REMISION_REMITENTE;
     ui->radioButton_guia->setChecked(true);
+
+    hideOptBoleta();
+    hideOptFactura();
+    hideOptFlete();
+    hideOptNotaCredito();
+    hideOptNotaDebito();
+    hideOptOrden();
+    hideOptRegSinDoc();
+    hideOptSaldo();
 }
 void CompraBuscar::setTipoFlete()
 {
     tipo = compra_items::FLETE;
     ui->radioButton_flete->setChecked(true);
+
+    hideOptGuiaRR();
+    hideOptBoleta();
+    hideOptFactura();
+    hideOptNotaCredito();
+    hideOptNotaDebito();
+    hideOptOrden();
+    hideOptRegSinDoc();
+    hideOptSaldo();
 }
 void CompraBuscar::setTipoNotaCredito()
 {
     tipo = compra_items::NOTA_CREDITO;
     ui->radioButton_nota_credito->setChecked(true);
+
+    hideOptGuiaRR();
+    hideOptBoleta();
+    hideOptFactura();
+    hideOptFlete();
+    hideOptNotaDebito();
+    hideOptOrden();
+    hideOptRegSinDoc();
+    hideOptSaldo();
 }
 void CompraBuscar::setTipoNotaDebito()
 {
     tipo = compra_items::NOTA_DEBITO;
     ui->radioButton_nota_debito->setChecked(true);
+
+    hideOptGuiaRR();
+    hideOptBoleta();
+    hideOptFactura();
+    hideOptFlete();
+    hideOptNotaCredito();
+    hideOptOrden();
+    hideOptRegSinDoc();
+    hideOptSaldo();
 }
 void CompraBuscar::setTipoSaldo()
 {
     tipo = compra_items::SALDO;
     ui->radioButton_saldo->setChecked(true);
+
+    hideOptGuiaRR();
+    hideOptBoleta();
+    hideOptFactura();
+    hideOptFlete();
+    hideOptNotaCredito();
+    hideOptNotaDebito();
+    hideOptOrden();
+    hideOptRegSinDoc();
 }
 void CompraBuscar::setTipoRegSinDoc()
 {
     tipo = compra_items::REG_SIN_DOC;
     ui->radioButton_reg_sin_doc->setChecked(true);
+
+    hideOptGuiaRR();
+    hideOptBoleta();
+    hideOptFactura();
+    hideOptFlete();
+    hideOptNotaCredito();
+    hideOptNotaDebito();
+    hideOptOrden();
+    hideOptSaldo();
 }
 void CompraBuscar::hideOptOrden()
 {
@@ -148,19 +230,19 @@ void CompraBuscar::on_verticalScrollBar_actionTriggered(int value)
     qDebug()<<"activation bar value: "<<bar->value()<<endl;
     */
     if(bar->value() == bar->maximum()) {
-        set_buscar();
+        set_buscarNombre();
     }
 }
 void CompraBuscar::set_ruc(QString ruc)
 {
-    ui->lineEdit_buscar->setText(ruc);
-    ui->lineEdit_buscar->setReadOnly(true);
+    ui->lineEdit_buscarNombre->setText(ruc);
+    ui->lineEdit_buscarNombre->setReadOnly(true);
 
     modo_only_date = true;
 
     //ui->pushButton_agregar->hide();
 
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_returnPressed();
 }
 
 void CompraBuscar::on_compra_closing()
@@ -195,7 +277,7 @@ void CompraBuscar::on_compra_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -205,7 +287,7 @@ void CompraBuscar::on_compra_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -237,7 +319,7 @@ void CompraBuscar::on_compra_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
@@ -269,7 +351,7 @@ void CompraBuscar::on_compra_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -279,7 +361,7 @@ void CompraBuscar::on_compra_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -311,7 +393,7 @@ void CompraBuscar::on_compra_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
@@ -343,7 +425,7 @@ void CompraBuscar::on_compra_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -353,7 +435,7 @@ void CompraBuscar::on_compra_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -385,7 +467,7 @@ void CompraBuscar::on_compra_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
@@ -417,7 +499,7 @@ void CompraBuscar::on_compra_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -427,7 +509,7 @@ void CompraBuscar::on_compra_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -459,7 +541,7 @@ void CompraBuscar::on_compra_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
@@ -491,7 +573,7 @@ void CompraBuscar::on_compra_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -501,7 +583,7 @@ void CompraBuscar::on_compra_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -533,7 +615,7 @@ void CompraBuscar::on_compra_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
@@ -565,7 +647,7 @@ void CompraBuscar::on_compra_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -575,7 +657,7 @@ void CompraBuscar::on_compra_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -607,7 +689,7 @@ void CompraBuscar::on_compra_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
@@ -639,7 +721,7 @@ void CompraBuscar::on_compra_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -649,7 +731,7 @@ void CompraBuscar::on_compra_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -681,7 +763,7 @@ void CompraBuscar::on_compra_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
@@ -708,7 +790,7 @@ void CompraBuscar::on_compra_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -718,7 +800,7 @@ void CompraBuscar::on_compra_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -740,7 +822,7 @@ void CompraBuscar::on_compra_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
@@ -767,7 +849,7 @@ void CompraBuscar::on_compra_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -777,7 +859,7 @@ void CompraBuscar::on_compra_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -799,28 +881,18 @@ void CompraBuscar::on_compra_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
     }
 }
-void CompraBuscar::set_buscar()
+void CompraBuscar::set_buscarNombre()
 {
     QString str_query;
 
-    QString arg = ui->lineEdit_buscar->text();
-    QString match = "";
-    bool ok;
-
-    arg.left(11).toFloat(&ok);
-    if(ok){
-        match = "ruc";
-        arg = arg.mid(0, 11)+"%";
-    }else{
-        match = "razon_social";
-        arg = arg+"%";
-    }
+    QString arg = ui->lineEdit_buscarNombre->text();
+    arg = arg.trimmed();
 
     switch(tipo)
     {
@@ -833,9 +905,9 @@ void CompraBuscar::set_buscar()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
+        str_query += " WHERE juridica.razon_social LIKE '%" + arg + "%' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case compra_items::FACTURA:{
@@ -847,9 +919,9 @@ void CompraBuscar::set_buscar()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
+        str_query += " WHERE juridica.razon_social LIKE '%" + arg + "%' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case compra_items::BOLETA:{
@@ -861,9 +933,9 @@ void CompraBuscar::set_buscar()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
+        str_query += " WHERE juridica.razon_social LIKE '%" + arg + "%' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case compra_items::GUIA_REMISION_REMITENTE:{
@@ -875,9 +947,9 @@ void CompraBuscar::set_buscar()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
+        str_query += " WHERE juridica.razon_social LIKE '%" + arg + "%' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case compra_items::FLETE:{
@@ -889,9 +961,9 @@ void CompraBuscar::set_buscar()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
+        str_query += " WHERE juridica.razon_social LIKE '%" + arg + "%' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case compra_items::NOTA_CREDITO:{
@@ -903,9 +975,9 @@ void CompraBuscar::set_buscar()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
+        str_query += " WHERE juridica.razon_social LIKE '%" + arg + "%' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case compra_items::NOTA_DEBITO:{
@@ -917,9 +989,9 @@ void CompraBuscar::set_buscar()
         str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '%" + arg + "' AND ";
+        str_query += " WHERE juridica.razon_social LIKE '%" + arg + "%' AND ";
         str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica."+match;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case compra_items::SALDO:{
@@ -1179,7 +1251,7 @@ void CompraBuscar::set_buscar()
     }
 }
 
-void CompraBuscar::on_lineEdit_buscar_textEdited(const QString &arg1)
+void CompraBuscar::on_lineEdit_buscarNombre_textChanged(const QString &arg1)
 {
     pos = 0;
 
@@ -1187,10 +1259,10 @@ void CompraBuscar::on_lineEdit_buscar_textEdited(const QString &arg1)
     ui->tableWidget->setColumnCount(0);
     ui->tableWidget->clear();
 
-    set_buscar();
+    set_buscarNombre();
 }
 
-void CompraBuscar::on_lineEdit_buscar_returnPressed()
+void CompraBuscar::on_lineEdit_buscarNombre_returnPressed()
 {
     qDebug()<<"return Pressed"<<endl;
     pos = 0;
@@ -1199,7 +1271,7 @@ void CompraBuscar::on_lineEdit_buscar_returnPressed()
     ui->tableWidget->setColumnCount(0);
     ui->tableWidget->clear();
 
-    set_buscar();
+    set_buscarNombre();
 }
 void CompraBuscar::on_pushButton_ok_clicked()
 {    
@@ -1332,72 +1404,63 @@ void CompraBuscar::on_radioButton_orden_clicked()
 {
     tipo = compra_items::ORDEN;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void CompraBuscar::on_radioButton_factura_clicked()
 {
     tipo = compra_items::FACTURA;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void CompraBuscar::on_radioButton_boleta_clicked()
 {
     tipo = compra_items::BOLETA;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void CompraBuscar::on_radioButton_guia_clicked()
 {
     tipo = compra_items::GUIA_REMISION_REMITENTE;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void CompraBuscar::on_radioButton_flete_clicked()
 {
     tipo = compra_items::FLETE;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void CompraBuscar::on_radioButton_nota_credito_clicked()
 {
     tipo = compra_items::NOTA_CREDITO;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void CompraBuscar::on_radioButton_nota_debito_clicked()
 {
     tipo = compra_items::NOTA_DEBITO;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void CompraBuscar::on_radioButton_saldo_clicked()
 {
     tipo = compra_items::SALDO;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void CompraBuscar::on_radioButton_reg_sin_doc_clicked()
 {
     tipo = compra_items::REG_SIN_DOC;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 void CompraBuscar::on_pushButton_editar_clicked()
 {
@@ -1419,7 +1482,7 @@ void CompraBuscar::showEvent(QShowEvent *event)
     afterShow = true;
 
     if(!firstShow){
-        on_lineEdit_buscar_textEdited(ui->lineEdit_buscar->text());
+        on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
         //on_lineEdit_buscar_returnPressed();
         firstShow = true;
     }
@@ -1439,8 +1502,8 @@ bool CompraBuscar::eventFilter(QObject *obj, QEvent *e)
             if(focusWidget()){
                 focusWidget()->setFocus();
             }else{
-                ui->lineEdit_buscar->setFocus();
-                ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                ui->lineEdit_buscarNombre->setFocus();
+                ui->lineEdit_buscarNombre->setCursorPosition(ui->lineEdit_buscarNombre->text().length());
             }
             return true;
         }
@@ -1454,14 +1517,14 @@ bool CompraBuscar::eventFilter(QObject *obj, QEvent *e)
             if(afterShow) {
                 if(focusWidget()){
                     if(focusWidget() == ui->pushButton_nuevo){
-                        ui->lineEdit_buscar->setFocus();
-                        ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                        ui->lineEdit_buscarNombre->setFocus();
+                        ui->lineEdit_buscarNombre->setCursorPosition(ui->lineEdit_buscarNombre->text().length());
                     }else{
                         focusWidget()->setFocus();
                     }
                 }else{
-                    ui->lineEdit_buscar->setFocus();
-                    ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                    ui->lineEdit_buscarNombre->setFocus();
+                    ui->lineEdit_buscarNombre->setCursorPosition(ui->lineEdit_buscarNombre->text().length());
                 }
                 afterShow = false;
             }
@@ -1530,11 +1593,11 @@ bool CompraBuscar::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:
                 if(modo_only_date){
-                    on_lineEdit_buscar_textEdited(ui->lineEdit_buscar->text());
-                    on_lineEdit_buscar_returnPressed();
+                    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
+
                     ui->tableWidget->setFocus(Qt::TabFocusReason);
                 }else{
-                    ui->lineEdit_buscar->setFocus(Qt::TabFocusReason);
+                    ui->lineEdit_buscarNombre->setFocus(Qt::TabFocusReason);
                 }
                 return true;
             case Qt::Key_Enter:{
@@ -1552,7 +1615,7 @@ bool CompraBuscar::eventFilter(QObject *obj, QEvent *e)
         }
         return false;
     }
-    w_temp = ui->lineEdit_buscar;
+    w_temp = ui->lineEdit_buscarNombre;
     if(w_temp == obj){
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
@@ -1560,7 +1623,29 @@ bool CompraBuscar::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Return:
-                on_lineEdit_buscar_returnPressed();
+                on_lineEdit_buscarNombre_returnPressed();
+                return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->lineEdit_buscarCodigo;
+    if(w_temp == obj){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                on_lineEdit_buscarCodigo_returnPressed();
                 return true;
             case Qt::Key_Enter:{
                 QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
@@ -1587,7 +1672,7 @@ bool CompraBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Down: {
                 int index = ui->tableWidget->currentRow();
                 if (index == ui->tableWidget->rowCount() - 1) {
-                    set_buscar();
+                    set_buscarNombre();
                     return true;
                 }
             }break;
@@ -1830,5 +1915,391 @@ void CompraBuscar::editarItem(QTableWidgetItem *item)
         w->select(id, fecha_emision);
         SYSTEM->change_center_w(this, w);
     }break;
+    }
+}
+
+void CompraBuscar::on_lineEdit_buscarCodigo_textChanged(const QString &arg1)
+{
+    pos = 0;
+
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setColumnCount(0);
+    ui->tableWidget->clear();
+
+    set_buscarCodigo();
+}
+
+void CompraBuscar::on_lineEdit_buscarCodigo_returnPressed()
+{
+    pos = 0;
+
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setColumnCount(0);
+    ui->tableWidget->clear();
+
+    set_buscarCodigo();
+}
+void CompraBuscar::set_buscarCodigo()
+{
+    QString str_query;
+
+    QString arg = ui->lineEdit_buscarCodigo->text();
+    arg = arg.trimmed();
+    //arg = arg.simplified();
+
+    switch(tipo)
+    {
+    case compra_items::ORDEN:{
+        str_query = "SELECT documento.id, persona.id, anexo.fecha_emision, anexo.serie, anexo.numero, juridica.ruc, juridica.razon_social";
+        str_query += " FROM orden";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::COMPRA)+" AND orden.comprobante_documento_id = comprobante.documento_id)";
+        str_query += " JOIN documento ON orden.comprobante_documento_id = documento.id";
+        str_query += " JOIN anexo ON documento.id = anexo.documento_id";
+        str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
+        str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
+        str_query += " JOIN juridica ON persona.id = juridica.persona_id";
+        str_query += " WHERE juridica.ruc LIKE '" + arg + "%' AND ";
+        str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+    case compra_items::FACTURA:{
+        str_query = "SELECT documento.id, persona.id, anexo.fecha_emision, anexo.serie, anexo.numero, juridica.ruc, juridica.razon_social";
+        str_query += " FROM factura";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::COMPRA)+" AND factura.comprobante_documento_id = comprobante.documento_id)";
+        str_query += " JOIN documento ON factura.comprobante_documento_id = documento.id";
+        str_query += " JOIN anexo ON documento.id = anexo.documento_id";
+        str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
+        str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
+        str_query += " JOIN juridica ON persona.id = juridica.persona_id";
+        str_query += " WHERE juridica.ruc LIKE '" + arg + "%' AND ";
+        str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+    case compra_items::BOLETA:{
+        str_query = "SELECT documento.id, persona.id, anexo.fecha_emision, anexo.serie, anexo.numero, juridica.ruc, juridica.razon_social";
+        str_query += " FROM boleta";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::COMPRA)+" AND boleta.comprobante_documento_id = comprobante.documento_id)";
+        str_query += " JOIN documento ON boleta.comprobante_documento_id = documento.id";
+        str_query += " JOIN anexo ON documento.id = anexo.documento_id";
+        str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
+        str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
+        str_query += " JOIN juridica ON persona.id = juridica.persona_id";
+        str_query += " WHERE juridica.ruc LIKE '" + arg + "%' AND ";
+        str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+    case compra_items::GUIA_REMISION_REMITENTE:{
+        str_query = "SELECT documento.id, persona.id, anexo.fecha_emision, anexo.serie, anexo.numero, juridica.ruc, juridica.razon_social";
+        str_query += " FROM guia_remision_remitente";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::COMPRA)+" AND guia_remision_remitente.comprobante_documento_id = comprobante.documento_id)";
+        str_query += " JOIN documento ON guia_remision_remitente.comprobante_documento_id = documento.id";
+        str_query += " JOIN anexo ON documento.id = anexo.documento_id";
+        str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
+        str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
+        str_query += " JOIN juridica ON persona.id = juridica.persona_id";
+        str_query += " WHERE juridica.ruc LIKE '" + arg + "%' AND ";
+        str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+    case compra_items::FLETE:{
+        str_query = "SELECT documento.id, persona.id, anexo.fecha_emision, anexo.serie, anexo.numero, juridica.ruc, juridica.razon_social";
+        str_query += " FROM flete";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::COMPRA)+" AND flete.comprobante_documento_id = comprobante.documento_id)";
+        str_query += " JOIN documento ON flete.comprobante_documento_id = documento.id";
+        str_query += " JOIN anexo ON documento.id = anexo.documento_id";
+        str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
+        str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
+        str_query += " JOIN juridica ON persona.id = juridica.persona_id";
+        str_query += " WHERE juridica.ruc LIKE '" + arg + "%' AND ";
+        str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+    case compra_items::NOTA_CREDITO:{
+        str_query = "SELECT documento.id, persona.id, anexo.fecha_emision, anexo.serie, anexo.numero, juridica.ruc, juridica.razon_social";
+        str_query += " FROM nota_credito";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::COMPRA)+" AND nota_credito.comprobante_documento_id = comprobante.documento_id)";
+        str_query += " JOIN documento ON nota_credito.comprobante_documento_id = documento.id";
+        str_query += " JOIN anexo ON documento.id = anexo.documento_id";
+        str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
+        str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
+        str_query += " JOIN juridica ON persona.id = juridica.persona_id";
+        str_query += " WHERE juridica.ruc LIKE '" + arg + "%' AND ";
+        str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+    case compra_items::NOTA_DEBITO:{
+        str_query = "SELECT documento.id, persona.id, anexo.fecha_emision, anexo.serie, anexo.numero, juridica.ruc, juridica.razon_social";
+        str_query += " FROM nota_debito";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::COMPRA)+" AND nota_debito.comprobante_documento_id = comprobante.documento_id)";
+        str_query += " JOIN documento ON nota_debito.comprobante_documento_id = documento.id";
+        str_query += " JOIN anexo ON documento.id = anexo.documento_id";
+        str_query += " JOIN documento_h_persona ON documento_h_persona.documento_id = documento.id";
+        str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
+        str_query += " JOIN juridica ON persona.id = juridica.persona_id";
+        str_query += " WHERE juridica.ruc LIKE '" + arg + "%' AND ";
+        str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+    case compra_items::SALDO:{
+        str_query = "SELECT documento.id, anexo.fecha_emision";
+        str_query += " FROM saldo";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::COMPRA)+" AND saldo.comprobante_documento_id = comprobante.documento_id)";
+        str_query += " JOIN documento ON saldo.comprobante_documento_id = documento.id";
+        str_query += " JOIN anexo ON documento.id = anexo.documento_id";
+        str_query += " WHERE";
+        str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
+        str_query += " ORDER BY anexo.fecha_emision DESC";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+    case compra_items::REG_SIN_DOC:{
+        str_query = "SELECT documento.id, anexo.fecha_emision";
+        str_query += " FROM registro_sin_documento";
+        str_query += " JOIN comprobante ON (comprobante.operacion_id = "+QString().setNum(operacion_items::COMPRA)+" AND registro_sin_documento.comprobante_documento_id = comprobante.documento_id)";
+        str_query += " JOIN documento ON registro_sin_documento.comprobante_documento_id = documento.id";
+        str_query += " JOIN anexo ON documento.id = anexo.documento_id";
+        str_query += " WHERE";
+        str_query += " (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
+        str_query += " ORDER BY anexo.fecha_emision DESC";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+    }
+
+    QSqlQuery query;
+    qDebug() << str_query << endl;
+    if (query.exec(str_query)) {
+        int rowCount = ui->tableWidget->rowCount();
+        ui->tableWidget->setRowCount(rowCount + query.size());
+
+        int columnCount = query.record().count();
+        ui->tableWidget->setColumnCount(columnCount);
+
+        switch(tipo)
+        {
+        case compra_items::ORDEN:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "PERSONA_ID" << "FECHA_EMISION"
+                                                       << "SERIE" << "NUMERO"
+                                                       << "RUC" << "RAZON SOCIAL");
+            ui->tableWidget->setColumnHidden(0, true);
+            ui->tableWidget->setColumnHidden(1, true);
+        }break;
+        case compra_items::FACTURA:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "PERSONA_ID" << "FECHA_EMISION"
+                                                       << "SERIE" << "NUMERO"
+                                                       << "RUC" << "RAZON SOCIAL");
+            ui->tableWidget->setColumnHidden(0, true);
+            ui->tableWidget->setColumnHidden(1, true);
+        }break;
+        case compra_items::BOLETA:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "PERSONA_ID" << "FECHA_EMISION"
+                                                       << "SERIE" << "NUMERO"
+                                                       << "RUC" << "RAZON SOCIAL");
+            ui->tableWidget->setColumnHidden(0, true);
+            ui->tableWidget->setColumnHidden(1, true);
+        }break;
+        case compra_items::GUIA_REMISION_REMITENTE:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "PERSONA_ID" << "FECHA_EMISION"
+                                                       << "SERIE" << "NUMERO"
+                                                       << "RUC" << "RAZON SOCIAL");
+            ui->tableWidget->setColumnHidden(0, true);
+            ui->tableWidget->setColumnHidden(1, true);
+        }break;
+        case compra_items::FLETE:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "PERSONA_ID" << "FECHA_EMISION"
+                                                       << "SERIE" << "NUMERO"
+                                                       << "RUC" << "RAZON SOCIAL");
+            ui->tableWidget->setColumnHidden(0, true);
+            ui->tableWidget->setColumnHidden(1, true);
+        }break;
+        case compra_items::NOTA_CREDITO:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "PERSONA_ID" << "FECHA_EMISION"
+                                                       << "SERIE" << "NUMERO"
+                                                       << "RUC" << "RAZON SOCIAL");
+            ui->tableWidget->setColumnHidden(0, true);
+            ui->tableWidget->setColumnHidden(1, true);
+        }break;
+        case compra_items::NOTA_DEBITO:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "PERSONA_ID" << "FECHA_EMISION"
+                                                       << "SERIE" << "NUMERO"
+                                                       << "RUC" << "RAZON SOCIAL");
+            ui->tableWidget->setColumnHidden(0, true);
+            ui->tableWidget->setColumnHidden(1, true);
+        }break;
+        case compra_items::SALDO:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "FECHA_EMISION");
+            ui->tableWidget->setColumnHidden(0, true);
+        }break;
+        case compra_items::REG_SIN_DOC:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "FECHA_EMISION");
+            ui->tableWidget->setColumnHidden(0, true);
+        }break;
+        }
+
+        while (query.next()) {
+            switch(tipo)
+            {
+            case compra_items::ORDEN:{
+                QString id = query.value(0).toString();
+                QString persona_id = query.value(1).toString();
+                QString fecha_emision = query.value(2).toDate().toString("dd-MM-yyyy");
+                QString serie = query.value(3).toString();
+                QString numero = query.value(4).toString();
+                QString ruc = query.value(5).toString();
+                QString razon_social = query.value(6).toString();
+
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
+                ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
+                ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
+                ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
+                ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
+                ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
+
+            }break;
+            case compra_items::FACTURA:{
+                QString id = query.value(0).toString();
+                QString persona_id = query.value(1).toString();
+                QString fecha_emision = query.value(2).toDate().toString("dd-MM-yyyy");
+                QString serie = query.value(3).toString();
+                QString numero = query.value(4).toString();
+                QString ruc = query.value(5).toString();
+                QString razon_social = query.value(6).toString();
+
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
+                ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
+                ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
+                ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
+                ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
+                ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
+
+            }break;
+            case compra_items::BOLETA:{
+                QString id = query.value(0).toString();
+                QString persona_id = query.value(1).toString();
+                QString fecha_emision = query.value(2).toDate().toString("dd-MM-yyyy");
+                QString serie = query.value(3).toString();
+                QString numero = query.value(4).toString();
+                QString ruc = query.value(5).toString();
+                QString razon_social = query.value(6).toString();
+
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
+                ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
+                ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
+                ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
+                ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
+                ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
+
+            }break;
+            case compra_items::GUIA_REMISION_REMITENTE:{
+                QString id = query.value(0).toString();
+                QString persona_id = query.value(1).toString();
+                QString fecha_emision = query.value(2).toDate().toString("dd-MM-yyyy");
+                QString serie = query.value(3).toString();
+                QString numero = query.value(4).toString();
+                QString ruc = query.value(5).toString();
+                QString razon_social = query.value(6).toString();
+
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
+                ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
+                ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
+                ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
+                ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
+                ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
+
+            }break;
+            case compra_items::FLETE:{
+                QString id = query.value(0).toString();
+                QString persona_id = query.value(1).toString();
+                QString fecha_emision = query.value(2).toDate().toString("dd-MM-yyyy");
+                QString serie = query.value(3).toString();
+                QString numero = query.value(4).toString();
+                QString ruc = query.value(5).toString();
+                QString razon_social = query.value(6).toString();
+
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
+                ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
+                ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
+                ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
+                ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
+                ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
+
+            }break;
+            case compra_items::NOTA_CREDITO:{
+                QString id = query.value(0).toString();
+                QString persona_id = query.value(1).toString();
+                QString fecha_emision = query.value(2).toDate().toString("dd-MM-yyyy");
+                QString serie = query.value(3).toString();
+                QString numero = query.value(4).toString();
+                QString ruc = query.value(5).toString();
+                QString razon_social = query.value(6).toString();
+
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
+                ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
+                ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
+                ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
+                ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
+                ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
+
+            }break;
+            case compra_items::NOTA_DEBITO:{
+                QString id = query.value(0).toString();
+                QString persona_id = query.value(1).toString();
+                QString fecha_emision = query.value(2).toDate().toString("dd-MM-yyyy");
+                QString serie = query.value(3).toString();
+                QString numero = query.value(4).toString();
+                QString ruc = query.value(5).toString();
+                QString razon_social = query.value(6).toString();
+
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(persona_id));
+                ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(fecha_emision));
+                ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(serie));
+                ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(numero));
+                ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(ruc));
+                ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(razon_social));
+
+            }break;
+            case compra_items::SALDO:{
+                QString id = query.value(0).toString();
+                QString fecha_emision = query.value(1).toDate().toString("dd-MM-yyyy");
+
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(fecha_emision));
+
+            }break;
+            case compra_items::REG_SIN_DOC:{
+                QString id = query.value(0).toString();
+                QString fecha_emision = query.value(1).toDate().toString("dd-MM-yyyy");
+
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(fecha_emision));
+
+            }break;
+            }
+            ++pos;
+        }
+        SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
+
+    } else {
     }
 }

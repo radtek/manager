@@ -1,5 +1,8 @@
 #include "_startprogram.h"
 
+#include <QHostInfo>
+#include <QNetworkInterface>
+
 _StartProgram::_StartProgram()
 {
 
@@ -7,6 +10,31 @@ _StartProgram::_StartProgram()
 _StartProgram::~_StartProgram()
 {
     qDebug()<<"DELETE _STARTPROGRAM"<<endl;
+}
+QString _StartProgram::getMacAddress()
+{
+    /*
+    foreach(QNetworkInterface netInterface, QNetworkInterface::allInterfaces())
+    {
+        // Return only the first non-loopback MAC Address
+        if (!(netInterface.flags() & QNetworkInterface::IsLoopBack))
+            return netInterface.hardwareAddress();
+    }*/
+    QProcess process;
+    process.start("getmac /v /nh");
+    process.waitForFinished(-1);
+    QString out = QString(process.readAllStandardOutput().toStdString().c_str());
+    QStringList list = out.split(QRegExp("\\s+"));
+    /*
+    for(int i=0; i<list.size(); i++){
+        qDebug()<<list[i]<<endl;
+    }
+    */
+    if(list.size() > 5){
+        out = list[5];
+        qDebug()<<out<<endl;
+    }
+    return out;
 }
 void _StartProgram::run()
 {
@@ -31,8 +59,22 @@ void _StartProgram::run()
     // Cargar config database (configuracion de base de datos de un archivo)
     //DATABASE_CONFIG(C_DB_FILE_CONFIG_NAME);
 
+    QString text = getMacAddress();
+    /*
+    foreach(QNetworkInterface interfac, QNetworkInterface::allInterfaces())
+    {
+        text = interfac.hardwareAddress();
+        qDebug()<<text<<endl;
+    }
+
+    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
+             qDebug() << address.toString();
+    }
+    */
     //qDebug()<<"entro"<<endl;
-    if(QDate::currentDate() >= QDate(2017,4,7) && QDate::currentDate() <= QDate(2017,5,6)){
+    if(text.compare("D8-50-E6-3D-7B-B0") == 0
+            && QDate::currentDate() >= QDate(2017,5,1) && QDate::currentDate() <= QDate(2017,6,6)){
 
     }else{
         QWidget* w = new QWidget();

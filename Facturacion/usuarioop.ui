@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>379</width>
+    <width>432</width>
     <height>210</height>
    </rect>
   </property>
@@ -212,12 +212,37 @@
      </item>
      <item>
       <widget class="QLineEdit" name="lineEdit_usuario">
+       <property name="minimumSize">
+        <size>
+         <width>250</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>250</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <pointsize>10</pointsize>
         </font>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_6">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>
@@ -300,7 +325,7 @@
         <string>&amp;Eliminar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/delete_32.png</normaloff>:/new/Iconos/delete_32.png</iconset>
        </property>
        <property name="iconSize">
@@ -338,7 +363,7 @@
         <string>&amp;Guardar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/colaborador_32.png</normaloff>:/new/Iconos/colaborador_32.png</iconset>
        </property>
        <property name="iconSize">
@@ -360,7 +385,7 @@
         <string>&amp;Salir</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/salir_32.png</normaloff>:/new/Iconos/salir_32.png</iconset>
        </property>
        <property name="iconSize">
@@ -385,6 +410,8 @@
   <tabstop>pushButton_guardar</tabstop>
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../ManagerSystem/iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

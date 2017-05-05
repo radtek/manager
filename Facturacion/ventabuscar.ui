@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>821</width>
-    <height>378</height>
+    <width>609</width>
+    <height>436</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -111,26 +111,19 @@
       </spacer>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_reg_sin_doc">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Reg. Sin Doc.</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QRadioButton" name="radioButton_boleta">
        <property name="font">
         <font>
          <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="text">
-        <string>Boleta</string>
+        <string>Boleta(Alt+1)</string>
+       </property>
+       <property name="shortcut">
+        <string>Alt+1</string>
        </property>
       </widget>
      </item>
@@ -139,22 +132,15 @@
        <property name="font">
         <font>
          <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="text">
         <string>Factura</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="radioButton_nota_pedido">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>N. de Pedido</string>
+       <property name="shortcut">
+        <string>Alt+2</string>
        </property>
       </widget>
      </item>
@@ -163,22 +149,15 @@
        <property name="font">
         <font>
          <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="text">
         <string>Guía R.R.</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="radioButton_cotizacion">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Cotización</string>
+       <property name="shortcut">
+        <string>Alt+3</string>
        </property>
       </widget>
      </item>
@@ -187,10 +166,15 @@
        <property name="font">
         <font>
          <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="text">
         <string>N. de Crédito</string>
+       </property>
+       <property name="shortcut">
+        <string>Alt+4</string>
        </property>
       </widget>
      </item>
@@ -199,15 +183,101 @@
        <property name="font">
         <font>
          <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="text">
         <string>N. de Débito</string>
        </property>
+       <property name="shortcut">
+        <string>Alt+5</string>
+       </property>
       </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_6">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
+     <item>
+      <spacer name="horizontalSpacer_9">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton_reg_sin_doc">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Reg. Sin Doc.(Alt+6)</string>
+       </property>
+       <property name="shortcut">
+        <string>Alt+6</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton_nota_pedido">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>N. de Pedido</string>
+       </property>
+       <property name="shortcut">
+        <string>Alt+7</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton_cotizacion">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Cotización</string>
+       </property>
+       <property name="shortcut">
+        <string>Alt+8</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_10">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -351,13 +421,13 @@
       <widget class="QLabel" name="label_nombre">
        <property name="minimumSize">
         <size>
-         <width>0</width>
+         <width>80</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
+         <width>80</width>
          <height>16777215</height>
         </size>
        </property>
@@ -367,12 +437,12 @@
         </font>
        </property>
        <property name="text">
-        <string>Código o Nombre</string>
+        <string>Nombre</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_buscar">
+      <widget class="QLineEdit" name="lineEdit_buscarNombre">
        <property name="minimumSize">
         <size>
          <width>350</width>
@@ -385,6 +455,81 @@
         </font>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QLabel" name="label_codigo">
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Código</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_buscarCodigo">
+       <property name="minimumSize">
+        <size>
+         <width>120</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>120</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_8">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>
@@ -432,10 +577,21 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>pushButton_nuevo</tabstop>
+  <tabstop>pushButton_editar</tabstop>
+  <tabstop>radioButton_boleta</tabstop>
+  <tabstop>radioButton_factura</tabstop>
+  <tabstop>radioButton_guia</tabstop>
+  <tabstop>radioButton_nota_credito</tabstop>
+  <tabstop>radioButton_nota_debito</tabstop>
+  <tabstop>radioButton_reg_sin_doc</tabstop>
+  <tabstop>radioButton_nota_pedido</tabstop>
+  <tabstop>radioButton_cotizacion</tabstop>
   <tabstop>dateEdit_inicio</tabstop>
   <tabstop>dateEdit_fin</tabstop>
   <tabstop>tableWidget</tabstop>
-  <tabstop>lineEdit_buscar</tabstop>
+  <tabstop>lineEdit_buscarNombre</tabstop>
+  <tabstop>lineEdit_buscarCodigo</tabstop>
   <tabstop>pushButton_ok</tabstop>
   <tabstop>pushButton_salir</tabstop>
  </tabstops>

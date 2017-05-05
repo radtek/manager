@@ -542,7 +542,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Cantidad de RSN y NP no revisado</string>
+        <string>Cantidad de Nota de Pedido</string>
        </property>
       </widget>
      </item>

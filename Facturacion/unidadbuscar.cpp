@@ -133,6 +133,8 @@ void UnidadBuscar::on_unidad_closing()
 void UnidadBuscar::set_buscar()
 {
     QString unidad = ui->lineEdit_unidad_buscar->text();
+    unidad = unidad.trimmed();
+
     QString str_query = "SELECT id, unidad FROM unidad WHERE unidad LIKE '%" + unidad + "%'";
     str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
 

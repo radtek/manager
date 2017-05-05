@@ -42,12 +42,14 @@ public slots:
     void on_colaborador_closing();
 
 private:
-    void set_buscar();
+    void set_buscarNombre();
+
+    void set_buscarCodigo();
 
 public slots:
-    void on_lineEdit_buscar_textChanged(const QString& arg);
+    void on_lineEdit_buscarNombre_textChanged(const QString& arg);
 
-    void on_lineEdit_buscar_returnPressed();
+    void on_lineEdit_buscarNombre_returnPressed();
 
     void on_pushButton_ok_clicked();
 
@@ -78,6 +80,10 @@ protected:
 
 private slots:
     void on_pushButton_editar_clicked();
+
+    void on_lineEdit_buscarCodigo_textChanged(const QString &arg1);
+
+    void on_lineEdit_buscarCodigo_returnPressed();
 
 private:
     void editarItem(QTableWidgetItem* item);

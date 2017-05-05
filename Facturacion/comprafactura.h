@@ -119,6 +119,8 @@ private slots:
 
     void on_pushButton_canjear_clicked();
 
+    void on_lineEdit_cod_textChanged(const QString &arg1);
+
 signals:
     void showing();
 

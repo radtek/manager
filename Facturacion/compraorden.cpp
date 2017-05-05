@@ -603,10 +603,6 @@ void CompraOrden::on_pushButton_proveedor_clicked()
 {
     CompraProveedor* w_buscar_proveedor = new CompraProveedor;
     w_buscar_proveedor->setTipoProveedor();
-    w_buscar_proveedor->hideOptTransportista();
-    w_buscar_proveedor->hideOptClienteDNI();
-    w_buscar_proveedor->hideOptClienteRUC();
-    w_buscar_proveedor->hideOptUsuario();
     
     w_buscar_proveedor->set_widget_previous(this);
     connect(w_buscar_proveedor, SIGNAL(closing()), this, SLOT(on_proveedor_closing()));
@@ -678,6 +674,9 @@ void CompraOrden::on_comboBox_moneda_currentIndexChanged(int index)
 
     // DOLARES
     if(index == 1){
+        dolar = SYSTEM->get_dolar(ui->dateTimeEdit_emision->date());
+        ui->label_cambio_dolar_value->setText(QString().setNum(dolar, ' ', 3));
+
         ui->label_cambio_dolar->show();
         ui->label_cambio_dolar_value->show();
 
@@ -788,6 +787,11 @@ void CompraOrden::on_tableWidget_itemChanged(QTableWidgetItem *item)
 }
 void CompraOrden::on_pushButton_amarres_clicked()
 {
+    if(id.compare("") == 0) {
+        QMessageBox::warning(this, "Advertencia", "No existe documento. Debe guardarlo primero.", "Ok");
+        return;
+    }
+
     CompraAmarres* w_compra_amarres = new CompraAmarres;
     w_compra_amarres->set_widget_previous(this);
     w_compra_amarres->set_documento(this->id, tipo_documento::ORDEN);
@@ -909,6 +913,8 @@ void CompraOrden::on_dateTimeEdit_emision_dateChanged(const QDate &date)
     int index = ui->comboBox_moneda->currentIndex();
     // DOLARES
     if(index == 1){
+        dolar = SYSTEM->get_dolar(ui->dateTimeEdit_emision->date());
+        ui->label_cambio_dolar_value->setText(QString().setNum(dolar, ' ', 3));
         /*
         ui->label_cambio_dolar_value->hide();
         double cambio_dolar = SYSTEM->get_dolar(date);
@@ -1249,33 +1255,6 @@ bool CompraOrden::eventFilter(QObject *obj, QEvent *e)
     return eventFilter(obj, e);
 }
 
-void CompraOrden::on_lineEdit_cod_textEdited(const QString &arg1)
-{
-    if(arg1.length() == 11){
-        QString str_query;
-        QSqlQuery query;
-
-        str_query = "SELECT juridica.persona_id, juridica.ruc";
-        str_query += ", juridica.razon_social";
-        str_query += " FROM proveedor";
-        str_query += " JOIN juridica ON juridica.persona_id = proveedor.juridica_persona_id";
-        //str_query += " JOIN persona ON persona.id = proveedor.juridica_persona_id";
-        str_query += " WHERE juridica.ruc = '"+arg1+"'";
-
-        qDebug()<<str_query<<endl;
-        if(query.exec(str_query)) {
-            query.next();
-            persona_id = query.value(0).toString();
-            codigo = query.value(1).toString();
-            nombre = query.value(2).toString();
-            ui->lineEdit_cod->setText(codigo);
-            ui->lineEdit_nombre->setText(nombre);
-
-        }else{
-        }
-    }
-}
-
 void CompraOrden::on_pushButton_borrar_clicked()
 {
     QTableWidgetItem* item= ui->tableWidget->currentItem();
@@ -1401,10 +1380,39 @@ void CompraOrden::on_pushButton_up_clicked()
 
 void CompraOrden::on_pushButton_canjear_clicked()
 {
+    /*
     CompraCanjear* w = new CompraCanjear;
     w->set_widget_previous(this);
 
     w->set_data(compra_items::ORDEN, id, ui->lineEdit_cod->text(), ui->lineEdit_nombre->text());
 
     SYSTEM->change_center_w(this, w);
+    */
+}
+
+void CompraOrden::on_lineEdit_cod_textChanged(const QString &arg1)
+{
+    if(arg1.length() == 11){
+        QString str_query;
+        QSqlQuery query;
+
+        str_query = "SELECT juridica.persona_id, juridica.ruc";
+        str_query += ", juridica.razon_social";
+        str_query += " FROM proveedor";
+        str_query += " JOIN juridica ON juridica.persona_id = proveedor.juridica_persona_id";
+        //str_query += " JOIN persona ON persona.id = proveedor.juridica_persona_id";
+        str_query += " WHERE juridica.ruc = '"+arg1+"'";
+
+        qDebug()<<str_query<<endl;
+        if(query.exec(str_query)) {
+            query.next();
+            persona_id = query.value(0).toString();
+            codigo = query.value(1).toString();
+            nombre = query.value(2).toString();
+            ui->lineEdit_cod->setText(codigo);
+            ui->lineEdit_nombre->setText(nombre);
+
+        }else{
+        }
+    }
 }

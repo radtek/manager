@@ -30,7 +30,8 @@ ColaboradorBuscar::ColaboradorBuscar(QWidget *parent) :
 
     // INSTALL EVENTFILTER    
     this->installEventFilter(this);
-    ui->lineEdit_buscar->installEventFilter(this);
+    ui->lineEdit_buscarNombre->installEventFilter(this);
+    ui->lineEdit_buscarCodigo->installEventFilter(this);
     ui->tableWidget->installEventFilter(this);
     ui->pushButton_ok->installEventFilter(this);
     ui->pushButton_salir->installEventFilter(this);
@@ -61,7 +62,7 @@ void ColaboradorBuscar::on_verticalScrollBar_actionTriggered(int value)
     qDebug()<<"activation bar value: "<<bar->value()<<endl;
     */
     if(bar->value() == bar->maximum()) {
-        set_buscar();
+        set_buscarNombre();
     }
 }
 QString ColaboradorBuscar::get_ID()
@@ -84,26 +85,51 @@ void ColaboradorBuscar::setTipoProveedor()
 {
     tipo = persona_items::PROVEEDOR;
     ui->radioButton_proveedor->setChecked(true);
+
+    hideOptTransportista();
+    hideOptClienteDNI();
+    hideOptClienteRUC();
+    hideOptUsuario();
 }
 void ColaboradorBuscar::setTipoTransportista()
 {
     tipo = persona_items::TRANSPORTISTA;
     ui->radioButton_transportista->setChecked(true);
+
+    hideOptProveedor();
+    hideOptClienteDNI();
+    hideOptClienteRUC();
+    hideOptUsuario();
 }
 void ColaboradorBuscar::setTipoClienteRUC()
 {
     tipo = persona_items::CLIENTE_RUC;
     ui->radioButton_cliente_ruc->setChecked(true);
+
+    hideOptProveedor();
+    hideOptTransportista();
+    hideOptClienteDNI();
+    hideOptUsuario();
 }
 void ColaboradorBuscar::setTipoClienteDNI()
 {
     tipo = persona_items::CLIENTE_DNI;
     ui->radioButton_cliente_dni->setChecked(true);
+
+    hideOptProveedor();
+    hideOptTransportista();
+    hideOptClienteRUC();
+    hideOptUsuario();
 }
 void ColaboradorBuscar::setTipoUsuario()
 {
     tipo = persona_items::USUARIO;
     ui->radioButton_usuario->setChecked(true);
+
+    hideOptProveedor();
+    hideOptTransportista();
+    hideOptClienteRUC();
+    hideOptClienteDNI();
 }
 void ColaboradorBuscar::hideOptProveedor()
 {
@@ -154,7 +180,7 @@ void ColaboradorBuscar::on_colaborador_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -164,7 +190,7 @@ void ColaboradorBuscar::on_colaborador_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -189,7 +215,7 @@ void ColaboradorBuscar::on_colaborador_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
@@ -218,7 +244,7 @@ void ColaboradorBuscar::on_colaborador_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -228,7 +254,7 @@ void ColaboradorBuscar::on_colaborador_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -253,7 +279,7 @@ void ColaboradorBuscar::on_colaborador_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
@@ -282,7 +308,7 @@ void ColaboradorBuscar::on_colaborador_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -292,7 +318,7 @@ void ColaboradorBuscar::on_colaborador_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -317,7 +343,7 @@ void ColaboradorBuscar::on_colaborador_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
@@ -346,7 +372,7 @@ void ColaboradorBuscar::on_colaborador_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -356,7 +382,7 @@ void ColaboradorBuscar::on_colaborador_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -381,7 +407,7 @@ void ColaboradorBuscar::on_colaborador_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
@@ -409,7 +435,7 @@ void ColaboradorBuscar::on_colaborador_closing()
                     ui->tableWidget->setColumnCount(0);
                     ui->tableWidget->clear();
 
-                    set_buscar();
+                    set_buscarNombre();
                 }break;
                 }
             }else{
@@ -419,7 +445,7 @@ void ColaboradorBuscar::on_colaborador_closing()
                 ui->tableWidget->setColumnCount(0);
                 ui->tableWidget->clear();
 
-                set_buscar();
+                set_buscarNombre();
             }
         }break;
         case MODIFICAR:{
@@ -448,7 +474,7 @@ void ColaboradorBuscar::on_colaborador_closing()
             ui->tableWidget->setColumnCount(0);
             ui->tableWidget->clear();
 
-            set_buscar();
+            set_buscarNombre();
         }break;
         }
     }break;
@@ -456,25 +482,16 @@ void ColaboradorBuscar::on_colaborador_closing()
     }
 
 }
-void ColaboradorBuscar::set_buscar()
+void ColaboradorBuscar::set_buscarNombre()
 {
     QString str_query;
 
-    QString arg = ui->lineEdit_buscar->text();
+    QString arg = ui->lineEdit_buscarNombre->text();
+    arg = arg.trimmed();
 
     switch(tipo)
     {
     case persona_items::PROVEEDOR:{
-        QString match = "";
-        bool ok;
-        arg.left(11).toFloat(&ok);
-        if(ok){
-            match = "ruc";
-            arg = arg.mid(0, 11)+"%";
-        }else{
-            match = "razon_social";
-            arg = arg+"%";
-        }
         str_query = "SELECT persona.id";
         str_query += ", juridica.ruc";
         str_query += ", juridica.razon_social";
@@ -482,21 +499,11 @@ void ColaboradorBuscar::set_buscar()
         str_query += " FROM persona";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
         str_query += " JOIN proveedor ON persona.id = proveedor.juridica_persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '%"+arg+"'";
+        str_query += " WHERE juridica.razon_social LIKE '%"+arg+"%'";
         str_query += " ORDER BY juridica.razon_social";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case persona_items::TRANSPORTISTA:{
-        QString match = "";
-        bool ok;
-        arg.left(11).toFloat(&ok);
-        if(ok){
-            match = "ruc";
-            arg = arg.mid(0, 11)+"%";
-        }else{
-            match = "razon_social";
-            arg = arg+"%";
-        }
         str_query = "SELECT persona.id";
         str_query += ", juridica.ruc";
         str_query += ", juridica.razon_social";
@@ -504,21 +511,11 @@ void ColaboradorBuscar::set_buscar()
         str_query += " FROM persona";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
         str_query += " JOIN transportista ON persona.id = transportista.juridica_persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '%"+arg+"'";
-        str_query += " ORDER BY juridica."+match;
+        str_query += " WHERE juridica.razon_social LIKE '%"+arg+"%'";
+        str_query += " ORDER BY juridica.razon_social";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case persona_items::CLIENTE_RUC:{
-        QString match = "";
-        bool ok;
-        arg.left(11).toFloat(&ok);
-        if(ok){
-            match = "ruc";
-            arg = arg.mid(0, 11)+"%";
-        }else{
-            match = "razon_social";
-            arg = arg+"%";
-        }
         str_query = "SELECT persona.id";
         str_query += ", juridica.ruc";
         str_query += ", juridica.razon_social";
@@ -526,21 +523,11 @@ void ColaboradorBuscar::set_buscar()
         str_query += " FROM persona";
         str_query += " JOIN juridica ON persona.id = juridica.persona_id";
         str_query += " JOIN cliente_ruc ON persona.id = cliente_ruc.juridica_persona_id";
-        str_query += " WHERE juridica."+match+" LIKE '%"+arg+"'";
-        str_query += " ORDER BY juridica."+match;
+        str_query += " WHERE juridica.razon_social LIKE '%"+arg+"%'";
+        str_query += " ORDER BY juridica.razon_social";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case persona_items::CLIENTE_DNI:{
-        QString match = "";
-        bool ok;
-        arg.left(8).toFloat(&ok);
-        if(ok){
-            match = "dni";
-            arg = arg.mid(0, 8)+"%";
-        }else{
-            match = "nombre";
-            arg = arg+"%";
-        }
         str_query = "SELECT persona.id";
         str_query += ", naturales.dni";
         str_query += ", naturales.nombre";
@@ -548,21 +535,11 @@ void ColaboradorBuscar::set_buscar()
         str_query += " FROM persona";
         str_query += " JOIN naturales ON persona.id = naturales.persona_id";
         str_query += " JOIN cliente_dni ON persona.id = cliente_dni.naturales_persona_id";
-        str_query += " WHERE naturales."+match+" LIKE '%"+arg+"'";
-        str_query += " ORDER BY naturales."+match;
+        str_query += " WHERE naturales.nombre LIKE '%"+arg+"%'";
+        str_query += " ORDER BY naturales.nombre";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case persona_items::USUARIO:{
-        QString match = "";
-        bool ok;
-        arg.left(8).toFloat(&ok);
-        if(ok){
-            match = "naturales.dni";
-            arg = arg.mid(0, 8)+"%";
-        }else{
-            match = "usuario.usuario";
-            arg = arg+"%";
-        }
         str_query = "SELECT persona.id";
         str_query += ", rol.id";
         str_query += ", rol.rol";
@@ -573,8 +550,8 @@ void ColaboradorBuscar::set_buscar()
         str_query += " JOIN naturales ON persona.id = naturales.persona_id";
         str_query += " JOIN usuario ON persona.id = usuario.naturales_persona_id";
         str_query += " JOIN rol ON rol.id = usuario.rol_id";
-        str_query += " WHERE "+match+" LIKE '%"+arg+"'";
-        str_query += " ORDER BY "+match;
+        str_query += " WHERE naturales.nombre LIKE '%"+arg+"%'";
+        str_query += " ORDER BY naturales.nombre";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
 
@@ -696,7 +673,7 @@ void ColaboradorBuscar::set_buscar()
 
     }
 }
-void ColaboradorBuscar::on_lineEdit_buscar_textChanged(const QString& arg)
+void ColaboradorBuscar::on_lineEdit_buscarNombre_textChanged(const QString& arg)
 {
     pos = 0;
 
@@ -704,10 +681,10 @@ void ColaboradorBuscar::on_lineEdit_buscar_textChanged(const QString& arg)
     ui->tableWidget->setColumnCount(0);
     ui->tableWidget->clear();
 
-    set_buscar();
+    set_buscarNombre();
 }
 
-void ColaboradorBuscar::on_lineEdit_buscar_returnPressed()
+void ColaboradorBuscar::on_lineEdit_buscarNombre_returnPressed()
 {
     pos = 0;
 
@@ -715,7 +692,7 @@ void ColaboradorBuscar::on_lineEdit_buscar_returnPressed()
     ui->tableWidget->setColumnCount(0);
     ui->tableWidget->clear();
 
-    set_buscar();
+    set_buscarNombre();
 }
 
 void ColaboradorBuscar::on_pushButton_ok_clicked()
@@ -852,7 +829,7 @@ void ColaboradorBuscar::on_radioButton_proveedor_clicked()
 {
     tipo = persona_items::PROVEEDOR;
 
-    on_lineEdit_buscar_textChanged("");
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
     //on_lineEdit_buscar_returnPressed();
 }
 
@@ -860,7 +837,7 @@ void ColaboradorBuscar::on_radioButton_transportista_clicked()
 {
     tipo = persona_items::TRANSPORTISTA;
 
-    on_lineEdit_buscar_textChanged("");
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
     //on_lineEdit_buscar_returnPressed();
 }
 
@@ -868,7 +845,7 @@ void ColaboradorBuscar::on_radioButton_cliente_ruc_clicked()
 {
     tipo = persona_items::CLIENTE_RUC;
 
-    on_lineEdit_buscar_textChanged("");
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
     //on_lineEdit_buscar_returnPressed();
 }
 
@@ -876,7 +853,7 @@ void ColaboradorBuscar::on_radioButton_cliente_dni_clicked()
 {
     tipo = persona_items::CLIENTE_DNI;
 
-    on_lineEdit_buscar_textChanged("");
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
     //on_lineEdit_buscar_returnPressed();
 }
 
@@ -884,7 +861,7 @@ void ColaboradorBuscar::on_radioButton_usuario_clicked()
 {
     tipo = persona_items::USUARIO;
 
-    on_lineEdit_buscar_textChanged("");
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
     //on_lineEdit_buscar_returnPressed();
 }
 void ColaboradorBuscar::showEvent(QShowEvent *se)
@@ -894,7 +871,7 @@ void ColaboradorBuscar::showEvent(QShowEvent *se)
     afterShow = true;
 
     if(!firstShow){
-        on_lineEdit_buscar_textChanged(ui->lineEdit_buscar->text());
+        on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
         //on_lineEdit_buscar_returnPressed();
         firstShow = true;
     }
@@ -917,8 +894,8 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
             if(focusWidget()){
                 focusWidget()->setFocus();
             }else{
-                ui->lineEdit_buscar->setFocus();
-                ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                ui->lineEdit_buscarNombre->setFocus();
+                ui->lineEdit_buscarNombre->setCursorPosition(ui->lineEdit_buscarNombre->text().length());
             }
             return true;
         }
@@ -932,14 +909,14 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
             if(afterShow) {
                 if(focusWidget()){
                     if(focusWidget() == ui->pushButton_nuevo){
-                        ui->lineEdit_buscar->setFocus();
-                        ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                        ui->lineEdit_buscarNombre->setFocus();
+                        ui->lineEdit_buscarNombre->setCursorPosition(ui->lineEdit_buscarNombre->text().length());
                     }else{
                         focusWidget()->setFocus();
                     }
                 }else{
-                    ui->lineEdit_buscar->setFocus();
-                    ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                    ui->lineEdit_buscarNombre->setFocus();
+                    ui->lineEdit_buscarNombre->setCursorPosition(ui->lineEdit_buscarNombre->text().length());
                 }
                 afterShow = false;
             }
@@ -974,7 +951,7 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
         }
         return false;
     }
-    w_temp = ui->lineEdit_buscar;
+    w_temp = ui->lineEdit_buscarNombre;
     if(obj == w_temp){
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
@@ -982,7 +959,30 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {            
             case Qt::Key_Return:{
-                on_lineEdit_buscar_returnPressed();
+                on_lineEdit_buscarNombre_returnPressed();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->lineEdit_buscarCodigo;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:{
+                on_lineEdit_buscarCodigo_returnPressed();
                 return true;
             }break;
             case Qt::Key_Enter:{
@@ -1015,7 +1015,7 @@ bool ColaboradorBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Down:{
                 int index = ui->tableWidget->currentRow();
                 if (index == ui->tableWidget->rowCount() - 1) {
-                    set_buscar();
+                    set_buscarNombre();
                     return true;
                 }
             }break;
@@ -1197,4 +1197,217 @@ void ColaboradorBuscar::editarItem(QTableWidgetItem *item)
     //}break;
     //}
 
+}
+
+void ColaboradorBuscar::on_lineEdit_buscarCodigo_textChanged(const QString &arg1)
+{
+    pos = 0;
+
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setColumnCount(0);
+    ui->tableWidget->clear();
+
+    set_buscarCodigo();
+}
+
+void ColaboradorBuscar::on_lineEdit_buscarCodigo_returnPressed()
+{
+    pos = 0;
+
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setColumnCount(0);
+    ui->tableWidget->clear();
+
+    set_buscarCodigo();
+}
+void ColaboradorBuscar::set_buscarCodigo()
+{
+    QString str_query;
+
+    QString arg = ui->lineEdit_buscarCodigo->text();
+    arg = arg.trimmed();
+
+    switch(tipo)
+    {
+    case persona_items::PROVEEDOR:{
+        str_query = "SELECT persona.id";
+        str_query += ", juridica.ruc";
+        str_query += ", juridica.razon_social";
+        str_query += ", juridica.domicilio_fiscal";
+        str_query += " FROM persona";
+        str_query += " JOIN juridica ON persona.id = juridica.persona_id";
+        str_query += " JOIN proveedor ON persona.id = proveedor.juridica_persona_id";
+        str_query += " WHERE juridica.ruc LIKE '"+arg+"%'";
+        str_query += " ORDER BY juridica.razon_social";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+    case persona_items::TRANSPORTISTA:{
+        str_query = "SELECT persona.id";
+        str_query += ", juridica.ruc";
+        str_query += ", juridica.razon_social";
+        str_query += ", juridica.domicilio_fiscal";
+        str_query += " FROM persona";
+        str_query += " JOIN juridica ON persona.id = juridica.persona_id";
+        str_query += " JOIN transportista ON persona.id = transportista.juridica_persona_id";
+        str_query += " WHERE juridica.ruc LIKE '"+arg+"%'";
+        str_query += " ORDER BY juridica.razon_social";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+    case persona_items::CLIENTE_RUC:{
+        str_query = "SELECT persona.id";
+        str_query += ", juridica.ruc";
+        str_query += ", juridica.razon_social";
+        str_query += ", juridica.domicilio_fiscal";
+        str_query += " FROM persona";
+        str_query += " JOIN juridica ON persona.id = juridica.persona_id";
+        str_query += " JOIN cliente_ruc ON persona.id = cliente_ruc.juridica_persona_id";
+        str_query += " WHERE juridica.ruc LIKE '"+arg+"%'";
+        str_query += " ORDER BY juridica.razon_social";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+    case persona_items::CLIENTE_DNI:{
+        str_query = "SELECT persona.id";
+        str_query += ", naturales.dni";
+        str_query += ", naturales.nombre";
+        str_query += ", naturales.direccion";
+        str_query += " FROM persona";
+        str_query += " JOIN naturales ON persona.id = naturales.persona_id";
+        str_query += " JOIN cliente_dni ON persona.id = cliente_dni.naturales_persona_id";
+        str_query += " WHERE naturales.dni LIKE '"+arg+"%'";
+        str_query += " ORDER BY naturales.nombre";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+    case persona_items::USUARIO:{
+        str_query = "SELECT persona.id";
+        str_query += ", rol.id";
+        str_query += ", rol.rol";
+        str_query += ", usuario.usuario";
+        str_query += ", naturales.dni";
+        str_query += ", naturales.nombre";
+        str_query += " FROM persona";
+        str_query += " JOIN naturales ON persona.id = naturales.persona_id";
+        str_query += " JOIN usuario ON persona.id = usuario.naturales_persona_id";
+        str_query += " JOIN rol ON rol.id = usuario.rol_id";
+        str_query += " WHERE naturales.dni LIKE '"+arg+"%'";
+        str_query += " ORDER BY naturales.nombre";
+        str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
+    }break;
+
+    }
+
+    QSqlQuery query;
+    qDebug() << str_query << endl;
+    if (query.exec(str_query)) {
+        int rowCount = ui->tableWidget->rowCount();
+        ui->tableWidget->setRowCount(rowCount + query.size());
+
+        int columnCount = query.record().count();
+        ui->tableWidget->setColumnCount(columnCount);
+
+        switch(tipo)
+        {
+        case persona_items::PROVEEDOR:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "RUC" << "RAZON SOCIAL"
+                                                       << "DIRECCION");
+            ui->tableWidget->setColumnHidden(0, true);
+        }break;
+        case persona_items::TRANSPORTISTA:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "RUC" << "RAZON SOCIAL"
+                                                       << "DIRECCION");
+            ui->tableWidget->setColumnHidden(0, true);
+        }break;
+        case persona_items::CLIENTE_RUC:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "RUC" << "RAZON SOCIAL"
+                                                       << "DIRECCION");
+            ui->tableWidget->setColumnHidden(0, true);
+        }break;
+        case persona_items::CLIENTE_DNI:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "DNI" << "NOMBRE"
+                                                       << "DIRECCION");
+            ui->tableWidget->setColumnHidden(0, true);
+        }break;
+        case persona_items::USUARIO:{
+            ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
+                                                       << "ID_ROL"
+                                                       << "ROL" << "USUARIO"
+                                                       << "DNI" << "NOMBRE");
+            ui->tableWidget->setColumnHidden(0, true);
+            ui->tableWidget->setColumnHidden(1, true);
+        }break;
+
+        }
+
+        while (query.next()) {
+
+            switch(tipo)
+            {
+            case persona_items::PROVEEDOR:{
+                QString id = query.value(0).toString();
+                QString ruc = query.value(1).toString();
+                QString razon_social = query.value(2).toString();
+                QString direccion = query.value(3).toString();
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(ruc));
+                ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(razon_social));
+                ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(direccion));
+            }break;
+            case persona_items::TRANSPORTISTA:{
+                QString id = query.value(0).toString();
+                QString ruc = query.value(1).toString();
+                QString razon_social = query.value(2).toString();
+                QString direccion = query.value(3).toString();
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(ruc));
+                ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(razon_social));
+                ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(direccion));
+            }break;
+            case persona_items::CLIENTE_RUC:{
+                QString id = query.value(0).toString();
+                QString ruc = query.value(1).toString();
+                QString razon_social = query.value(2).toString();
+                QString direccion = query.value(3).toString();
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(ruc));
+                ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(razon_social));
+                ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(direccion));
+            }break;
+            case persona_items::CLIENTE_DNI:{
+                QString id = query.value(0).toString();
+                QString dni = query.value(1).toString();
+                QString nombre = query.value(2).toString();
+                QString direccion = query.value(3).toString();
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(dni));
+                ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(nombre));
+                ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(direccion));
+            }break;
+            case persona_items::USUARIO:{
+                QString id = query.value(0).toString();
+                QString id_rol = query.value(1).toString();
+                QString rol = query.value(2).toString();
+                QString usuario = query.value(3).toString();
+                QString dni = query.value(4).toString();
+                QString nombre = query.value(5).toString();
+                ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
+                ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(id_rol));
+                ui->tableWidget->setItem(pos, 2, new QTableWidgetItem(rol));
+                ui->tableWidget->setItem(pos, 3, new QTableWidgetItem(usuario));
+                ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(dni));
+                ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(nombre));
+            }break;
+
+            }
+            for(int j=0; j<ui->tableWidget->columnCount(); j++)
+                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
+                                                             | Qt::ItemIsSelectable);
+            ++pos;
+        }
+        SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
+    }else{
+
+    }
 }

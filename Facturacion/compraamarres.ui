@@ -57,7 +57,7 @@
         <string>Editar(F2)</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/doc_edit.png</normaloff>:/new/Iconos/doc_edit.png</iconset>
        </property>
        <property name="iconSize">
@@ -164,7 +164,7 @@
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
  <resources>
-  <include location="../ManagerSystem/Iconos.qrc"/>
+  <include location="../ManagerSystem/iconos.qrc"/>
  </resources>
  <connections/>
 </ui>

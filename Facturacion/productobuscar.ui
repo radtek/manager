@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>571</width>
+    <width>582</width>
     <height>410</height>
    </rect>
   </property>
@@ -60,7 +60,7 @@
         <string>&amp;Nuevo(Alt+N)</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/agregar_32.png</normaloff>:/new/Iconos/agregar_32.png</iconset>
        </property>
        <property name="iconSize">
@@ -85,7 +85,7 @@
         <string>Editar(F2)</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/edit (2).png</normaloff>:/new/Iconos/edit (2).png</iconset>
        </property>
        <property name="iconSize">
@@ -331,8 +331,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>0</width>
+         <width>400</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>400</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -341,6 +347,19 @@
         </font>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>
@@ -475,6 +494,8 @@
   <tabstop>pushButton_ok</tabstop>
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../ManagerSystem/iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

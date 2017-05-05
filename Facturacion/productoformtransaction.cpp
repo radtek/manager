@@ -9,7 +9,6 @@ ProductoFormTransaction::ProductoFormTransaction(QWidget *parent) :
 
     op = -1;
 
-
     afterShow = false;
 
     widget_previous = NULL;
@@ -33,6 +32,9 @@ ProductoFormTransaction::ProductoFormTransaction(QWidget *parent) :
     ui->lineEdit_tipo->setReadOnly(true);
     ui->lineEdit_marca->setReadOnly(true);
     ui->lineEdit_unidad->setReadOnly(true);
+
+    ui->lineEdit_cantidad->hide();
+    ui->lineEdit_precio->hide();
     //ui->lineEdit_nombre->setReadOnly(true);
 
     //ui->pushButton_buscar_tipo->setDisabled(true);

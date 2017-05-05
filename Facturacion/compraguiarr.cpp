@@ -543,10 +543,6 @@ void CompraGuiaRR::on_pushButton_proveedor_clicked()
 {
     CompraProveedor* w = new CompraProveedor;
     w->setTipoProveedor();
-    w->hideOptTransportista();
-    w->hideOptClienteDNI();
-    w->hideOptClienteRUC();
-    w->hideOptUsuario();
     
     w->set_widget_previous(this);
     connect(w, SIGNAL(closing()), this, SLOT(on_proveedor_closing()));
@@ -949,33 +945,6 @@ bool CompraGuiaRR::eventFilter(QObject *obj, QEvent *e)
     return eventFilter(obj, e);
 }
 
-void CompraGuiaRR::on_lineEdit_cod_textEdited(const QString &arg1)
-{
-    if(arg1.length() == 11){
-        QString str_query;
-        QSqlQuery query;
-
-        str_query = "SELECT juridica.persona_id, juridica.ruc";
-        str_query += ", juridica.razon_social";
-        str_query += " FROM proveedor";
-        str_query += " JOIN juridica ON juridica.persona_id = proveedor.juridica_persona_id";
-        //str_query += " JOIN persona ON persona.id = proveedor.juridica_persona_id";
-        str_query += " WHERE juridica.ruc = '"+arg1+"'";
-
-        qDebug()<<str_query<<endl;
-        if(query.exec(str_query)) {
-            query.next();
-            persona_id = query.value(0).toString();
-            codigo = query.value(1).toString();
-            nombre = query.value(2).toString();
-            ui->lineEdit_cod->setText(codigo);
-            ui->lineEdit_nombre->setText(nombre);
-
-        }else{
-        }
-    }
-}
-
 void CompraGuiaRR::on_pushButton_down_clicked()
 {
     QTableWidgetItem* item= ui->tableWidget->currentItem();
@@ -1064,6 +1033,11 @@ void CompraGuiaRR::on_pushButton_borrar_clicked()
 
 void CompraGuiaRR::on_pushButton_amarres_clicked()
 {
+    if(id.compare("") == 0) {
+        QMessageBox::warning(this, "Advertencia", "No existe documento. Debe guardarlo primero.", "Ok");
+        return;
+    }
+
     CompraAmarres* w_compra_amarres = new CompraAmarres;
     w_compra_amarres->set_widget_previous(this);
     w_compra_amarres->set_documento(this->id, tipo_documento::GUIA_REMISION_REMITENTE);
@@ -1270,4 +1244,31 @@ void CompraGuiaRR::on_pushButton_quitar_boleta_clicked()
 void CompraGuiaRR::on_pushButton_canjear_clicked()
 {
 
+}
+
+void CompraGuiaRR::on_lineEdit_cod_textChanged(const QString &arg1)
+{
+    if(arg1.length() == 11){
+        QString str_query;
+        QSqlQuery query;
+
+        str_query = "SELECT juridica.persona_id, juridica.ruc";
+        str_query += ", juridica.razon_social";
+        str_query += " FROM proveedor";
+        str_query += " JOIN juridica ON juridica.persona_id = proveedor.juridica_persona_id";
+        //str_query += " JOIN persona ON persona.id = proveedor.juridica_persona_id";
+        str_query += " WHERE juridica.ruc = '"+arg1+"'";
+
+        qDebug()<<str_query<<endl;
+        if(query.exec(str_query)) {
+            query.next();
+            persona_id = query.value(0).toString();
+            codigo = query.value(1).toString();
+            nombre = query.value(2).toString();
+            ui->lineEdit_cod->setText(codigo);
+            ui->lineEdit_nombre->setText(nombre);
+
+        }else{
+        }
+    }
 }

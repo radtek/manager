@@ -18,7 +18,7 @@ VentaBoleta::VentaBoleta(QWidget *parent) :
     // DISABLES
 
     //ui->lineEdit_cod->setReadOnly(true);
-    ui->lineEdit_nombre->setReadOnly(true);
+    //ui->lineEdit_nombre->setReadOnly(true);
 
     // SET DATA
     disconnect(ui->dateEdit_declaracion, SIGNAL(dateChanged(QDate)), this, SLOT(on_dateEdit_declaracion_dateChanged(QDate)));
@@ -38,32 +38,36 @@ VentaBoleta::VentaBoleta(QWidget *parent) :
     // SET SERIE Y NUMERO
     A_Venta::set_serie_numero(ui->lineEdit_serie, ui->lineEdit_numero);
 
-    LineEditDelegate* lineEditDelegate = new LineEditDelegate;
-    ui->tableWidget->setItemDelegateForColumn(INDEX_DESCRIPCION, lineEditDelegate);
-    DoubleSpinBoxDelegate* dSpinBoxDelegate = new DoubleSpinBoxDelegate;
-    dSpinBoxDelegate->setMinimum(0);
-    dSpinBoxDelegate->setMaximum(999999999);
-    dSpinBoxDelegate->setDecimals(DECIMALS_CANTIDAD);
-    dSpinBoxDelegate->setSingleStep(1.0);
-    ui->tableWidget->setItemDelegateForColumn(INDEX_CANTIDAD, dSpinBoxDelegate);
-    dSpinBoxDelegate = new DoubleSpinBoxDelegate;
-    dSpinBoxDelegate->setMinimum(0);
-    dSpinBoxDelegate->setMaximum(999999999);
-    dSpinBoxDelegate->setDecimals(DECIMALS_PRECIO_UNITARIO);
-    dSpinBoxDelegate->setSingleStep(QString("0."+SYSTEM->zeros(DECIMALS_PRECIO_UNITARIO-1)+"1").toDouble());
-    ui->tableWidget->setItemDelegateForColumn(INDEX_P_UNIT, dSpinBoxDelegate);
-    dSpinBoxDelegate = new DoubleSpinBoxDelegate;
-    dSpinBoxDelegate->setMinimum(0);
-    dSpinBoxDelegate->setMaximum(999999999);
-    dSpinBoxDelegate->setDecimals(DECIMALS_PRECIO_TOTAL);
-    dSpinBoxDelegate->setSingleStep(QString("0."+SYSTEM->zeros(DECIMALS_PRECIO_TOTAL-1)+"1").toDouble());
-    ui->tableWidget->setItemDelegateForColumn(INDEX_P_TOTAL, dSpinBoxDelegate);
+    // SET DELEGATE
+    LineEditNumberDelegate* delegate = new LineEditNumberDelegate;
+    delegate->setDecimals(DECIMALS_CANTIDAD);
+    delegate->setMinimumWidth(100);
+    delegate->setMinimumHeight(22);
+    delegate->setMaximumWidth(100);
+    delegate->setMaximumHeight(22);
+    ui->tableWidget->setItemDelegateForColumn(INDEX_CANTIDAD, delegate);
+    delegate = new LineEditNumberDelegate;
+    delegate->setMinimumWidth(100);
+    delegate->setMinimumHeight(22);
+    delegate->setMaximumWidth(100);
+    delegate->setMaximumHeight(22);
+    delegate->setDecimals(DECIMALS_PRECIO_UNITARIO);
+    ui->tableWidget->setItemDelegateForColumn(INDEX_P_UNIT, delegate);
+    delegate = new LineEditNumberDelegate;
+    delegate->setMinimumWidth(100);
+    delegate->setMinimumHeight(22);
+    delegate->setMaximumWidth(100);
+    delegate->setMaximumHeight(22);
+    delegate->setDecimals(DECIMALS_PRECIO_TOTAL);
+    ui->tableWidget->setItemDelegateForColumn(INDEX_P_TOTAL, delegate);
 
     ui->tableWidget->hideColumn(INDEX_ID);
 
+    ui->label_title_registroSinDoc->hide();
     ui->label_serie_numero_registroSinDoc->hide();
     ui->comboBox_id_registroSinDoc->hide();
     ui->comboBox_serie_numero_registroSinDoc->hide();
+    ui->pushButton_buscar_registroSinDoc->hide();
     ui->pushButton_quitar_registroSinDoc->hide();
     ui->pushButton_jalar_registroSinDoc->hide();
 
@@ -384,7 +388,9 @@ void VentaBoleta::set_producto(QString producto_id
         total += p_total;
     }
 
-    ui->lineEdit_total->setText(QString().setNum(total, ' ', DECIMALS_PRECIO_TOTAL));
+    QString str_total = QString().setNum(total, ' ', DECIMALS_PRECIO_TOTAL);
+    SYSTEM->normalDecimal(str_total);
+    ui->lineEdit_total->setText(str_total);
 
     SYSTEM->table_resize_to_contents(0, ui->tableWidget);
 
@@ -463,10 +469,6 @@ bool VentaBoleta::guardar()
     if(ui->dateEdit_declaracion->date().month() > ui->dateEdit_emision->date().month()){
         return false;
     }
-    if(persona_id.compare("") == 0)
-    {        
-        return false;
-    }
     if(ui->tableWidget->rowCount() <= 0)
     {
         return false;
@@ -485,14 +487,14 @@ bool VentaBoleta::guardar()
         str_query += "&&END_QUERY&&";
 
         // COMPROBANTE
-        str_query +=  "INSERT INTO comprobante(documento_id";
+        str_query += "INSERT INTO comprobante(documento_id";
         str_query += ", operacion_id)VALUES(";
         str_query += "(SELECT MAX(documento.id) FROM documento)";
         str_query += ", "+QString().setNum(operacion_items::VENTA)+")";
         str_query += "&&END_QUERY&&";
 
         // ANEXO
-        str_query +=  "INSERT INTO anexo(documento_id";
+        str_query += "INSERT INTO anexo(documento_id";
         str_query += ", fecha_emision, fecha_sistema, serie, numero)VALUES(";
         str_query += "(SELECT MAX(documento.id) FROM documento)";
         str_query += ", '"+ui->dateEdit_emision->date().toString("yyyy-MM-dd")+"'";
@@ -504,12 +506,14 @@ bool VentaBoleta::guardar()
         // DOCUMENTO_H_DOCUMENTO
 
         // DOCUMENTO_H_PERSONA
-        str_query +=  "INSERT INTO documento_h_persona(documento_id, persona_id)VALUES(";
-        str_query += "(SELECT MAX(documento.id) FROM documento), "+persona_id+")";
-        str_query += "&&END_QUERY&&";
+        if(persona_id.compare("") == 0){
+            str_query += "INSERT INTO documento_h_persona(documento_id, persona_id)VALUES(";
+            str_query += "(SELECT MAX(documento.id) FROM documento), "+persona_id+")";
+            str_query += "&&END_QUERY&&";
+        }
 
         // DOCUMENTO_H_PRODUCTO
-        str_query +=  "INSERT INTO documento_h_producto(documento_id, producto_id, cantidad, precio)VALUES";
+        str_query += "INSERT INTO documento_h_producto(documento_id, producto_id, cantidad, precio)VALUES";
         QString str_query_2;
         for(int i= 0; i< ui->tableWidget->rowCount(); i++){
             QString producto_id = ui->tableWidget->item(i, INDEX_ID)->text();
@@ -524,10 +528,12 @@ bool VentaBoleta::guardar()
 
         // BOLETA
         str_query += "INSERT INTO boleta(comprobante_documento_id";
+        str_query += ", nombre";
         str_query += ", declaracion";
         str_query += ", anulado";
         str_query += ")VALUES(";
         str_query += "(SELECT MAX(documento.id) FROM documento)";
+        str_query += ", '"+ui->lineEdit_nombre->text()+"'";
         str_query += ", '"+ui->dateEdit_declaracion->date().toString("yyyy-MM-dd")+"'";
         str_query += ", '"+QString().setNum(anulado)+"')";
         str_query += "&&END_QUERY&&";
@@ -609,10 +615,13 @@ bool VentaBoleta::guardar()
         // DOCUMENTO_H_DOCUMENTO
 
         // DOCUMENTO_H_PERSONA
-        str_query +=  "UPDATE documento_h_persona SET";
-        str_query += " persona_id = "+persona_id;
-        str_query += " WHERE documento_id = "+id;
-        str_query += "&&END_QUERY&&";
+        if(persona_id.compare("") == 0){
+            str_query += "DELETE FROM documento_h_persona WHERE documento_id = "+id;
+            str_query += "&&END_QUERY&&";
+            str_query += "INSERT INTO documento_h_persona(documento_id, persona_id)VALUES(";
+            str_query += "(SELECT MAX(documento.id) FROM documento), "+persona_id+")";
+            str_query += "&&END_QUERY&&";
+        }
 
         // DOCUMENTO_H_PRODUCTO
         str_query += "DELETE FROM documento_h_producto WHERE documento_id = "+id;
@@ -637,7 +646,8 @@ bool VentaBoleta::guardar()
         str_query += "&&END_QUERY&&";
 
         str_query += "UPDATE boleta SET";
-        str_query += " declaracion = '"+ui->dateEdit_declaracion->date().toString("yyyy-MM-dd")+"'";
+        str_query += " nombre = '"+ui->lineEdit_nombre->text()+"'";
+        str_query += ", declaracion = '"+ui->dateEdit_declaracion->date().toString("yyyy-MM-dd")+"'";
         str_query += ", anulado = '"+QString().setNum(anulado)+"'";
         str_query += " WHERE comprobante_documento_id = "+id;
         str_query += "&&END_QUERY&&";
@@ -795,15 +805,7 @@ void VentaBoleta::on_pushButton_cliente_clicked()
     VentaCliente* w = new VentaCliente;
     w->set_widget_previous(this);
 
-    w->hideOptProveedor();
-    w->hideOptTransportista();
-
     w->setTipoClienteDNI();
-
-    w->hideOptClienteRUC();
-    w->hideOptUsuario();
-
-    w->set_tipo(persona_items::CLIENTE_DNI);
 
     connect(w, SIGNAL(closing()), this, SLOT(on_cliente_closing()));
 
@@ -903,11 +905,35 @@ void VentaBoleta::on_pushButton_guardar_clicked()
     switch(ret){
     case 0:{
         if(guardar()){
-            QMessageBox::information(this, "Información", "Se guardo con éxito.");
             this->setAttribute(Qt::WA_DeleteOnClose);
             SYSTEM->change_center_w(this, widget_previous);
+
+            QMainWindow* mw = SYSTEM->get_mainw(this);
+            SnackBarInfo* w = new SnackBarInfo;
+            w->set_data("Se guardo exitosamente.", ":/new/Iconos/successfull.png");
+            mw->statusBar()->addWidget(w);
+            int width = mw->width();
+            w->setMinimumWidth(width);
+            w->setMaximumWidth(width);
         }else{
-            QMessageBox::critical(this, "Error", "No se pudieron guardar los datos.");
+            if(ui->dateEdit_declaracion->date().month() > ui->dateEdit_emision->date().month()){
+                QMessageBox::critical(this, "Error", "El mes de declaración es mayor que el mes emisión.");
+            }else{
+                if(ui->tableWidget->rowCount() <= 0){
+                    QMessageBox::critical(this, "Error", "No tiene productos.");
+                }else{
+                    QMessageBox::critical(this, "Error", "No se pudieron guardar los datos.");
+                    /*
+                    QMainWindow* mw = SYSTEM->get_mainw(this);
+                    SnackBarInfo* w = new SnackBarInfo;
+                    w->set_data("Error inesperado. Consulte al programador.", ":/new/Iconos/exclamation.png");
+                    mw->statusBar()->addWidget(w);
+                    int width = mw->width();
+                    w->setMinimumWidth(width);
+                    w->setMaximumWidth(width);
+                    */
+                }
+            }
         }
         return;
     }break;
@@ -1051,7 +1077,16 @@ void VentaBoleta::on_pushButton_imprimir_clicked()
 
 void VentaBoleta::on_pushButton_amarres_clicked()
 {
+    if(id.compare("") == 0) {
+        QMessageBox::warning(this, "Advertencia", "No existe documento. Debe guardarlo primero.", "Ok");
+        return;
+    }
 
+    VentaAmarres* w_compra_amarres = new VentaAmarres;
+    w_compra_amarres->set_widget_previous(this);
+    w_compra_amarres->set_documento(this->id, tipo_documento::BOLETA);
+
+    SYSTEM->change_center_w(this, w_compra_amarres);
 }
 
 void VentaBoleta::on_pushButton_salir_clicked()
@@ -1145,6 +1180,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->dateEdit_emision->setFocus(Qt::TabFocusReason);
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1157,6 +1197,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:{
                 ui->dateTimeEdit_sistema->setFocus(Qt::TabFocusReason);
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1174,6 +1219,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->lineEdit_serie->setFocus(Qt::TabFocusReason);
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1187,6 +1237,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:{
                 ui->lineEdit_numero->setFocus(Qt::TabFocusReason);
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1217,6 +1272,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_cliente->setFocus(Qt::TabFocusReason);
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         if(e->type() == QEvent::FocusOut){
@@ -1242,6 +1302,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_cliente->setFocus(Qt::TabFocusReason);
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1255,6 +1320,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:{
                 ui->pushButton_cliente->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1272,6 +1342,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_ing_prod->setFocus(Qt::TabFocusReason);
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1285,6 +1360,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:{
                 ui->pushButton_ing_prod->setFocus(Qt::TabFocusReason);
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1303,6 +1383,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_ing_prod->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1317,6 +1402,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:{
                 ui->pushButton_down->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1335,6 +1425,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_up->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1349,6 +1444,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:{
                 ui->pushButton_borrar->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1370,6 +1470,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                     ui->pushButton_guardar->setFocus(Qt::TabFocusReason);
                     return true;
                 }
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
             }break;
             case Qt::Key_F3:{
                 QTableWidgetItem* item = ui->tableWidget->currentItem();
@@ -1413,6 +1518,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_guardar->setFocus(Qt::TabFocusReason);
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1427,6 +1537,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:{
                 ui->pushButton_amarres->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1445,6 +1560,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_eliminar->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1459,6 +1579,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:{
                 ui->pushButton_anular->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1477,6 +1602,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_imprimir->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1491,6 +1621,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:{
                 ui->pushButton_guardar->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1512,6 +1647,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_salir->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1528,6 +1668,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             //}break;
             case Qt::Key_Return:{
                 ui->comboBox_serie_numero_registroSinDoc->setFocus(Qt::TabFocusReason);
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1548,6 +1693,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_buscar_registroSinDoc->setFocus(Qt::TabFocusReason);
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1564,6 +1714,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             //}break;
             case Qt::Key_Return:{
                 ui->pushButton_buscar_registroSinDoc->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1584,6 +1739,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_jalar_registroSinDoc->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1600,6 +1760,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             //}break;
             case Qt::Key_Return:{
                 ui->pushButton_quitar_registroSinDoc->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1620,6 +1785,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->comboBox_serie_numero_guiarr->setFocus(Qt::TabFocusReason);
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1636,6 +1806,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             //}break;
             case Qt::Key_Return:{
                 ui->pushButton_buscar_guiarr->setFocus(Qt::TabFocusReason);
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1656,6 +1831,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_buscar_guiarr->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1672,6 +1852,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             //}break;
             case Qt::Key_Return:{
                 ui->pushButton_jalar_guiarr->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1692,6 +1877,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_quitar_guiarr->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1708,6 +1898,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             //}break;
             case Qt::Key_Return:{
                 ui->comboBox_serie_numero_notaPedido->setFocus(Qt::TabFocusReason);
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1728,6 +1923,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_buscar_notaPedido->setFocus(Qt::TabFocusReason);
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1744,6 +1944,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             //}break;
             case Qt::Key_Return:{
                 ui->pushButton_buscar_notaPedido->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1764,6 +1969,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_jalar_notaPedido->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1780,6 +1990,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             //}break;
             case Qt::Key_Return:{
                 ui->pushButton_quitar_notaPedido->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1800,6 +2015,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->comboBox_serie_numero_cotizacion->setFocus(Qt::TabFocusReason);
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1816,6 +2036,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             //}break;
             case Qt::Key_Return:{
                 ui->pushButton_buscar_cotizacion->setFocus(Qt::TabFocusReason);
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1836,6 +2061,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_buscar_cotizacion->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1854,6 +2084,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
                 ui->pushButton_jalar_cotizacion->click();
                 return true;
             }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
         }
         return false;
@@ -1870,6 +2105,11 @@ bool VentaBoleta::eventFilter(QObject *obj, QEvent *e)
             //}break;
             case Qt::Key_Return:{
                 ui->pushButton_quitar_cotizacion->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1980,8 +2220,6 @@ void VentaBoleta::on_pushButton_borrar_clicked()
 void VentaBoleta::on_lineEdit_serie_returnPressed()
 {
 
-
-
 }
 
 void VentaBoleta::on_tableWidget_itemChanged(QTableWidgetItem *item)
@@ -2004,7 +2242,9 @@ void VentaBoleta::on_tableWidget_itemChanged(QTableWidgetItem *item)
         }
         p_total = cantidad*p_unitario;
 
-        ui->tableWidget->item(item->row(), INDEX_P_TOTAL)->setText(QString().setNum(p_total, ' ', DECIMALS_PRECIO_TOTAL));
+        QString value = QString().setNum(p_total, ' ', DECIMALS_PRECIO_TOTAL);
+        SYSTEM->normalDecimal(value);
+        ui->tableWidget->item(item->row(), INDEX_P_TOTAL)->setText(value);
     }
     // P_UNITARIO
     if(item->column() == INDEX_P_UNIT){
@@ -2017,7 +2257,9 @@ void VentaBoleta::on_tableWidget_itemChanged(QTableWidgetItem *item)
 
         p_total = cantidad*p_unitario;
 
-        ui->tableWidget->item(item->row(), INDEX_P_TOTAL)->setText(QString().setNum(p_total, ' ', DECIMALS_PRECIO_TOTAL));
+        QString value = QString().setNum(p_total, ' ', DECIMALS_PRECIO_TOTAL);
+        SYSTEM->normalDecimal(value);
+        ui->tableWidget->item(item->row(), INDEX_P_TOTAL)->setText(value);
     }
     // P_TOTAL
     if(item->column() == INDEX_P_TOTAL){
@@ -2029,7 +2271,9 @@ void VentaBoleta::on_tableWidget_itemChanged(QTableWidgetItem *item)
 
         double p_unitario = p_total/cantidad;
 
-        ui->tableWidget->item(item->row(), INDEX_P_UNIT)->setText(QString().setNum(p_unitario, ' ', DECIMALS_PRECIO_UNITARIO));
+        QString value = QString().setNum(p_unitario, ' ', DECIMALS_PRECIO_UNITARIO);
+        SYSTEM->normalDecimal(value);
+        ui->tableWidget->item(item->row(), INDEX_P_UNIT)->setText(value);
     }
 
     double total = 0.0;
@@ -2046,7 +2290,9 @@ void VentaBoleta::on_tableWidget_itemChanged(QTableWidgetItem *item)
     SYSTEM->table_resize_to_contents(0, ui->tableWidget);
 
     // CON IGV
-    ui->lineEdit_total->setText(QString().setNum(total, ' ', DECIMALS_PRECIO_TOTAL));
+    QString str_total = QString().setNum(total, ' ', DECIMALS_PRECIO_TOTAL);
+    SYSTEM->normalDecimal(str_total);
+    ui->lineEdit_total->setText(str_total);
 
     connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*))
                , this, SLOT(on_tableWidget_itemChanged(QTableWidgetItem*)));

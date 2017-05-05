@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>690</width>
+    <width>822</width>
     <height>510</height>
    </rect>
   </property>
@@ -367,7 +367,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/Search_1.png</normaloff>:/new/Iconos/Search_1.png</iconset>
        </property>
        <property name="flat">
@@ -379,8 +379,14 @@
       <widget class="QLineEdit" name="lineEdit_nombre">
        <property name="minimumSize">
         <size>
-         <width>400</width>
+         <width>500</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>500</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -389,6 +395,19 @@
         </font>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>
@@ -547,7 +566,7 @@
         <string>Ingresar producto</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/Search_1.png</normaloff>:/new/Iconos/Search_1.png</iconset>
        </property>
       </widget>
@@ -579,7 +598,7 @@
         <string>Bajar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/br_down.png</normaloff>:/new/Iconos/br_down.png</iconset>
        </property>
        <property name="shortcut">
@@ -604,7 +623,7 @@
         <string>Subir</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/br_up.png</normaloff>:/new/Iconos/br_up.png</iconset>
        </property>
        <property name="shortcut">
@@ -629,7 +648,7 @@
         <string>Quitar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/sq_minus.png</normaloff>:/new/Iconos/sq_minus.png</iconset>
        </property>
        <property name="shortcut">
@@ -821,7 +840,7 @@
         <string>&amp;ELIMINAR</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/eliminar.png</normaloff>:/new/Iconos/eliminar.png</iconset>
        </property>
        <property name="iconSize">
@@ -859,7 +878,7 @@
         <string>CAN&amp;JEAR</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/Data_Transfer-48.png</normaloff>:/new/Iconos/Data_Transfer-48.png</iconset>
        </property>
        <property name="iconSize">
@@ -881,7 +900,7 @@
         <string>&amp;AMARRES</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/amarres.png</normaloff>:/new/Iconos/amarres.png</iconset>
        </property>
        <property name="iconSize">
@@ -903,7 +922,7 @@
         <string>&amp;GUARDAR</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/guardar.png</normaloff>:/new/Iconos/guardar.png</iconset>
        </property>
        <property name="iconSize">
@@ -925,7 +944,7 @@
         <string>&amp;SALIR</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/salir.png</normaloff>:/new/Iconos/salir.png</iconset>
        </property>
        <property name="iconSize">
@@ -965,7 +984,7 @@
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
  <resources>
-  <include location="../ManagerSystem/Iconos.qrc"/>
+  <include location="../ManagerSystem/iconos.qrc"/>
  </resources>
  <connections/>
 </ui>

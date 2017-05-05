@@ -98,8 +98,6 @@ private slots:
 
     void on_dateTimeEdit_emision_dateChanged(const QDate &date);
 
-    void on_lineEdit_codigo_textEdited(const QString &arg1);
-
     void on_comboBox_modalidad_currentIndexChanged(int index);
 
     void on_comboBox_moneda_currentIndexChanged(int index);    
@@ -107,6 +105,8 @@ private slots:
     void on_pushButton_guardar_dolar_clicked();
 
     void on_lineEdit_monto_textChanged(const QString &arg1);
+
+    void on_lineEdit_codigo_textChanged(const QString &arg1);
 
 signals:
     void showing();

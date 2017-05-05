@@ -15,6 +15,8 @@ public:
 
     void run();
 
+    QString getMacAddress();
+
 public slots:
 
 private slots:

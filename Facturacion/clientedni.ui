@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>523</width>
+    <width>626</width>
     <height>181</height>
    </rect>
   </property>
@@ -214,13 +214,13 @@ DIPONIBLE</string>
       <widget class="QLineEdit" name="lineEdit_direccion">
        <property name="minimumSize">
         <size>
-         <width>300</width>
+         <width>500</width>
          <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
+         <width>500</width>
          <height>16777215</height>
         </size>
        </property>
@@ -259,7 +259,7 @@ DIPONIBLE</string>
         <string>&amp;Eliminar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/delete_32.png</normaloff>:/new/Iconos/delete_32.png</iconset>
        </property>
        <property name="iconSize">
@@ -297,7 +297,7 @@ DIPONIBLE</string>
         <string>&amp;Guardar</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/colaborador_32.png</normaloff>:/new/Iconos/colaborador_32.png</iconset>
        </property>
        <property name="iconSize">
@@ -319,7 +319,7 @@ DIPONIBLE</string>
         <string>&amp;Salir</string>
        </property>
        <property name="icon">
-        <iconset resource="../ManagerSystem/Iconos.qrc">
+        <iconset resource="../ManagerSystem/iconos.qrc">
          <normaloff>:/new/Iconos/salir_32.png</normaloff>:/new/Iconos/salir_32.png</iconset>
        </property>
        <property name="iconSize">
@@ -343,6 +343,8 @@ DIPONIBLE</string>
   <tabstop>pushButton_guardar</tabstop>
   <tabstop>pushButton_salir</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../ManagerSystem/iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

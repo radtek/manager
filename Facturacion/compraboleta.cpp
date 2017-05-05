@@ -446,7 +446,7 @@ bool CompraBoleta::guardar()
         */
 
         // ANEXO
-        str_query +=  "UPDATE anexo SET";
+        str_query += "UPDATE anexo SET";
         str_query += " fecha_emision = '"+ui->dateTimeEdit_emision->date().toString("yyyy-MM-dd")+"'";
         str_query += ", fecha_sistema = '"+ui->dateTimeEdit_sistema->dateTime().toString("yyyy-MM-dd hh:mm:ss")+"'";
         str_query += ", serie = '"+ui->lineEdit_serie->text()+"'";
@@ -611,10 +611,7 @@ void CompraBoleta::on_pushButton_proveedor_clicked()
 {
     CompraProveedor* w_buscar_proveedor = new CompraProveedor;
     w_buscar_proveedor->setTipoProveedor();
-    w_buscar_proveedor->hideOptTransportista();
-    w_buscar_proveedor->hideOptClienteDNI();
-    w_buscar_proveedor->hideOptClienteRUC();
-    w_buscar_proveedor->hideOptUsuario();
+
     w_buscar_proveedor->set_widget_previous(this);
     connect(w_buscar_proveedor, SIGNAL(closing()), this, SLOT(on_proveedor_closing()));;
 
@@ -1322,7 +1319,7 @@ bool CompraBoleta::eventFilter(QObject *obj, QEvent *e)
     return eventFilter(obj, e);
 }
 
-void CompraBoleta::on_lineEdit_cod_textEdited(const QString &arg1)
+void CompraBoleta::on_lineEdit_cod_textChanged(const QString &arg1)
 {
     if(arg1.length() == 11){
         QString str_query;
@@ -1350,7 +1347,12 @@ void CompraBoleta::on_lineEdit_cod_textEdited(const QString &arg1)
 }
 
 void CompraBoleta::on_pushButton_amarres_clicked()
-{    
+{
+    if(id.compare("") == 0) {
+        QMessageBox::warning(this, "Advertencia", "No existe documento. Debe guardarlo primero.", "Ok");
+        return;
+    }
+
     CompraAmarres* w_compra_amarres = new CompraAmarres;
     w_compra_amarres->set_widget_previous(this);
     w_compra_amarres->set_documento(this->id, tipo_documento::BOLETA);
@@ -1393,14 +1395,6 @@ void CompraBoleta::on_pushButton_buscar_orden_clicked()
     CompraBuscar* w = new CompraBuscar;
     w->set_widget_previous(this);
     w->setTipoOrden();
-    w->hideOptBoleta();
-    w->hideOptFactura();
-    w->hideOptFlete();
-    w->hideOptGuiaRR();
-    w->hideOptNotaCredito();
-    w->hideOptNotaDebito();
-    w->hideOptRegSinDoc();
-    w->hideOptSaldo();
 
     connect(w, SIGNAL(closing()), this, SLOT(on_orden_buscar_closing()));
     w->set_ruc(ui->lineEdit_cod->text());
@@ -1418,14 +1412,7 @@ void CompraBoleta::on_pushButton_buscar_guia_clicked()
     CompraBuscar* w = new CompraBuscar;
     w->set_widget_previous(this);
     w->setTipoGuiaRR();
-    w->hideOptBoleta();
-    w->hideOptFactura();
-    w->hideOptFlete();
-    w->hideOptNotaCredito();
-    w->hideOptNotaDebito();
-    w->hideOptOrden();
-    w->hideOptRegSinDoc();
-    w->hideOptSaldo();
+
     connect(w, SIGNAL(closing()), this, SLOT(on_guia_buscar_closing()));
     w->set_ruc(ui->lineEdit_cod->text());
 

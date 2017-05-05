@@ -31,7 +31,8 @@ VentaBuscar::VentaBuscar(QWidget *parent) :
     this->installEventFilter(this);
     ui->dateEdit_inicio->installEventFilter(this);
     ui->dateEdit_fin->installEventFilter(this);
-    ui->lineEdit_buscar->installEventFilter(this);
+    ui->lineEdit_buscarNombre->installEventFilter(this);
+    ui->lineEdit_buscarCodigo->installEventFilter(this);
     ui->tableWidget->installEventFilter(this);
     ui->pushButton_ok->installEventFilter(this);
     ui->pushButton_salir->installEventFilter(this);
@@ -55,14 +56,14 @@ void VentaBuscar::set_widget_previous(QWidget *w)
 }
 void VentaBuscar::set_ruc(QString ruc)
 {
-    ui->lineEdit_buscar->setText(ruc);
-    ui->lineEdit_buscar->setReadOnly(true);
+    ui->lineEdit_buscarCodigo->setText(ruc);
+    ui->lineEdit_buscarCodigo->setReadOnly(true);
 
     modo_only_date = true;
 
     ui->pushButton_nuevo->hide();
 
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarCodigo_returnPressed();
 }
 
 void VentaBuscar::on_compra_closing()
@@ -183,13 +184,8 @@ void VentaBuscar::set_buscar()
 {
     QString str_query;
 
-    QString arg = ui->lineEdit_buscar->text();
-    QString match = "";
-    bool ok_ruc, ok_dni;
-
-    arg.left(11).toFloat(&ok_ruc);
-    arg.left(8).toFloat(&ok_dni);
-
+    QString arg = ui->lineEdit_buscarNombre->text();
+    arg = arg.trimmed();
 
     switch(tipo)
     {
@@ -207,21 +203,9 @@ void VentaBuscar::set_buscar()
         str_query += " UNION ALL";
         str_query += " (SELECT naturales.persona_id AS id, naturales.dni AS codigo, naturales.nombre AS nombre, naturales.direccion FROM naturales)) AS cliente ON cliente.id = persona.id";
         str_query += " WHERE";
-        QString order_cliente;
-        if(ok_ruc && arg.length() == 11){
-            str_query += " cliente.codigo = '" + arg + "'";
-            order_cliente = "cliente.codigo";
-        }
-        if(ok_dni && arg.length() == 8){
-            str_query += " cliente.codigo = '" + arg + "'";
-            order_cliente = "cliente.codigo";
-        }
-        if(!ok_ruc && !ok_dni){
-            str_query += " cliente.nombre LIKE '"+arg+"%'";
-            order_cliente = "cliente.nombre";
-        }
+        str_query += " cliente.nombre LIKE '%"+arg+"'";
         str_query += " AND (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, "+order_cliente;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, cliente.nombre";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case venta_items::BOLETA:{
@@ -236,17 +220,9 @@ void VentaBuscar::set_buscar()
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN naturales ON naturales.persona_id = persona.id";
         str_query += " WHERE";
-        QString order_cliente;
-        if(ok_dni && arg.length() == 8){
-            str_query += " naturales.dni = '" + arg + "'";
-            order_cliente = "naturales.dni";
-        }
-        if(!ok_dni){
-            str_query += " naturales.nombre LIKE '"+arg+"%'";
-            order_cliente = "naturales.nombre";
-        }
+        str_query += " naturales.nombre LIKE '%"+arg+"'";
         str_query += " AND (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, "+order_cliente;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, naturales.nombre";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case venta_items::FACTURA:{
@@ -261,17 +237,9 @@ void VentaBuscar::set_buscar()
         str_query += " JOIN persona ON persona.id = documento_h_persona.persona_id";
         str_query += " JOIN juridica ON juridica.persona_id = persona.id";
         str_query += " WHERE";
-        QString order_cliente;
-        if(ok_ruc && arg.length() == 11){
-            str_query += " juridica.ruc = '" + arg + "'";
-            order_cliente = "juridica.ruc";
-        }
-        if(!ok_ruc){
-            str_query += " juridica.razon_social LIKE '"+arg+"%'";
-            order_cliente = "juridica.razon_social";
-        }
+        str_query += " juridica.razon_social LIKE '%"+arg+"'";
         str_query += " AND (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, "+order_cliente;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, juridica.razon_social";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case venta_items::NOTA_PEDIDO:{
@@ -288,21 +256,9 @@ void VentaBuscar::set_buscar()
         str_query += " UNION ALL";
         str_query += " (SELECT naturales.persona_id AS id, naturales.dni AS codigo, naturales.nombre AS nombre, naturales.direccion FROM naturales)) AS cliente ON cliente.id = persona.id";
         str_query += " WHERE";
-        QString order_cliente;
-        if(ok_ruc && arg.length() == 11){
-            str_query += " cliente.codigo = '" + arg + "'";
-            order_cliente = "cliente.codigo";
-        }
-        if(ok_dni && arg.length() == 8){
-            str_query += " cliente.codigo = '" + arg + "'";
-            order_cliente = "cliente.codigo";
-        }
-        if(!ok_ruc && !ok_dni){
-            str_query += " cliente.nombre LIKE '"+arg+"%'";
-            order_cliente = "cliente.nombre";
-        }
+        str_query += " cliente.nombre LIKE '%"+arg+"'";
         str_query += " AND (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, "+order_cliente;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, cliente.nombre";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case venta_items::GUIA_REMISION_REMITENTE:{
@@ -319,21 +275,9 @@ void VentaBuscar::set_buscar()
         str_query += " UNION ALL";
         str_query += " (SELECT naturales.persona_id AS id, naturales.dni AS codigo, naturales.nombre AS nombre, naturales.direccion FROM naturales)) AS cliente ON cliente.id = persona.id";
         str_query += " WHERE";
-        QString order_cliente;
-        if(ok_ruc && arg.length() == 11){
-            str_query += " cliente.codigo = '" + arg + "'";
-            order_cliente = "cliente.codigo";
-        }
-        if(ok_dni && arg.length() == 8){
-            str_query += " cliente.codigo = '" + arg + "'";
-            order_cliente = "cliente.codigo";
-        }
-        if(!ok_ruc && !ok_dni){
-            str_query += " cliente.nombre LIKE '"+arg+"%'";
-            order_cliente = "cliente.nombre";
-        }
+        str_query += " cliente.nombre LIKE '%"+arg+"'";
         str_query += " AND (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, "+order_cliente;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, cliente.nombre";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case venta_items::COTIZACION:{
@@ -350,21 +294,9 @@ void VentaBuscar::set_buscar()
         str_query += " UNION ALL";
         str_query += " (SELECT naturales.persona_id AS id, naturales.dni AS codigo, naturales.nombre AS nombre, naturales.direccion FROM naturales)) AS cliente ON cliente.id = persona.id";
         str_query += " WHERE";
-        QString order_cliente;
-        if(ok_ruc && arg.length() == 11){
-            str_query += " cliente.codigo = '" + arg + "'";
-            order_cliente = "cliente.codigo";
-        }
-        if(ok_dni && arg.length() == 8){
-            str_query += " cliente.codigo = '" + arg + "'";
-            order_cliente = "cliente.codigo";
-        }
-        if(!ok_ruc && !ok_dni){
-            str_query += " cliente.nombre LIKE '"+arg+"%'";
-            order_cliente = "cliente.nombre";
-        }
+        str_query += " cliente.nombre LIKE '%"+arg+"'";
         str_query += " AND (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, "+order_cliente;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, cliente.nombre";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case venta_items::NOTA_CREDITO:{
@@ -381,21 +313,9 @@ void VentaBuscar::set_buscar()
         str_query += " UNION ALL";
         str_query += " (SELECT naturales.persona_id AS id, naturales.dni AS codigo, naturales.nombre AS nombre, naturales.direccion FROM naturales)) AS cliente ON cliente.id = persona.id";
         str_query += " WHERE";
-        QString order_cliente;
-        if(ok_ruc && arg.length() == 11){
-            str_query += " cliente.codigo = '" + arg + "'";
-            order_cliente = "cliente.codigo";
-        }
-        if(ok_dni && arg.length() == 8){
-            str_query += " cliente.codigo = '" + arg + "'";
-            order_cliente = "cliente.codigo";
-        }
-        if(!ok_ruc && !ok_dni){
-            str_query += " cliente.nombre LIKE '"+arg+"%'";
-            order_cliente = "cliente.nombre";
-        }
+        str_query += " cliente.nombre LIKE '%"+arg+"'";
         str_query += " AND (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, "+order_cliente;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, cliente.nombre";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     case venta_items::NOTA_DEBITO:{
@@ -412,21 +332,9 @@ void VentaBuscar::set_buscar()
         str_query += " UNION ALL";
         str_query += " (SELECT naturales.persona_id AS id, naturales.dni AS codigo, naturales.nombre AS nombre, naturales.direccion FROM naturales)) AS cliente ON cliente.id = persona.id";
         str_query += " WHERE";
-        QString order_cliente;
-        if(ok_ruc && arg.length() == 11){
-            str_query += " cliente.codigo = '" + arg + "'";
-            order_cliente = "cliente.codigo";
-        }
-        if(ok_dni && arg.length() == 8){
-            str_query += " cliente.codigo = '" + arg + "'";
-            order_cliente = "cliente.codigo";
-        }
-        if(!ok_ruc && !ok_dni){
-            str_query += " cliente.nombre LIKE '"+arg+"%'";
-            order_cliente = "cliente.nombre";
-        }
+        str_query += " cliente.nombre LIKE '%"+arg+"'";
         str_query += " AND (anexo.fecha_emision BETWEEN '"+ui->dateEdit_inicio->date().toString("yyyy-MM-dd")+"' AND '"+ui->dateEdit_fin->date().toString("yyyy-MM-dd")+"')";
-        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, "+order_cliente;
+        str_query += " ORDER BY anexo.fecha_emision DESC, anexo.serie DESC, anexo.numero DESC, cliente.nombre";
         str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
     }break;
     }
@@ -712,7 +620,7 @@ void VentaBuscar::set_buscar()
     }
 }
 
-void VentaBuscar::on_lineEdit_buscar_textEdited(const QString &arg1)
+void VentaBuscar::on_lineEdit_buscarNombre_textChanged(const QString &arg1)
 {
     //connect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
     pos = 0;
@@ -724,7 +632,7 @@ void VentaBuscar::on_lineEdit_buscar_textEdited(const QString &arg1)
     set_buscar();
 }
 
-void VentaBuscar::on_lineEdit_buscar_returnPressed()
+void VentaBuscar::on_lineEdit_buscarNombre_returnPressed()
 {
     //disconnect(ui->lineEdit_buscar, SIGNAL(returnPressed()), this, SLOT(on_lineEdit_buscar_returnPressed()));
     pos = 0;
@@ -857,64 +765,56 @@ void VentaBuscar::on_radioButton_reg_sin_doc_clicked()
 {
     tipo = venta_items::REGISTRO_SIN_DOCUMENTO;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void VentaBuscar::on_radioButton_boleta_clicked()
 {
     tipo = venta_items::BOLETA;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void VentaBuscar::on_radioButton_factura_clicked()
 {
     tipo = venta_items::FACTURA;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void VentaBuscar::on_radioButton_nota_pedido_clicked()
 {
     tipo = venta_items::NOTA_PEDIDO;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void VentaBuscar::on_radioButton_guia_clicked()
 {
     tipo = venta_items::GUIA_REMISION_REMITENTE;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void VentaBuscar::on_radioButton_cotizacion_clicked()
 {
     tipo = venta_items::COTIZACION;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void VentaBuscar::on_radioButton_nota_credito_clicked()
 {
     tipo = venta_items::NOTA_CREDITO;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 
 void VentaBuscar::on_radioButton_nota_debito_clicked()
 {
     tipo = venta_items::NOTA_DEBITO;
 
-    on_lineEdit_buscar_textEdited("");
-    on_lineEdit_buscar_returnPressed();
+    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
 }
 void VentaBuscar::on_pushButton_editar_clicked()
 {
@@ -936,7 +836,7 @@ void VentaBuscar::showEvent(QShowEvent *event)
     afterShow = true;
 
     if(!firstShow){
-        on_lineEdit_buscar_textEdited(ui->lineEdit_buscar->text());
+        on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
         //on_lineEdit_buscar_returnPressed();
         firstShow = true;
     }
@@ -956,8 +856,8 @@ bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
             if(focusWidget()){
                 focusWidget()->setFocus();
             }else{
-                ui->lineEdit_buscar->setFocus();
-                ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                ui->lineEdit_buscarNombre->setFocus();
+                ui->lineEdit_buscarNombre->setCursorPosition(ui->lineEdit_buscarNombre->text().length());
             }
             return true;
         }
@@ -971,14 +871,14 @@ bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
             if(afterShow) {
                 if(focusWidget()){
                     if(focusWidget() == ui->pushButton_nuevo){
-                        ui->lineEdit_buscar->setFocus();
-                        ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                        ui->lineEdit_buscarNombre->setFocus();
+                        ui->lineEdit_buscarNombre->setCursorPosition(ui->lineEdit_buscarNombre->text().length());
                     }else{
                         focusWidget()->setFocus();
                     }
                 }else{
-                    ui->lineEdit_buscar->setFocus();
-                    ui->lineEdit_buscar->setCursorPosition(ui->lineEdit_buscar->text().length());
+                    ui->lineEdit_buscarNombre->setFocus();
+                    ui->lineEdit_buscarNombre->setCursorPosition(ui->lineEdit_buscarNombre->text().length());
                 }
                 afterShow = false;
             }
@@ -1023,6 +923,11 @@ bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->dateEdit_fin->setFocus(Qt::TabFocusReason);
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -1042,14 +947,19 @@ bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
             {
             case Qt::Key_Return:
                 if(modo_only_date){
-                    on_lineEdit_buscar_textEdited(ui->lineEdit_buscar->text());
+                    on_lineEdit_buscarNombre_textChanged(ui->lineEdit_buscarNombre->text());
                     //on_lineEdit_buscar_returnPressed();
                     ui->tableWidget->setFocus(Qt::TabFocusReason);
                 }else{
-                    ui->lineEdit_buscar->setFocus(Qt::TabFocusReason);
+                    ui->lineEdit_buscarNombre->setFocus(Qt::TabFocusReason);
                 }
 
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -1060,7 +970,7 @@ bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
         }
         return false;
     }
-    w_temp = ui->lineEdit_buscar;
+    w_temp = ui->lineEdit_buscarNombre;
     if(w_temp == obj){
         if(e->type() == QEvent::KeyPress){
             QKeyEvent *KeyEvent = (QKeyEvent*)e;
@@ -1068,7 +978,35 @@ bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Return:{
-                on_lineEdit_buscar_returnPressed();
+                on_lineEdit_buscarNombre_returnPressed();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->lineEdit_buscarCodigo;
+    if(w_temp == obj){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:{
+                on_lineEdit_buscarCodigo_returnPressed();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
                 return true;
             }break;
             }
@@ -1091,9 +1029,14 @@ bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Down: {
                 int index = ui->tableWidget->currentRow();
                 if (index == ui->tableWidget->rowCount() - 1) {
-                    on_lineEdit_buscar_returnPressed();
+                    on_lineEdit_buscarNombre_returnPressed();
                 }
-            }
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -1111,6 +1054,11 @@ bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_ok->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -1128,6 +1076,11 @@ bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_salir->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -1145,6 +1098,33 @@ bool VentaBuscar::eventFilter(QObject *obj, QEvent *e)
             case Qt::Key_Return:
                 ui->pushButton_nuevo->click();
                 return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->pushButton_editar;
+    if(w_temp == obj){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:
+                ui->pushButton_editar->click();
+                return true;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
             }
 
         }else{
@@ -1310,4 +1290,14 @@ void VentaBuscar::editarItem(QTableWidgetItem *item)
         SYSTEM->change_center_w(this, w);
     }break;
     }
+}
+
+void VentaBuscar::on_lineEdit_buscarCodigo_textChanged(const QString &arg1)
+{
+
+}
+
+void VentaBuscar::on_lineEdit_buscarCodigo_returnPressed()
+{
+
 }

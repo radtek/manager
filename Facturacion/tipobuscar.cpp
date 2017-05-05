@@ -133,6 +133,8 @@ void TipoBuscar::on_tipo_closing()
 void TipoBuscar::set_buscar()
 {
     QString tipo = ui->lineEdit_tipo_buscar->text();
+    tipo = tipo.trimmed();
+
     QString str_query = "SELECT id, tipo FROM tipo WHERE tipo LIKE '%" + tipo + "%'";
             str_query += " LIMIT "+QString().setNum(pos)+", "+QString().setNum(size_query)+"";
 

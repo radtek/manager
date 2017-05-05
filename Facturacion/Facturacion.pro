@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += widgets qml quick network opengl sql script scripttools svg webengine webenginewidgets xml xmlpatterns multimedia testlib dbus
+QT       += widgets network opengl sql webengine webenginewidgets xml xmlpatterns multimedia dbus
 QT       += charts texttospeech
 greaterThan(QT_MAJOR_VERSION, 4): QT += printsupport
 

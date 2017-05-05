@@ -209,8 +209,8 @@ void CompraChartCosto::llenar_tabla()
 
     str_query += ", SUM(documento_h_producto.precio * IF(factura.modalidad IS NULL, 1, IF(factura.modalidad = 1, 1.18, 1))) AS precio";
 
-    str_query += ", (SELECT SUM(documento_h_producto.precio) FROM documento_h_producto";
-    str_query += " WHERE documento.id = documento_h_producto.documento_id) AS total";
+    str_query += ", (SELECT SUM(d_h_prod_total.precio * IF(factura.modalidad IS NULL, 1, IF(factura.modalidad = 1, 1.18, 1))) FROM documento_h_producto d_h_prod_total";
+    str_query += " WHERE documento.id = d_h_prod_total.documento_id) AS total";
 
     str_query += ", IFNULL((SELECT SUM(d_h_prod_flete.precio_aux) FROM documento d";
     str_query += " JOIN documento_h_documento d_h_d_flete ON d.id = d_h_d_flete.documento_id1";
@@ -405,29 +405,37 @@ void CompraChartCosto::llenar_cantidad_precio()
     str_query += ", documento.tipo_documento_id AS tipo_documento_id";
     str_query += ", anexo.fecha_emision AS fecha_emision";
     str_query += ", SUM(documento_h_producto.cantidad) AS cantidad_bruto";
+
     str_query += ", IFNULL((SELECT SUM(d_h_prod_nc_cantidad.cantidad_aux) FROM documento d";
     str_query += " JOIN documento_h_documento d_h_d_nc ON d.id = d_h_d_nc.documento_id1";
     str_query += " JOIN documento d_nc ON (d_h_d_nc.documento_id = d_nc.id AND d_nc.tipo_documento_id = "+QString().setNum(tipo_documento::NOTA_CREDITO)+")";
     str_query += " JOIN documento_h_producto d_h_prod_nc_cantidad ON (d_h_prod_nc_cantidad.producto_id = "+producto_id+" AND d_h_prod_nc_cantidad.documento_id = d_nc.id)";
     str_query += " WHERE d.id = documento.id), 0) AS cantidad_nc";
-    str_query += ", SUM(documento_h_producto.precio) AS precio";
-    str_query += ", (SELECT SUM(documento_h_producto.precio) FROM documento_h_producto";
-    str_query += " WHERE documento.id = documento_h_producto.documento_id) AS total";
+
+    str_query += ", SUM(documento_h_producto.precio * IF(factura.modalidad IS NULL, 1, IF(factura.modalidad = 1, 1.18, 1))) AS precio";
+
+    str_query += ", (SELECT SUM(d_h_prod_total.precio * IF(factura.modalidad IS NULL, 1, IF(factura.modalidad = 1, 1.18, 1))) FROM documento_h_producto d_h_prod_total";
+    str_query += " WHERE documento.id = d_h_prod_total.documento_id) AS total";
+
     str_query += ", IFNULL((SELECT SUM(d_h_prod_flete.precio_aux) FROM documento d";
     str_query += " JOIN documento_h_documento d_h_d_flete ON d.id = d_h_d_flete.documento_id1";
     str_query += " JOIN documento d_flete ON (d_h_d_flete.documento_id = d_flete.id AND d_flete.tipo_documento_id = "+QString().setNum(tipo_documento::FLETE)+")";
     str_query += " JOIN documento_h_producto d_h_prod_flete ON (d_h_prod_flete.producto_id = "+producto_id+" AND d_h_prod_flete.documento_id = d_flete.id)";
     str_query += " WHERE d.id = documento.id), 0) AS precio_flete";
-    str_query += ", IFNULL((SELECT SUM(d_h_prod_nc_desc.precio_aux) FROM documento d";
+
+    str_query += ", IFNULL((SELECT SUM(d_h_prod_nc_desc.precio_aux * IF(nc.modalidad IS NULL, 1, IF(nc.modalidad = 1, 1.18, 1))) FROM documento d";
     str_query += " JOIN documento_h_documento d_h_d_nc ON d.id = d_h_d_nc.documento_id1";
     str_query += " JOIN documento d_nc ON (d_h_d_nc.documento_id = d_nc.id AND d_nc.tipo_documento_id = "+QString().setNum(tipo_documento::NOTA_CREDITO)+")";
+    str_query += " JOIN nota_credito nc ON d_nc.id = nc.comprobante_documento_id";
     str_query += " JOIN documento_h_producto d_h_prod_nc_desc ON (d_h_prod_nc_desc.producto_id = "+producto_id+" AND d_h_prod_nc_desc.documento_id = d_nc.id)";
     str_query += " WHERE d.id = documento.id), 0) AS desc_nc";
-    str_query += ", IFNULL((SELECT SUM(nc.monto) FROM documento d";
+
+    str_query += ", IFNULL((SELECT SUM(nc.monto * IF(nc.modalidad IS NULL, 1, IF(nc.modalidad = 1, 1.18, 1))) FROM documento d";
     str_query += " JOIN documento_h_documento d_h_d_nc ON d.id = d_h_d_nc.documento_id1";
     str_query += " JOIN documento d_nc ON (d_h_d_nc.documento_id = d_nc.id AND d_nc.tipo_documento_id = "+QString().setNum(tipo_documento::NOTA_CREDITO)+")";
     str_query += " JOIN nota_credito nc ON d_nc.id = nc.comprobante_documento_id";
     str_query += " WHERE d.id = documento.id), 0) AS nc_monto";
+
     str_query += " FROM producto";
     str_query += " JOIN documento_h_producto ON producto.id = documento_h_producto.producto_id";
 

@@ -697,10 +697,6 @@ void CompraNotaCredito::on_pushButton_proveedor_clicked()
 {
     CompraProveedor* w_buscar_proveedor = new CompraProveedor;
     w_buscar_proveedor->setTipoProveedor();
-    w_buscar_proveedor->hideOptTransportista();
-    w_buscar_proveedor->hideOptClienteDNI();
-    w_buscar_proveedor->hideOptClienteRUC();
-    w_buscar_proveedor->hideOptUsuario();
     
     w_buscar_proveedor->set_widget_previous(this);
     
@@ -739,6 +735,11 @@ void CompraNotaCredito::on_pushButton_ing_prod_clicked()
 
 void CompraNotaCredito::on_pushButton_amarres_clicked()
 {
+    if(id.compare("") == 0) {
+        QMessageBox::warning(this, "Advertencia", "No existe documento. Debe guardarlo primero.", "Ok");
+        return;
+    }
+
     CompraAmarres* w_compra_amarres = new CompraAmarres;
     w_compra_amarres->set_widget_previous(this);
     w_compra_amarres->set_documento(this->id, tipo_documento::NOTA_CREDITO);
@@ -968,7 +969,10 @@ void CompraNotaCredito::on_dateTimeEdit_emision_dateChanged(const QDate &date)
 
     int index = ui->comboBox_moneda->currentIndex();
     // DOLARES
-    if(index == 1){        
+    if(index == 1){
+        dolar = SYSTEM->get_dolar(date);
+        ui->lineEdit_dolar->setDecimals(3);
+        ui->lineEdit_dolar->setText(QString().setNum(dolar, ' ', 3));
         //double cambio_dolar = SYSTEM->get_dolar(date);
         //ui->lineEdit_dolar->setText(QString().setNum(cambio_dolar, ' ', 3));
         //if(cambio_dolar == 0.0){
@@ -992,32 +996,7 @@ void CompraNotaCredito::on_dateTimeEdit_emision_dateChanged(const QDate &date)
         //mes_emision = date.month();
     }
 }
-void CompraNotaCredito::on_lineEdit_codigo_textEdited(const QString &arg1)
-{
-    if(arg1.length() == 11){
-        QString str_query;
-        QSqlQuery query;
 
-        str_query = "SELECT juridica.persona_id, juridica.ruc";
-        str_query += ", juridica.razon_social";
-        str_query += " FROM proveedor";
-        str_query += " JOIN juridica ON juridica.persona_id = proveedor.juridica_persona_id";
-        //str_query += " JOIN persona ON persona.id = proveedor.juridica_persona_id";
-        str_query += " WHERE juridica.ruc = '"+arg1+"'";
-
-        qDebug()<<str_query<<endl;
-        if(query.exec(str_query)) {
-            query.next();
-            persona_id = query.value(0).toString();
-            codigo = query.value(1).toString();
-            nombre = query.value(2).toString();
-            ui->lineEdit_codigo->setText(codigo);
-            ui->lineEdit_nombre->setText(nombre);
-
-        }else{
-        }
-    }
-}
 void CompraNotaCredito::showEvent(QShowEvent *se)
 {
     emit showing();
@@ -2033,6 +2012,10 @@ void CompraNotaCredito::on_comboBox_moneda_currentIndexChanged(int index)
 
     // DOLARES
     if(index == 1){
+        dolar = SYSTEM->get_dolar(ui->dateTimeEdit_emision->date());
+        ui->lineEdit_dolar->setDecimals(3);
+        ui->lineEdit_dolar->setText(QString().setNum(dolar, ' ', 3));
+
         ui->label_cambio_dolar->show();
         ui->lineEdit_dolar->show();
         ui->label_loading->show();
@@ -2159,5 +2142,32 @@ void CompraNotaCredito::on_lineEdit_monto_textChanged(const QString &arg1)
         ui->lineEdit_subtotal->setText(str_subtotal);
         ui->lineEdit_igv->setText(str_igv);
         ui->lineEdit_total->setText(str_total);
+    }
+}
+
+void CompraNotaCredito::on_lineEdit_codigo_textChanged(const QString &arg1)
+{
+    if(arg1.length() == 11){
+        QString str_query;
+        QSqlQuery query;
+
+        str_query = "SELECT juridica.persona_id, juridica.ruc";
+        str_query += ", juridica.razon_social";
+        str_query += " FROM proveedor";
+        str_query += " JOIN juridica ON juridica.persona_id = proveedor.juridica_persona_id";
+        //str_query += " JOIN persona ON persona.id = proveedor.juridica_persona_id";
+        str_query += " WHERE juridica.ruc = '"+arg1+"'";
+
+        qDebug()<<str_query<<endl;
+        if(query.exec(str_query)) {
+            query.next();
+            persona_id = query.value(0).toString();
+            codigo = query.value(1).toString();
+            nombre = query.value(2).toString();
+            ui->lineEdit_codigo->setText(codigo);
+            ui->lineEdit_nombre->setText(nombre);
+
+        }else{
+        }
     }
 }

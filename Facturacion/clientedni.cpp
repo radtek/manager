@@ -4,7 +4,7 @@
 ClienteDNI::ClienteDNI(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ClienteDNI)
-{    
+{
     ui->setupUi(this);
 
     afterShow = false;

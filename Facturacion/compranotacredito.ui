@@ -391,8 +391,14 @@
       <widget class="QLineEdit" name="lineEdit_nombre">
        <property name="minimumSize">
         <size>
-         <width>400</width>
+         <width>500</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>500</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -401,6 +407,19 @@
         </font>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>

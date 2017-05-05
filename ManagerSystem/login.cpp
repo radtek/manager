@@ -13,19 +13,7 @@ Login::Login(QWidget *parent) :
     afterShow = false;
 
     opciones = NULL;
-    /*
-    QString text;
-    foreach(QNetworkInterface interfac, QNetworkInterface::allInterfaces())
-    {
-        text = interfac.hardwareAddress();
-        qDebug()<<text<<endl;
-    }
 
-    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
-        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
-             qDebug() << address.toString();
-    }
-    */
 
     online = false;
 

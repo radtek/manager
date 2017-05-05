@@ -299,12 +299,14 @@ void ProductoBuscar::on_pushButton_salir_clicked()
 void ProductoBuscar::set_buscar_codigo()
 {
     QString codigo = ui->lineEdit_codigo->text();
+    codigo = codigo.trimmed();
+    
     QString str_query = "SELECT producto.id, tipo.id, marca.id, unidad.id, codigo, tipo.tipo, descripcion, marca.marca, unidad.unidad, precio, cantidad";
             str_query += " FROM producto";
             str_query += " LEFT JOIN tipo AS tipo ON tipo.id = tipo_id";
             str_query += " LEFT JOIN marca AS marca ON marca.id = marca_id";
             str_query += " LEFT JOIN unidad AS unidad ON unidad.id = unidad_id";
-            str_query += " WHERE codigo = '" + codigo + "'";
+            str_query += " WHERE codigo LIKE '" + codigo + "%'";
             str_query += " ORDER BY producto.descripcion";
     //str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
 
@@ -323,6 +325,8 @@ void ProductoBuscar::set_buscar_codigo()
         ui->tableWidget->setColumnHidden(1, true);
         ui->tableWidget->setColumnHidden(2, true);
         ui->tableWidget->setColumnHidden(3, true);
+        ui->tableWidget->setColumnHidden(9, true);
+        ui->tableWidget->setColumnHidden(10, true);
 
         while (query.next()) {
             QString id = query.value(0).toString();
@@ -362,9 +366,13 @@ void ProductoBuscar::set_buscar_codigo()
 void ProductoBuscar::set_buscar()
 {
     QString tipo = ui->lineEdit_tipo_buscar->text();
+    tipo = tipo.trimmed();
     QString descripcion = ui->lineEdit_descripcion_buscar->text();
+    descripcion = descripcion.trimmed();
     QString marca = ui->lineEdit_marca_buscar->text();
+    marca = marca.trimmed();
     QString unidad = ui->lineEdit_unidad_buscar->text();
+    unidad = unidad.trimmed();
 
     QString str_query = "SELECT producto.id, tipo.id, marca.id, unidad.id, codigo, tipo.tipo, descripcion, marca.marca, unidad.unidad, precio, cantidad";
     str_query += " FROM producto";
@@ -393,6 +401,8 @@ void ProductoBuscar::set_buscar()
         ui->tableWidget->setColumnHidden(1, true);
         ui->tableWidget->setColumnHidden(2, true);
         ui->tableWidget->setColumnHidden(3, true);
+        ui->tableWidget->setColumnHidden(9, true);
+        ui->tableWidget->setColumnHidden(10, true);
 
         while (query.next()) {
             QString id = query.value(0).toString();

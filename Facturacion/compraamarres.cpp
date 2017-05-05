@@ -16,8 +16,8 @@ CompraAmarres::CompraAmarres(QWidget *parent) :
     ui->tableWidget->hideColumn(2);
 
     this->installEventFilter(this);
-    ui->tableWidget->installEventFilter(this);
     ui->pushButton_editar->installEventFilter(this);
+    ui->tableWidget->installEventFilter(this);    
     ui->pushButton_salir->installEventFilter(this);
 }
 CompraAmarres::~CompraAmarres()
@@ -97,14 +97,9 @@ void CompraAmarres::on_compra_closing()
 void CompraAmarres::on_pushButton_editar_clicked()
 {
     QTableWidgetItem* item = ui->tableWidget->currentItem();
-
-    if(!item){
-        QMessageBox::warning(this, "Advertencia", "Selecciona un item de la tabla.", "Ok");
-        return;
-    }
-    on_tableWidget_itemDoubleClicked(item);
+    editarItem(item);
 }
-void CompraAmarres::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
+void CompraAmarres::editarItem(QTableWidgetItem *item)
 {
     //QTableWidget* tb = ui->tableWidget;
 
@@ -170,6 +165,10 @@ void CompraAmarres::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
 
     }break;
     }
+}
+void CompraAmarres::on_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
+{
+    editarItem(item);
 }
 void CompraAmarres::on_pushButton_salir_clicked()
 {
@@ -240,6 +239,27 @@ bool CompraAmarres::eventFilter(QObject *obj, QEvent *e)
         return false;
     }
 
+    w_temp = ui->pushButton_editar;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Return:{
+                ui->pushButton_editar->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+        }
+        return false;
+    }
+
     w_temp = ui->tableWidget;
     if(obj == w_temp){
         if(e->type() == QEvent::KeyPress){
@@ -255,27 +275,6 @@ bool CompraAmarres::eventFilter(QObject *obj, QEvent *e)
                     //ui->pushButton_modificar->click();
                     return true;
                 }
-            }break;
-            case Qt::Key_Enter:{
-                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
-                QApplication::sendEvent(w_temp, key);
-                return true;
-            }break;
-            }
-        }
-        return false;
-    }
-
-    w_temp = ui->pushButton_editar;
-    if(obj == w_temp){
-        if(e->type() == QEvent::KeyPress){
-            QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
-            switch(KeyEvent->key())
-            {
-            case Qt::Key_Return:{
-                ui->pushButton_editar->click();
-                return true;
             }break;
             case Qt::Key_Enter:{
                 QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);

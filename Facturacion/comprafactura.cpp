@@ -8,7 +8,9 @@ CompraFactura::CompraFactura(QWidget *parent) :
     ui->setupUi(this);
 
     igv = SYSTEM->get_igv();
-    dolar = SYSTEM->get_dolar();
+    //dolar = SYSTEM->get_dolar();
+    igv = 0.18;
+    dolar = 0.0;
 
     afterShow = false;
 
@@ -451,20 +453,20 @@ bool CompraFactura::guardar()
 
     if (id.compare("") == 0) {
         // DOCUMENTO
-        str_query +=  "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
+        str_query += "INSERT INTO documento(tipo_documento_id, habilitado)VALUES(";
         str_query += QString().setNum(tipo_documento::FACTURA);
         str_query += ", 1)";
         str_query += "&&END_QUERY&&";
 
         // COMPROBANTE
-        str_query +=  "INSERT INTO comprobante(documento_id";
+        str_query += "INSERT INTO comprobante(documento_id";
         str_query += ", operacion_id)VALUES(";
         str_query += "(SELECT MAX(documento.id) FROM documento)";
         str_query += ", "+QString().setNum(operacion_items::COMPRA)+")";
         str_query += "&&END_QUERY&&";
 
         // ANEXO
-        str_query +=  "INSERT INTO anexo(documento_id";
+        str_query += "INSERT INTO anexo(documento_id";
         str_query += ", fecha_emision, fecha_sistema, serie, numero)VALUES(";
         str_query += "(SELECT MAX(documento.id) FROM documento)";
         //str_query += ", '"+ui->dateEdit_declaracion->date().toString("yyyy-MM-dd")+"'";
@@ -477,7 +479,7 @@ bool CompraFactura::guardar()
         // DOCUMENTO_H_DOCUMENTO
 
         // DOCUMENTO_H_PERSONA
-        str_query +=  "INSERT INTO documento_h_persona(documento_id, persona_id)VALUES(";
+        str_query += "INSERT INTO documento_h_persona(documento_id, persona_id)VALUES(";
         str_query += "(SELECT MAX(documento.id) FROM documento), "+persona_id+")";
         str_query += "&&END_QUERY&&";
 
@@ -548,7 +550,7 @@ bool CompraFactura::guardar()
         str_query += "&&END_QUERY&&";
         */
         // ANEXO
-        str_query +=  "UPDATE anexo SET";        
+        str_query += "UPDATE anexo SET";
         str_query += " fecha_emision = '"+ui->dateTimeEdit_emision->date().toString("yyyy-MM-dd")+"'";
         str_query += ", fecha_sistema = '"+ui->dateTimeEdit_sistema->dateTime().toString("yyyy-MM-dd hh:mm:ss")+"'";
         str_query += ", serie = '"+ui->lineEdit_serie->text()+"'";
@@ -559,7 +561,7 @@ bool CompraFactura::guardar()
         // DOCUMENTO_H_DOCUMENTO
 
         // DOCUMENTO_H_PERSONA
-        str_query +=  "UPDATE documento_h_persona SET";
+        str_query += "UPDATE documento_h_persona SET";
         str_query += " persona_id = "+persona_id;
         str_query += " WHERE documento_id = "+id;
         str_query += "&&END_QUERY&&";
@@ -692,8 +694,8 @@ void CompraFactura::on_proveedor_closing()
     if(persona_id.compare("") == 0) {
         return;
     }
-    on_pushButton_jalar_orden_clicked();
-    on_pushButton_jalar_guia_clicked();
+    //on_pushButton_jalar_orden_clicked();
+    //on_pushButton_jalar_guia_clicked();
 
     this->persona_id = persona_id;
     codigo = w->get_codigo();
@@ -722,11 +724,7 @@ void CompraFactura::on_producto_closing()
 void CompraFactura::on_pushButton_proveedor_clicked()
 {    
     CompraProveedor* w_buscar_proveedor = new CompraProveedor;
-    w_buscar_proveedor->setTipoProveedor();
-    w_buscar_proveedor->hideOptTransportista();
-    w_buscar_proveedor->hideOptClienteDNI();
-    w_buscar_proveedor->hideOptClienteRUC();
-    w_buscar_proveedor->hideOptUsuario();
+    w_buscar_proveedor->setTipoProveedor();    
     
     w_buscar_proveedor->set_widget_previous(this);
     connect(w_buscar_proveedor, SIGNAL(closing()), this, SLOT(on_proveedor_closing()));;
@@ -807,6 +805,10 @@ void CompraFactura::on_comboBox_moneda_currentIndexChanged(int index)
 
     // DOLARES
     if(index == 1){
+        dolar = SYSTEM->get_dolar(ui->dateTimeEdit_emision->date());
+        ui->lineEdit_dolar->setDecimals(3);
+        ui->lineEdit_dolar->setText(QString().setNum(dolar, ' ', 3));
+
         ui->label_cambio_dolar->show();
         ui->lineEdit_dolar->show();
         ui->label_loading->show();
@@ -936,6 +938,11 @@ void CompraFactura::on_tableWidget_itemChanged(QTableWidgetItem *item)
 }
 void CompraFactura::on_pushButton_amarres_clicked()
 {
+    if(id.compare("") == 0) {
+        QMessageBox::warning(this, "Advertencia", "No existe documento. Debe guardarlo primero.", "Ok");
+        return;
+    }
+
     CompraAmarres* w_compra_amarres = new CompraAmarres;
     w_compra_amarres->set_widget_previous(this);
     w_compra_amarres->set_documento(this->id, tipo_documento::FACTURA);
@@ -1175,7 +1182,10 @@ void CompraFactura::on_dateTimeEdit_emision_dateChanged(const QDate &date)
 {
     int index = ui->comboBox_moneda->currentIndex();
     // DOLARES
-    if(index == 1){        
+    if(index == 1){
+        dolar = SYSTEM->get_dolar(date);
+        ui->lineEdit_dolar->setDecimals(3);
+        ui->lineEdit_dolar->setText(QString().setNum(dolar, ' ', 3));
         //double cambio_dolar = SYSTEM->get_dolar(date);
         //ui->lineEdit_dolar->setText(QString().setNum(cambio_dolar, ' ', 3));
         //if(cambio_dolar == 0.0){
@@ -2236,10 +2246,39 @@ void CompraFactura::on_pushButton_guardar_dolar_clicked()
 
 void CompraFactura::on_pushButton_canjear_clicked()
 {
+    /*
     CompraCanjear* w = new CompraCanjear;
     w->set_widget_previous(this);
 
     w->set_data(compra_items::ORDEN, id, ui->lineEdit_cod->text(), ui->lineEdit_nombre->text());
 
     SYSTEM->change_center_w(this, w);
+    */
+}
+
+void CompraFactura::on_lineEdit_cod_textChanged(const QString &arg1)
+{
+    if(arg1.length() == 11){
+        QString str_query;
+        QSqlQuery query;
+
+        str_query = "SELECT juridica.persona_id, juridica.ruc";
+        str_query += ", juridica.razon_social";
+        str_query += " FROM proveedor";
+        str_query += " JOIN juridica ON juridica.persona_id = proveedor.juridica_persona_id";
+        //str_query += " JOIN persona ON persona.id = proveedor.juridica_persona_id";
+        str_query += " WHERE juridica.ruc = '"+arg1+"'";
+
+        qDebug()<<str_query<<endl;
+        if(query.exec(str_query)) {
+            query.next();
+            persona_id = query.value(0).toString();
+            codigo = query.value(1).toString();
+            nombre = query.value(2).toString();
+            ui->lineEdit_cod->setText(codigo);
+            ui->lineEdit_nombre->setText(nombre);
+
+        }else{
+        }
+    }
 }

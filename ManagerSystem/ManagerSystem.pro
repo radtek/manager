@@ -5,7 +5,7 @@
 #-------------------------------------------------
 CONFIG += c++14
 
-QT       += core gui opengl sql webengine webenginecore webenginewidgets charts
+QT       += core gui opengl sql webengine webenginewidgets charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += printsupport
 

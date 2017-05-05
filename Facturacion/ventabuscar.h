@@ -38,9 +38,9 @@ private:
     void set_buscar();
 
 private slots:
-    void on_lineEdit_buscar_textEdited(const QString &arg1);
+    void on_lineEdit_buscarNombre_textChanged(const QString &arg1);
 
-    void on_lineEdit_buscar_returnPressed();
+    void on_lineEdit_buscarNombre_returnPressed();
 
     void on_pushButton_ok_clicked();
 
@@ -67,6 +67,10 @@ private slots:
     void on_pushButton_editar_clicked();
 
     void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
+
+    void on_lineEdit_buscarCodigo_textChanged(const QString &arg1);
+
+    void on_lineEdit_buscarCodigo_returnPressed();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *e);

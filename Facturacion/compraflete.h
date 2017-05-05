@@ -100,7 +100,7 @@ private slots:
 
     void on_dateTimeEdit_emision_dateChanged(const QDate &date);
 
-    void on_lineEdit_cod_textEdited(const QString &arg1);
+    void on_lineEdit_cod_textChanged(const QString &arg1);
 
 signals:
     void showing();

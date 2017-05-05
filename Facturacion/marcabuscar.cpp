@@ -133,6 +133,8 @@ void MarcaBuscar::on_marca_closing()
 void MarcaBuscar::set_buscar()
 {
     QString marca = ui->lineEdit_marca_buscar->text();
+    marca = marca.trimmed();
+
     QString str_query = "SELECT id, marca FROM marca WHERE marca LIKE '%" + marca + "%'";
     str_query += " LIMIT " + QString().setNum(pos) + ", " + QString().setNum(size_query) + "";
 

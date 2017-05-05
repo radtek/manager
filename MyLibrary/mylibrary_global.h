@@ -1,7 +1,7 @@
 #ifndef MYLIBRARY_GLOBAL_H
 #define MYLIBRARY_GLOBAL_H
 
-#include "mylibrary_global.h"
+#include <QtCore/qglobal.h>
 
 #if defined(MYLIBRARY_LIBRARY)
 #  define MYLIBRARYSHARED_EXPORT Q_DECL_EXPORT
