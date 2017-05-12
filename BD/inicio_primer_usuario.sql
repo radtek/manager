@@ -7,7 +7,7 @@ ALTER TABLE producto AUTO_INCREMENT = 1;
 DELETE FROM documento;
 ALTER TABLE documento AUTO_INCREMENT = 1;
 
-INSERT INTO `managersystem`.`persona`
+INSERT INTO `persona`
 (`id`,
 `tipo_persona_id`,
 `habilitado`)
@@ -16,14 +16,14 @@ VALUES
 5,
 '1');
 
-INSERT INTO `managersystem`.`naturales`
+INSERT INTO `naturales`
 (`persona_id`,
 `dni`, `nombre`)
 VALUES
 ((SELECT MAX(persona.id) FROM persona),
 '71200685', 'ALEXANDER GABRIEL LUNA CHOQUECOTA');
 
-INSERT INTO `managersystem`.`usuario`
+INSERT INTO `usuario`
 (`naturales_persona_id`,
 `rol_id`,
 `usuario`,

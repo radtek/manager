@@ -1,2 +1,0 @@
-DELETE FROM tipo where id <> 0;
-ALTER TABLE tipo AUTO_INCREMENT = 1;

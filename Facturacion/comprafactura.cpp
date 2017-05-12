@@ -2282,3 +2282,8 @@ void CompraFactura::on_lineEdit_cod_textChanged(const QString &arg1)
         }
     }
 }
+
+void CompraFactura::on_pushButton_reload_clicked()
+{
+
+}

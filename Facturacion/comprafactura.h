@@ -121,6 +121,8 @@ private slots:
 
     void on_lineEdit_cod_textChanged(const QString &arg1);
 
+    void on_pushButton_reload_clicked();
+
 signals:
     void showing();
 

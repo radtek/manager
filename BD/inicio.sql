@@ -16,6 +16,7 @@ INSERT INTO tipo_persona(id, numero, persona)VALUES(2, 1, 'transportista');
 INSERT INTO tipo_persona(id, numero, persona)VALUES(3, 2, 'cliente_ruc');
 INSERT INTO tipo_persona(id, numero, persona)VALUES(4, 3, 'cliente_dni');
 INSERT INTO tipo_persona(id, numero, persona)VALUES(5, 4, 'usuario');
+INSERT INTO tipo_persona(id, numero, persona)VALUES(6, 5, 'desconocido');
 
 INSERT INTO tipo_documento(id, numero, documento)VALUES(1, 0, 'registro sin documento');
 INSERT INTO tipo_documento(id, numero, documento)VALUES(2, 1, 'boleta');
