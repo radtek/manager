@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>582</width>
-    <height>304</height>
+    <height>272</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -493,82 +493,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QLabel" name="label_precio">
-       <property name="minimumSize">
-        <size>
-         <width>110</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>110</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Precio</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="LineEdit" name="lineEdit_precio">
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QLabel" name="label_cantidad">
-       <property name="minimumSize">
-        <size>
-         <width>110</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>110</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Cantidad</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="LineEdit" name="lineEdit_cantidad">
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
      <item>
       <spacer name="horizontalSpacer_3">
        <property name="orientation">
@@ -688,13 +613,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>LineEdit</class>
-   <extends>QLineEdit</extends>
-   <header location="global">lineedit.h</header>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>lineEdit_codigo</tabstop>
   <tabstop>lineEdit_tipo</tabstop>
@@ -707,8 +625,6 @@
   <tabstop>pushButton_buscar_unidad</tabstop>
   <tabstop>pushButton_limpiar_unidad</tabstop>
   <tabstop>lineEdit_descripcion</tabstop>
-  <tabstop>lineEdit_precio</tabstop>
-  <tabstop>lineEdit_cantidad</tabstop>
   <tabstop>pushButton_eliminar</tabstop>
   <tabstop>pushButton_guardar</tabstop>
   <tabstop>pushButton_salir</tabstop>

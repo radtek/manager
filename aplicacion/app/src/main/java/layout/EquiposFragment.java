@@ -3,6 +3,7 @@ package layout;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
@@ -57,10 +58,15 @@ public class EquiposFragment extends Fragment {
 
     private boolean ventaFragment_active = false;
 
+    private boolean ratioBuscarFragment_active = false;
+
     private OnFragmentInteractionListener mListener;
 
     public void ventaFragmentActive() {
         ventaFragment_active = true;
+    }
+    public void ratioBuscarFragment_active() {
+        ratioBuscarFragment_active = true;
     }
 
     public EquiposFragment() {
@@ -164,6 +170,7 @@ public class EquiposFragment extends Fragment {
 
     public void CargarEquipos()
     {
+        /*
         boolean tieneAcceso = util.AccesoInternet.Verificar(getContext());
         if (tieneAcceso) {
             Log.d("cargarEquipos", "call service");
@@ -209,20 +216,33 @@ public class EquiposFragment extends Fragment {
 
                                     ((MainActivity) getActivity()).onBackPressed();
 
-                                } else {
-                                    Fragment fragment = new AdminEquipoFragment();
-
-                                    int itemPosition = position;
-                                    Equipo _equipo = (Equipo) _ListContactos.getItemAtPosition(position);
-
-                                    Bundle bundle = new Bundle();
-                                    bundle.putSerializable("equipo", _equipo);
-                                    fragment.setArguments(bundle);
-
-
-                                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+                                    return;
                                 }
+                                if (ratioBuscarFragment_active) {
+                                    String equipo_id = String.valueOf(equipoList.get(position).getId());
+                                    String codigoInterno = ((TextView) view.findViewById(R.id.item_CodigoInterno)).getText().toString();
+                                    String centro = ((TextView) view.findViewById(R.id.item_Centro)).getText().toString();
+                                    String placa = ((TextView) view.findViewById(R.id.item_Placa)).getText().toString();
+
+                                    RatioBuscarFragment ratioBuscarFragment = (RatioBuscarFragment) ((MainActivity) getActivity()).listFragments.get(((MainActivity) getActivity()).listFragments.size() - 2);
+                                    ratioBuscarFragment.setEquipo(equipo_id, codigoInterno, centro, placa);
+
+                                    ((MainActivity) getActivity()).onBackPressed();
+                                    return;
+                                }
+                                Fragment fragment = new AdminEquipoFragment();
+
+                                int itemPosition = position;
+                                Equipo _equipo = (Equipo) _ListContactos.getItemAtPosition(position);
+
+                                Bundle bundle = new Bundle();
+                                bundle.putSerializable("equipo", _equipo);
+                                fragment.setArguments(bundle);
+
+
+                                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                                fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+
                             }
                         });
 
@@ -237,6 +257,7 @@ public class EquiposFragment extends Fragment {
                     //Intent obj = new Intent(_context,MenuActivity.class);
                     Intent obj = new Intent(_context,MenuChecklistActivity.class);
                     startActivity(obj);*/
+        /*
                     }
                     // pd.dismiss();
                 }
@@ -248,6 +269,7 @@ public class EquiposFragment extends Fragment {
                 }
             }.execute();
         }else {
+        */
             WSqlite sqlite = new WSqlite();
             List<Equipo> result = sqlite.GET_LISTEQUIPOS(context);
 
@@ -281,28 +303,39 @@ public class EquiposFragment extends Fragment {
                         ventaFragment.setEquipo(equipo_id, codigoInterno, centro, placa);
 
                         ((MainActivity) getActivity()).onBackPressed();
+                        return;
+                    }
+                    if (ratioBuscarFragment_active) {
+                        String equipo_id = String.valueOf(equipoList.get(position).getId());
+                        String codigoInterno = ((TextView) view.findViewById(R.id.item_CodigoInterno)).getText().toString();
+                        String centro = ((TextView) view.findViewById(R.id.item_Centro)).getText().toString();
+                        String placa = ((TextView) view.findViewById(R.id.item_Placa)).getText().toString();
 
-                    } else {
-                        Fragment fragment = new AdminEquipoFragment();
+                        RatioBuscarFragment ratioBuscarFragment = (RatioBuscarFragment) ((MainActivity) getActivity()).listFragments.get(((MainActivity) getActivity()).listFragments.size() - 2);
+                        ratioBuscarFragment.setEquipo(equipo_id, codigoInterno, centro, placa);
 
-                        int itemPosition = position;
-                        Equipo _equipo = (Equipo) listEquipos.getItemAtPosition(position);
-
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("equipo", _equipo);
-                        fragment.setArguments(bundle);
-
-                        EditText et_buscar = (EditText) rootView.findViewById(R.id.editText_buscar);
-                        InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(et_buscar.getWindowToken(), 0);
-
-                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+                        ((MainActivity) getActivity()).onBackPressed();
+                        return;
                     }
 
+                    Fragment fragment = new AdminEquipoFragment();
+
+                    int itemPosition = position;
+                    Equipo _equipo = (Equipo) listEquipos.getItemAtPosition(position);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("equipo", _equipo);
+                    fragment.setArguments(bundle);
+
+                    EditText et_buscar = (EditText) rootView.findViewById(R.id.editText_buscar);
+                    InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(et_buscar.getWindowToken(), 0);
+
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
                 }
             });
-        }
+        //}
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -341,7 +374,6 @@ public class EquiposFragment extends Fragment {
         public void onClick(View v) {
 
             Fragment fragment = new AdminEquipoFragment();
-
             Bundle bundle = new Bundle();
             Equipo equipo=new Equipo(0,null,null,null,null,null);
             bundle.putSerializable("equipo",equipo);
@@ -351,12 +383,11 @@ public class EquiposFragment extends Fragment {
             InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(et_buscar.getWindowToken(), 0);
 
+            ((MainActivity)getActivity()).listFragments.add(fragment);
+
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-
-            /*Snackbar.make(v, "Administracion de Equipos", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();*/
-
+            fragmentManager.beginTransaction().replace(R.id.flContent, fragment)
+                    .commit();
         }
     };
 

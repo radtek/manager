@@ -498,7 +498,7 @@ void CompraOrden::on_producto_closing()
     QString unidad = w->getUnidad();
     QString marca = w->getMarca();
     QString descripcion = w->getDescripcion()+" "+marca;
-    QString p_total = w->getPrecio();
+    QString p_total = "0.000";
 
     QString str_query;
     str_query += "SELECT t.id, t.tipo_documento_id, t.fecha_emision";

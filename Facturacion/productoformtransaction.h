@@ -24,16 +24,13 @@ public:
 	QString get_descripcion();
 	QString get_marca();
 	QString get_unidad();
-	QString get_precio();
-	QString get_cantidad();	
 
     void set_widget_previous(QWidget* w);
 
     int getOp(){ return op; }
 
 	void set_data(QString id, QString id_tipo, QString id_marca, QString id_unidad
-		, QString codigo, QString tipo, QString descripcion, QString marca, QString unidad
-		, QString precio, QString cantidad);
+        , QString codigo, QString tipo, QString descripcion, QString marca, QString unidad);
 
 private:
     bool guardar();

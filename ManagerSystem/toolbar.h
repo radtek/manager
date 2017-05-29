@@ -46,6 +46,8 @@ public slots:
 
     void on_toolButton_configuracion_clicked();	
 	
+    void on_toolButton_salvados_clicked();
+
 private:
     Ui::ToolBar *ui;
 

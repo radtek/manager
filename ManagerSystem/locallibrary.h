@@ -12,6 +12,7 @@
 #include "home.h"
 #include "login.h"
 #include "managersystem.h"
+#include "salvados.h"
 #include "toolbar.h"
 
 #include "shares.h"

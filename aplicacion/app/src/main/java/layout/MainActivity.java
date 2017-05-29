@@ -3,6 +3,7 @@ package layout;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.print.PrintManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -29,6 +30,7 @@ import java.util.ListIterator;
 
 import layout.EquiposFragment;
 import layout.FragmentRatioPlanta;
+import layout.RatioBuscarFragment;
 import layout.JefesFragment;
 import layout.RatioDia;
 import layout.RatioEquipo;
@@ -37,6 +39,8 @@ import layout.VentaFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final int REQUEST_PRINTERS = 2;
 
     int countFragments = 0;
     int countBacks = 0;
@@ -106,6 +110,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        //super.onBackPressed();
+        Log.d("result", "back pressed");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -228,6 +234,21 @@ public class MainActivity extends AppCompatActivity
 
             }
         }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch(requestCode){
+            case REQUEST_PRINTERS:{
+                if(resultCode == RESULT_OK){
+
+                }
+            }break;
+
+        }
     }
 
     @Override
@@ -245,7 +266,22 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+        if (id == R.id.action_printers) {
+            PrintManager printManager =
+                    (PrintManager) getApplicationContext().getSystemService(getApplicationContext().PRINT_SERVICE);
+            return true;
+        }
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == R.id.action_exit) {
+            Log.d("result", "exit");
+            Intent intent = new Intent();
+            intent.putExtra("hola", "hola");
+            setResult(RESULT_OK,intent);
+
+            finish();
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -346,8 +382,87 @@ public class MainActivity extends AppCompatActivity
         };
         mainHandler.post(myRunnable);
 
+        item.setChecked(true);
+        // Set action bar title
+        setTitle(item.getTitle());
 
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
 
+        return true;
+    }
+    public boolean replaceRatioBuscarEquipo() {
+        // Handle navigation view item clicks here.
+        fragment = null;
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        MenuItem item = null;
+
+        fragment = new EquiposFragment();
+        item = navigationView.getMenu().getItem(0).getSubMenu().getItem(0);
+        ((EquiposFragment)fragment).ratioBuscarFragment_active();
+
+        listFragments.add(fragment);
+
+        Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
+
+        Runnable myRunnable = new Runnable() {
+            @Override
+            public void run() {
+                /*
+                for(int i=0; i<countBacks;i++)
+                    getSupportFragmentManager().popBackStackImmediate();
+                countBacks = 0;
+                */
+
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment)
+                        //.addToBackStack("Other")
+                        .commit();
+            } // This is your code
+        };
+        mainHandler.post(myRunnable);
+
+        item.setChecked(true);
+        // Set action bar title
+        setTitle(item.getTitle());
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
+        return true;
+    }
+    public boolean replaceRatioBuscarPlanta() {
+        // Handle navigation view item clicks here.
+        fragment = null;
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        MenuItem item = null;
+
+        fragment = new PlantaFragment();
+        item = navigationView.getMenu().getItem(0).getSubMenu().getItem(0);
+        ((PlantaFragment)fragment).ratioBuscarFragment_active();
+
+        listFragments.add(fragment);
+
+        Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
+
+        Runnable myRunnable = new Runnable() {
+            @Override
+            public void run() {
+                /*
+                for(int i=0; i<countBacks;i++)
+                    getSupportFragmentManager().popBackStackImmediate();
+                countBacks = 0;
+                */
+
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment)
+                        //.addToBackStack("Other")
+                        .commit();
+            } // This is your code
+        };
+        mainHandler.post(myRunnable);
 
         item.setChecked(true);
         // Set action bar title

@@ -27,9 +27,7 @@ ProductoBuscar::ProductoBuscar(QWidget *parent) :
 	tipo = "";
 	descripcion = "";
 	marca = "";
-	unidad = "";
-	precio = "";
-	cantidad = "";        
+	unidad = "";      
 /*
     disconnect(ui->lineEdit_codigo, SIGNAL(returnPressed())
                 , this, SLOT(on_lineEdit_codigo_returnPressed()));
@@ -104,14 +102,7 @@ QString ProductoBuscar::getDescripcion()
 {
 	return descripcion;
 }
-QString ProductoBuscar::getPrecio()
-{
-	return precio;
-}
-QString ProductoBuscar::getCantidad()
-{
-	return cantidad;
-}
+
 void ProductoBuscar::set_widget_previous(QWidget *widget_previous)
 {
     this->widget_previous = widget_previous;
@@ -158,8 +149,6 @@ void ProductoBuscar::on_productoFormTransaction_closing()
                 descripcion = widget_prod->get_descripcion();
                 marca = widget_prod->get_marca();
                 unidad = widget_prod->get_unidad();
-                precio = widget_prod->get_precio();
-                cantidad = widget_prod->get_cantidad();
 
                 setAttribute(Qt::WA_DeleteOnClose);
                 SYSTEM->change_center_w(this, widget_previous);
@@ -194,8 +183,6 @@ void ProductoBuscar::on_productoFormTransaction_closing()
         QString descripcion = widget_prod->get_descripcion();
         QString marca = widget_prod->get_marca();
         QString unidad = widget_prod->get_unidad();
-        QString precio = widget_prod->get_precio();
-        QString cantidad = widget_prod->get_cantidad();
 
         QTableWidgetItem* item = ui->tableWidget->currentItem();
         int row = item->row();
@@ -208,8 +195,6 @@ void ProductoBuscar::on_productoFormTransaction_closing()
         ui->tableWidget->item(row, 6)->setText(descripcion);
         ui->tableWidget->item(row, 7)->setText(marca);
         ui->tableWidget->item(row, 8)->setText(unidad);
-        ui->tableWidget->item(row, 9)->setText(precio);
-        ui->tableWidget->item(row, 10)->setText(cantidad);
 
         SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
     }break;
@@ -277,8 +262,6 @@ void ProductoBuscar::on_pushButton_ok_clicked()
 		descripcion = tb->item(row, 6)->text();
 		marca = tb->item(row, 7)->text();
 		unidad = tb->item(row, 8)->text();
-		precio = tb->item(row, 9)->text();
-		cantidad = tb->item(row, 10)->text();
 
         setAttribute(Qt::WA_DeleteOnClose);
 		SYSTEM->change_center_w(this, widget_previous);
@@ -301,7 +284,7 @@ void ProductoBuscar::set_buscar_codigo()
     QString codigo = ui->lineEdit_codigo->text();
     codigo = codigo.trimmed();
     
-    QString str_query = "SELECT producto.id, tipo.id, marca.id, unidad.id, codigo, tipo.tipo, descripcion, marca.marca, unidad.unidad, precio, cantidad";
+    QString str_query = "SELECT producto.id, tipo.id, marca.id, unidad.id, codigo, tipo.tipo, descripcion, marca.marca, unidad.unidad";
             str_query += " FROM producto";
             str_query += " LEFT JOIN tipo AS tipo ON tipo.id = tipo_id";
             str_query += " LEFT JOIN marca AS marca ON marca.id = marca_id";
@@ -320,13 +303,11 @@ void ProductoBuscar::set_buscar_codigo()
         ui->tableWidget->setColumnCount(columnCount);
 
         ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID" << "tipo_id" << "marca_id" << "unidad_id"
-            << "Codigo" << "Tipo" << "Descripción" << "Marca" << "Unidad" << "Precio" << "Cantidad");
+            << "Codigo" << "Tipo" << "Descripción" << "Marca" << "Unidad");
         ui->tableWidget->setColumnHidden(0, true);
         ui->tableWidget->setColumnHidden(1, true);
         ui->tableWidget->setColumnHidden(2, true);
         ui->tableWidget->setColumnHidden(3, true);
-        ui->tableWidget->setColumnHidden(9, true);
-        ui->tableWidget->setColumnHidden(10, true);
 
         while (query.next()) {
             QString id = query.value(0).toString();
@@ -338,8 +319,6 @@ void ProductoBuscar::set_buscar_codigo()
             QString descripcion = query.value(6).toString();
             QString marca = query.value(7).toString();
             QString unidad = query.value(8).toString();
-            QString precio = query.value(9).toString();
-            QString cantidad = query.value(10).toString();
 
             ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
             ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(tipo_id));
@@ -350,8 +329,6 @@ void ProductoBuscar::set_buscar_codigo()
             ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(descripcion));
             ui->tableWidget->setItem(pos, 7, new QTableWidgetItem(marca));
             ui->tableWidget->setItem(pos, 8, new QTableWidgetItem(unidad));
-            ui->tableWidget->setItem(pos, 9, new QTableWidgetItem(precio));
-            ui->tableWidget->setItem(pos, 10, new QTableWidgetItem(cantidad));
 
             for(int j=0; j<ui->tableWidget->columnCount(); j++)
                 ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
@@ -374,7 +351,7 @@ void ProductoBuscar::set_buscar()
     QString unidad = ui->lineEdit_unidad_buscar->text();
     unidad = unidad.trimmed();
 
-    QString str_query = "SELECT producto.id, tipo.id, marca.id, unidad.id, codigo, tipo.tipo, descripcion, marca.marca, unidad.unidad, precio, cantidad";
+    QString str_query = "SELECT producto.id, tipo.id, marca.id, unidad.id, codigo, tipo.tipo, descripcion, marca.marca, unidad.unidad";
     str_query += " FROM producto";
     str_query += " LEFT JOIN tipo AS tipo ON tipo.id = tipo_id";
     str_query += " LEFT JOIN marca AS marca ON marca.id = marca_id";
@@ -396,13 +373,11 @@ void ProductoBuscar::set_buscar()
         ui->tableWidget->setColumnCount(columnCount);
 
         ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID" << "tipo_id" << "marca_id" << "unidad_id"
-            << "Codigo" << "Tipo" << "Descripción" << "Marca" << "Unidad" << "Precio" << "Cantidad");
+            << "Codigo" << "Tipo" << "Descripción" << "Marca" << "Unidad");
         ui->tableWidget->setColumnHidden(0, true);
         ui->tableWidget->setColumnHidden(1, true);
         ui->tableWidget->setColumnHidden(2, true);
         ui->tableWidget->setColumnHidden(3, true);
-        ui->tableWidget->setColumnHidden(9, true);
-        ui->tableWidget->setColumnHidden(10, true);
 
         while (query.next()) {
             QString id = query.value(0).toString();
@@ -414,8 +389,6 @@ void ProductoBuscar::set_buscar()
             QString descripcion = query.value(6).toString();
             QString marca = query.value(7).toString();
             QString unidad = query.value(8).toString();
-            QString precio = query.value(9).toString();
-            QString cantidad = query.value(10).toString();
 
             ui->tableWidget->setItem(pos, 0, new QTableWidgetItem(id));
             ui->tableWidget->setItem(pos, 1, new QTableWidgetItem(tipo_id));
@@ -426,8 +399,6 @@ void ProductoBuscar::set_buscar()
             ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(descripcion));
             ui->tableWidget->setItem(pos, 7, new QTableWidgetItem(marca));
             ui->tableWidget->setItem(pos, 8, new QTableWidgetItem(unidad));
-            ui->tableWidget->setItem(pos, 9, new QTableWidgetItem(precio));
-            ui->tableWidget->setItem(pos, 10, new QTableWidgetItem(cantidad));
 
             for(int j=0; j<ui->tableWidget->columnCount(); j++)
                 ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
@@ -885,11 +856,9 @@ void ProductoBuscar::editarItem(QTableWidgetItem *item)
     QString descripcion = tb->item(row, 6)->text();
     QString marca = tb->item(row, 7)->text();
     QString unidad = tb->item(row, 8)->text();
-    QString precio = tb->item(row, 9)->text();
-    QString cantidad = tb->item(row, 10)->text();
 
     ProductoFormTransaction* w = new ProductoFormTransaction;
-    w->set_data(id, id_tipo, id_marca, id_unidad, codigo, tipo, descripcion, marca, unidad, precio, cantidad);
+    w->set_data(id, id_tipo, id_marca, id_unidad, codigo, tipo, descripcion, marca, unidad);
     connect(w, SIGNAL(closing()), this, SLOT(on_productoFormTransaction_closing()));
     w->set_widget_previous(this);
 

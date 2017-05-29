@@ -8,12 +8,21 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.util.Pools;
+import android.support.v7.widget.LinearLayoutCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +42,7 @@ import dominio.Equipo;
 import dominio.ReporteRatio;
 import servicios.wsequipos;
 import servicios.wsreportes;
+import sqlite.WSqlite;
 import util.CallService;
 
 /**
@@ -55,9 +65,25 @@ public class FragmentRatioPlanta extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    private String planta = "";
+    private String date_inicial = "";
+    private String date_final = "";
+    private String equipo_id = "";
+
+    public void setData(String planta, String date_inicial, String date_final, String equipo_id){
+        Log.d("ratio", planta);
+        this.planta = planta;
+        this.date_inicial = date_inicial;
+        this.date_final = date_final;
+        this.equipo_id = equipo_id;
+    }
+
+    private DisplayMetrics dm;
+
     public FragmentRatioPlanta() {
         // Required empty public constructor
     }
+
 
     /**
      * Use this factory method to create a new instance of
@@ -90,16 +116,63 @@ public class FragmentRatioPlanta extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        dm = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
         // Inflate the layout for this fragment
         rootView =inflater.inflate(R.layout.fragment_fragment_ratio_planta, container, false);
         context = container.getContext();
 
+        Button btn_buscar = (Button)rootView.findViewById(R.id.button_buscar);
+        btn_buscar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = new RatioBuscarFragment();
+                //Bundle bundle = new Bundle();
+                /*
+                Equipo equipo=new Equipo(0,null,null,null,null,null);
+                bundle.putSerializable("equipo",equipo);
+                fragment.setArguments(bundle);
+                */
+                /*
+                EditText et_buscar = (EditText) rootView.findViewById(R.id.editText_buscar);
+                InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(et_buscar.getWindowToken(), 0);
+                */
 
+                ((MainActivity)getActivity()).listFragments.add(fragment);
 
-        ReporteRatioPlanta();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment)
+                        .commit();
+            }
+        });
 
+        //ReporteRatioPlanta();
+        reporteRatio();
 
         return rootView;
+    }
+
+    public void reporteRatio()
+    {
+        WSqlite sqlite = new WSqlite();
+
+        List<Pair<String, Double>> ratios = sqlite.GET_RATIOPLANTA(context, planta);
+        List<ReporteRatio> resultado = new ArrayList<ReporteRatio>();
+        //Log.d("ratio", "inicio");
+        for(int i=0; i < ratios.size(); i++){
+            String indicador = ratios.get(i).first;
+            double ratio = ratios.get(i).second;
+
+            //Log.d("ratio", indicador);
+            //Log.d("ratio", String.valueOf(ratio));
+            ReporteRatio reporteRatio = new ReporteRatio(indicador,
+                    ratio);
+            resultado.add(reporteRatio);
+        }
+        //Log.d("ratio", "fin");
+        RenderReporte(resultado);
     }
 
     public void ReporteRatioPlanta()
@@ -119,7 +192,7 @@ public class FragmentRatioPlanta extends Fragment {
                 }
                 else
                 {
-                    List<ReporteRatio> Resultado=  (List<ReporteRatio>)result;
+                    List<ReporteRatio> Resultado =  (List<ReporteRatio>)result;
                     RenderReporte(Resultado);
                 }
                 pd.dismiss();
@@ -141,6 +214,20 @@ public class FragmentRatioPlanta extends Fragment {
         ArrayList<String> xAxis = new ArrayList<>();
         ArrayList<BarEntry> valueSet1 = new ArrayList<>();
         int x=0;
+        int width = dm.widthPixels + dm.widthPixels*((Ratios.size()-1)/3);
+
+        //ScrollView scroll = (ScrollView)rootView.findViewById(R.id.scrollView1);
+        //scroll.setHorizontalScrollBarEnabled(true);
+        //scroll.addView(chart);
+        ViewGroup.LayoutParams layout = chart.getLayoutParams();
+        layout.width = width;
+        //chart.setLayoutParams(layout);
+        //chart.setMinimumWidth(0);
+        //chart.setLayoutParams(0, 1);
+
+        Log.d("ratio", "width " + String.valueOf(chart.getLayoutParams().width));
+        Log.d("ratio", "height " + String.valueOf(chart.getLayoutParams().height));
+
         for(ReporteRatio r:Ratios)
         {
             xAxis.add(r.getIndicador());

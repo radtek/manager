@@ -862,7 +862,7 @@
   <customwidget>
    <class>LineEdit</class>
    <extends>QLineEdit</extends>
-   <header location="global">lineedit.h</header>
+   <header location="global">mylibrary/lineedit.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

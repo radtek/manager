@@ -796,7 +796,7 @@ void VentaBoleta::on_producto_closing()
     QString unidad = w->getUnidad();
     QString marca = w->getMarca();
     QString descripcion = w->getDescripcion()+" "+marca;
-    QString p_total = w->getPrecio();
+    QString p_total = "0.000";
 
     set_producto(producto_id, cantidad, unidad, descripcion, p_total);
 }

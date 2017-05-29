@@ -2,12 +2,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="55dp"
     tools:context="layout.RatioEquipo">
 
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/chart"
-        android:layout_gravity="bottom"
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="442dp" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/button_buscar"
+                android:layout_width="389dp"
+                android:layout_height="wrap_content"
+                android:text="BUSCAR..."
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView_planta"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:textSize="30sp" />
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="444dp"
+                android:layout_gravity="bottom" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
 </FrameLayout>

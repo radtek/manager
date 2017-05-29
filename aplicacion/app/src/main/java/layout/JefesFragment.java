@@ -304,12 +304,11 @@ public class JefesFragment extends Fragment {
             fragment.setArguments(bundle);
 
 
+            ((MainActivity)getActivity()).listFragments.add(fragment);
+
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-
-
-            /*Snackbar.make(v, "Administracion de Equipos", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();*/
+            fragmentManager.beginTransaction().replace(R.id.flContent, fragment)
+                    .commit();
 
         }
     };

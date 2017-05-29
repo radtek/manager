@@ -6,8 +6,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -149,7 +151,7 @@ public class VentaFragment extends Fragment {
             }
         });
 
-        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         String now = df.format(new Date());
 
         TextView txtFecha=(TextView)rootView.findViewById(R.id.txtFecha);
@@ -364,7 +366,9 @@ public class VentaFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE) {
-                    tv_equipo.callOnClick();
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(kilometros.getWindowToken(), 0);
+                    //tv_equipo.callOnClick();
                     return true;
                 }
                 return false;
@@ -420,7 +424,7 @@ public class VentaFragment extends Fragment {
     public void GuardarVenta()
     {
         IDEQUIPO = equipo_id;
-        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String now = df.format(new Date());
         String Fecha=now;
         String Producto="MAX/D B5(BA)";
@@ -464,18 +468,22 @@ public class VentaFragment extends Fragment {
                 }
             }
             if(posDot == -1) {
+                /*
                 int num_zeros = 3-str_galones.length();
                 for(int i=0; i<num_zeros; i++){
                     str_galones = "0" + str_galones;
-                }
+                }*/
                 str_galones = str_galones + ".000";
+
             }else{
                 String parte_entera = str_galones.substring(0, posDot);
                 String parte_decimal = str_galones.substring(posDot+1, str_galones.length());
+                int num_zeros;
+                /*
                 int num_zeros = 3-parte_entera.length();
                 for(int i=0; i<num_zeros; i++){
                     parte_entera = "0" + parte_entera;
-                }
+                }*/
                 num_zeros = 3-parte_decimal.length();
                 for(int i=0; i<num_zeros; i++){
                     parte_decimal = parte_decimal + "0";
@@ -508,18 +516,21 @@ public class VentaFragment extends Fragment {
                 }
             }
             if(posDot == -1) {
+                /*
                 int num_zeros = 4-str_horometro.length();
                 for(int i=0; i<num_zeros; i++){
                     str_horometro = "0" + str_horometro;
-                }
+                }*/
                 str_horometro = str_horometro + ".00";
             }else{
                 String parte_entera = str_horometro.substring(0, posDot);
                 String parte_decimal = str_horometro.substring(posDot+1, str_horometro.length());
+                int num_zeros;
+                /*
                 int num_zeros = 4-parte_entera.length();
                 for(int i=0; i<num_zeros; i++){
                     parte_entera = "0" + parte_entera;
-                }
+                }*/
                 num_zeros = 2-parte_decimal.length();
                 for(int i=0; i<num_zeros; i++){
                     parte_decimal = parte_decimal + "0";
@@ -552,11 +563,12 @@ public class VentaFragment extends Fragment {
                 }
             }
             if(posDot == -1) {
+                /*
                 int num_zeros = 4-str_kilometros.length();
                 for(int i=0; i<num_zeros; i++){
                     str_kilometros = "0" + str_kilometros;
-                }
-                str_kilometros = str_kilometros + ".00";
+                }*/
+                //str_kilometros = str_kilometros;
             }else{
                 String parte_entera = str_kilometros.substring(0, posDot);
                 String parte_decimal = str_kilometros.substring(posDot+1, str_kilometros.length());
@@ -580,7 +592,7 @@ public class VentaFragment extends Fragment {
 
         WSqlite sqlite = new WSqlite();
 
-        String Result=sqlite.INSERT_VENTA(context,Fecha,Producto,str_ticket
+        String Result = sqlite.INSERT_VENTA(context,Fecha,Producto,str_ticket
                 ,str_galones,str_horometro,str_kilometros,str_CodigoEquipo);
 
         Snackbar.make(rootView,Result, Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -607,6 +619,9 @@ public class VentaFragment extends Fragment {
         String galones = ((AutoCompleteTextView)rootView.findViewById(R.id.input_galones)).getText().toString();
         String horometro = ((AutoCompleteTextView)rootView.findViewById(R.id.input_horometro)).getText().toString();
         String kilometros = ((AutoCompleteTextView)rootView.findViewById(R.id.input_kilometros)).getText().toString();
+        ((AutoCompleteTextView)rootView.findViewById(R.id.input_galones)).setText("");
+        ((AutoCompleteTextView)rootView.findViewById(R.id.input_horometro)).setText("");
+        ((AutoCompleteTextView)rootView.findViewById(R.id.input_kilometros)).setText("");
 
         TextView tvCodigoInterno = ((TextView)rootView.findViewById(R.id.item_CodigoInterno));
         String codigoInterno = tvCodigoInterno.getText().toString();
@@ -614,6 +629,15 @@ public class VentaFragment extends Fragment {
         String centro = tvCentro.getText().toString();
         TextView tvPlaca = ((TextView)rootView.findViewById(R.id.item_Placa));
         String placa = tvPlaca.getText().toString();
+        //tvCodigoInterno.setText("");
+        //tvCentro.setText("");
+        //tvPlaca.setText("");
+
+        Fragment currentFragment = this;
+        FragmentTransaction fragTransaction = getFragmentManager().beginTransaction();
+        fragTransaction.detach(currentFragment);
+        fragTransaction.attach(currentFragment);
+        fragTransaction.commit();
 
         Intent obj = new Intent(context, BlueToothPrinter.class);
         obj.putExtra("FECHA", fecha);

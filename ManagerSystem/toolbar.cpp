@@ -14,11 +14,12 @@ ToolBar::ToolBar(QWidget *parent) :
     this->installEventFilter(this);
     ui->toolButton_colaboradores->installEventFilter(this);
     ui->toolButton_compras->installEventFilter(this);
-    ui->toolButton_home->installEventFilter(this);
-    ui->toolButton_configuracion->installEventFilter(this);
+    ui->toolButton_home->installEventFilter(this);    
     ui->toolButton_productos->installEventFilter(this);
     ui->toolButton_reportes->installEventFilter(this);
     ui->toolButton_ventas->installEventFilter(this);
+    ui->toolButton_salvados->installEventFilter(this);
+    ui->toolButton_configuracion->installEventFilter(this);
 }
 
 ToolBar::~ToolBar()
@@ -132,7 +133,7 @@ void ToolBar::on_toolButton_colaboradores_clicked()
     ui->toolButton_colaboradores->setFocus();
 
     // memory background-color: rgb(0, 51, 153);
-    QWidget* w = SYSTEM->set_center_w(new ColaboradorBuscar, "background-color: rgb(51, 119, 255);");
+    QWidget* w = SYSTEM->set_center_w(new ProductoBuscar, "background-color: rgb(51, 119, 255);");
     APP_MAINWINDOW->setCentralWidget(w);
 
     if(cur_label){
@@ -175,6 +176,21 @@ void ToolBar::on_toolButton_configuracion_clicked()
     ui->label_configuracion->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");
 }
 
+void ToolBar::on_toolButton_salvados_clicked()
+{
+    ui->toolButton_salvados->setFocus();
+
+    // memory background-color: rgb(110, 110, 110);
+    QWidget* w = SYSTEM->set_center_w(new Salvados, "background-color: rgb(191, 191, 191);");
+    APP_MAINWINDOW->setCentralWidget(w);
+
+    if(cur_label){
+        cur_label->setStyleSheet("");
+    }
+    cur_label = ui->label_salvados;
+
+    ui->label_salvados->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");
+}
 
 
 void ToolBar::showEvent(QShowEvent *se)
@@ -409,6 +425,39 @@ bool ToolBar::eventFilter(QObject *obj, QEvent *e)
                 if(cur_label){
                     cur_label->setStyleSheet("");
                 }
+                cur_label = ui->label_salvados;
+
+                ui->label_salvados->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");
+                ui->toolButton_salvados->setFocus(Qt::TabFocusReason);
+                return true;
+            }break;
+            case Qt::Key_Return:{
+                ui->toolButton_reportes->click();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+                QApplication::sendEvent(w_temp, key);
+                return true;
+            }break;
+            }
+
+        }else{
+
+        }
+        return false;
+    }
+    w_temp = ui->toolButton_salvados;
+    if(obj == w_temp){
+        if(e->type() == QEvent::KeyPress){
+            QKeyEvent *KeyEvent = (QKeyEvent*)e;
+
+            switch(KeyEvent->key())
+            {
+            case Qt::Key_Tab:{
+                if(cur_label){
+                    cur_label->setStyleSheet("");
+                }
                 cur_label = ui->label_configuracion;
 
                 ui->label_configuracion->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(0, 0, 0);");
@@ -416,7 +465,7 @@ bool ToolBar::eventFilter(QObject *obj, QEvent *e)
                 return true;
             }break;
             case Qt::Key_Return:{
-                ui->toolButton_reportes->click();
+                ui->toolButton_salvados->click();
                 return true;
             }break;
             case Qt::Key_Enter:{

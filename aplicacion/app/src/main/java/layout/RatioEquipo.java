@@ -5,9 +5,13 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.app.aplicacion.R;
@@ -23,6 +27,7 @@ import java.util.List;
 
 import dominio.ReporteRatio;
 import servicios.wsreportes;
+import sqlite.WSqlite;
 import util.CallService;
 
 /**
@@ -44,6 +49,18 @@ public class RatioEquipo extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private String planta = "";
+    private String date_inicial = "";
+    private String date_final = "";
+    private String equipo_id = "";
+
+    public void setData(String planta, String date_inicial, String date_final, String equipo_id){
+        this.planta = planta;
+        this.date_inicial = date_inicial;
+        this.date_final = date_final;
+        this.equipo_id = equipo_id;
+    }
 
     public RatioEquipo() {
         // Required empty public constructor
@@ -85,12 +102,61 @@ public class RatioEquipo extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_ratio_equipo, container, false);
         context = container.getContext();
 
-        ReporteRatioEquipo();
+        TextView tw_planta = (TextView)rootView.findViewById(R.id.textView_planta);
+        tw_planta.setText(planta);
+
+        Button btn_buscar = (Button)rootView.findViewById(R.id.button_buscar);
+        btn_buscar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = new RatioBuscarFragment();
+                //Bundle bundle = new Bundle();
+                /*
+                Equipo equipo=new Equipo(0,null,null,null,null,null);
+                bundle.putSerializable("equipo",equipo);
+                fragment.setArguments(bundle);
+                */
+                /*
+                EditText et_buscar = (EditText) rootView.findViewById(R.id.editText_buscar);
+                InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(et_buscar.getWindowToken(), 0);
+                */
+
+                ((MainActivity)getActivity()).listFragments.add(fragment);
+
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.flContent, fragment)
+                        .commit();
+            }
+        });
+
+        reporteRatio();
         return rootView;
 
 
     }
 
+    public void reporteRatio()
+    {
+        WSqlite sqlite = new WSqlite();
+
+        List<Pair<String, Double>> ratios = sqlite.GET_RATIOPLANTA_DIA_EQUIPO(context, planta
+                , date_inicial, date_final, equipo_id);
+        List<ReporteRatio> resultado = new ArrayList<ReporteRatio>();
+        //Log.d("ratio", "inicio");
+        for(int i=0; i < ratios.size(); i++){
+            String indicador = ratios.get(i).first;
+            double ratio = ratios.get(i).second;
+
+            //Log.d("ratio", indicador);
+            //Log.d("ratio", String.valueOf(ratio));
+            ReporteRatio reporteRatio = new ReporteRatio(indicador,
+                    ratio);
+            resultado.add(reporteRatio);
+        }
+        //Log.d("ratio", "fin");
+        RenderReporte(resultado);
+    }
     public void ReporteRatioEquipo()
     {
         final ProgressDialog pd = ProgressDialog.show(context, "Por favor espere", "Cargando Reporte....", true,false);
@@ -123,11 +189,11 @@ public class RatioEquipo extends Fragment {
     }
     public void RenderReporte(List<ReporteRatio> Ratios)
     {
-
         LimitLine line = new LimitLine(1.6f);
 
-
         BarChart chart = (BarChart) rootView.findViewById(R.id.chart);
+
+
         ArrayList<BarDataSet> dataSets = null;
         ArrayList<String> xAxis = new ArrayList<>();
         ArrayList<BarEntry> valueSet1 = new ArrayList<>();
@@ -141,6 +207,7 @@ public class RatioEquipo extends Fragment {
             x++;
         }
         BarDataSet barDataSet1 = new BarDataSet(valueSet1, "Brand 1");
+
         //barDataSet1.setColor(Color.rgb(0, 155, 0));
         barDataSet1.setColors(ColorTemplate.COLORFUL_COLORS);
         //BarDataSet barDataSet2 = new BarDataSet(valueSet2, "Brand 2");
@@ -150,10 +217,8 @@ public class RatioEquipo extends Fragment {
         dataSets.add(barDataSet1);
         //dataSets.add(barDataSet2);
 
-
-
-
         BarData data = new BarData(xAxis, dataSets);
+
         data.addLimitLine(line);
         chart.setData(data);
         chart.setDescription("Ratio x Equipo");

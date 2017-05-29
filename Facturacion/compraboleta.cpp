@@ -603,7 +603,23 @@ void CompraBoleta::on_producto_closing()
     QString unidad = w->getUnidad();
     QString marca = w->getMarca();
     QString descripcion = w->getDescripcion()+" "+marca;
-    QString p_total = w->getPrecio();
+    QString p_total = "0.000";
+
+    QSqlQuery query;
+    QString str_query = SYSTEM->query_ultimo_costo(producto_id);
+    if(query.exec(str_query)){
+        query.next();
+
+        double precio = query.value(5).toDouble();
+        double flete = query.value(6).toDouble();
+        double desc_nc = query.value(7).toDouble();
+        double desc_nc_monto = query.value(8).toDouble();
+        double precio_neto_val = precio + flete - desc_nc - desc_nc_monto;
+        QString precio_neto = QString().setNum(precio_neto_val, ' ', 3);
+        p_total = precio_neto;
+    }else{
+
+    }
 
     set_producto(producto_id, cantidad, unidad, descripcion, p_total);
 }
@@ -664,7 +680,7 @@ void CompraBoleta::on_tableWidget_itemChanged(QTableWidgetItem *item)
 
         double cantidad = s_cantidad.toDouble();
         double p_unitario = s_p_unitario.toDouble();
-        double p_total;
+        double p_total;        
 
         p_total = cantidad*p_unitario;
 
@@ -1072,6 +1088,19 @@ bool CompraBoleta::eventFilter(QObject *obj, QEvent *e)
                 QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
                 QApplication::sendEvent(w_temp, key);
                 return true;
+            }break;
+            case Qt::Key_F3:{
+                QTableWidgetItem* item = ui->tableWidget->currentItem();
+                if(item) {
+                    CompraChartCosto* w = new CompraChartCosto();
+                    QString producto_id = ui->tableWidget->item(item->row(), INDEX_ID)->text();
+                    QString unidad = ui->tableWidget->item(item->row(), INDEX_UNIDAD)->text();
+                    QString descripcion = ui->tableWidget->item(item->row(), INDEX_DESCRIPCION)->text();
+                    w->set_producto(producto_id, unidad, descripcion);
+                    w->set_widget_previous(this);
+                    SYSTEM->change_center_w(this, w);
+                    return true;
+                }
             }break;
             }
         }

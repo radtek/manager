@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>951</width>
+    <width>1016</width>
     <height>127</height>
    </rect>
   </property>
@@ -22,7 +22,7 @@
   <property name="styleSheet">
    <string notr="true">background-color: rgb(255, 255, 255);</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_8">
+  <layout class="QVBoxLayout" name="verticalLayout_10">
    <item>
     <widget class="QFrame" name="frame">
      <property name="styleSheet">
@@ -154,6 +154,11 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true"/>
               </property>
@@ -212,7 +217,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -281,7 +286,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -301,7 +306,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -327,6 +332,11 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true"/>
               </property>
@@ -348,7 +358,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>13</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -372,7 +382,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -435,7 +445,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -455,7 +465,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -481,6 +491,11 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true"/>
               </property>
@@ -502,7 +517,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -526,7 +541,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -586,7 +601,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -606,7 +621,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -632,6 +647,11 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true"/>
               </property>
@@ -653,7 +673,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -677,7 +697,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -737,7 +757,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -757,7 +777,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -773,15 +793,20 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>65</width>
+                <width>90</width>
                 <height>0</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>80</width>
+                <width>90</width>
                 <height>16777215</height>
                </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
               </property>
               <property name="text">
                <string>Cola&lt;u&gt;&lt;b&gt;b&lt;/b&gt;&lt;/u&gt;oradores</string>
@@ -801,7 +826,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -825,7 +850,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -885,7 +910,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -905,7 +930,7 @@
               </property>
               <property name="sizeHint" stdset="0">
                <size>
-                <width>15</width>
+                <width>5</width>
                 <height>20</height>
                </size>
               </property>
@@ -931,6 +956,11 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true"/>
               </property>
@@ -944,6 +974,126 @@
             </item>
             <item>
              <spacer name="horizontalSpacer_28">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>5</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QToolButton" name="toolButton_salvados">
+              <property name="minimumSize">
+               <size>
+                <width>55</width>
+                <height>55</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>55</width>
+                <height>55</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="iconos.qrc">
+                <normaloff>:/new/Iconos/Document_50.png</normaloff>:/new/Iconos/Document_50.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>45</width>
+                <height>45</height>
+               </size>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_31">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>15</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_17">
+            <item>
+             <spacer name="horizontalSpacer_32">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_salvados">
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Salva&lt;u&gt;&lt;b&gt;d&lt;/b&gt;&lt;/u&gt;os</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_34">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -1091,6 +1241,11 @@
                 <width>80</width>
                 <height>16777215</height>
                </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
               </property>
               <property name="styleSheet">
                <string notr="true"/>

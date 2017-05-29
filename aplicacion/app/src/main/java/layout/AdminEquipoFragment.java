@@ -148,7 +148,7 @@ public class AdminEquipoFragment extends Fragment {
             public void onTextChanged(CharSequence cs, int start, int before, int count) {
                 centro.removeTextChangedListener(this);
                 String s = new String(cs.toString());
-                boolean match = s.matches("^[0-9]*$ ");
+                boolean match = s.matches("[0-9]*$");
                 if(match){
                     //Toast.makeText(getApplicationContext(),"OK!",Toast.LENGTH_SHORT).show();
                 }else{
@@ -190,7 +190,7 @@ public class AdminEquipoFragment extends Fragment {
             public void onTextChanged(CharSequence cs, int start, int before, int count) {
                 planta.removeTextChangedListener(this);
                 String s = new String(cs.toString());
-                boolean match = s.matches("^[A-Z0-9- ]*$");
+                boolean match = s.matches("[A-Z ]*$");
                 if(match){
                     //Toast.makeText(getApplicationContext(),"OK!",Toast.LENGTH_SHORT).show();
                 }else{
@@ -232,7 +232,7 @@ public class AdminEquipoFragment extends Fragment {
             public void onTextChanged(CharSequence cs, int start, int before, int count) {
                 codigo_interno.removeTextChangedListener(this);
                 String s = new String(cs.toString());
-                boolean match = s.matches("^[A-Z0-9- ]*$");
+                boolean match = s.matches("[A-Z0-9-]*$");
                 if(match){
                     //Toast.makeText(getApplicationContext(),"OK!",Toast.LENGTH_SHORT).show();
                 }else{
@@ -274,7 +274,7 @@ public class AdminEquipoFragment extends Fragment {
             public void onTextChanged(CharSequence cs, int start, int before, int count) {
                 placa.removeTextChangedListener(this);
                 String s = new String(cs.toString());
-                boolean match = s.matches("^[A-Z0-9- ]*$");
+                boolean match = s.matches("[A-Z0-9-/]*$");
                 if(match){
                     //Toast.makeText(getApplicationContext(),"OK!",Toast.LENGTH_SHORT).show();
                 }else{
@@ -316,7 +316,7 @@ public class AdminEquipoFragment extends Fragment {
             public void onTextChanged(CharSequence cs, int start, int before, int count) {
                 clase.removeTextChangedListener(this);
                 String s = new String(cs.toString());
-                boolean match = s.matches("^[A-Z0-9- ]*$");
+                boolean match = s.matches("^[A-Z]*$");
                 if(match){
                     //Toast.makeText(getApplicationContext(),"OK!",Toast.LENGTH_SHORT).show();
                 }else{

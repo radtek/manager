@@ -717,7 +717,7 @@ void CompraNotaCredito::on_producto_closing()
     QString unidad = w->getUnidad();
     QString marca = w->getMarca();
     QString descripcion = w->getDescripcion()+" "+marca;
-    QString p_total = w->getPrecio();
+    QString p_total = "0.000";
     QString desc_cantidad = "0.000";
     QString desc_p_total = "0.000";
 

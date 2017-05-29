@@ -6,7 +6,10 @@ import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.SQLException;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -25,6 +28,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -36,16 +40,22 @@ import android.widget.Toast;
 
 import com.example.app.aplicacion.R;
 
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.lang.String;
-import java.util.*;
 import java.lang.*;
+import java.sql.Connection;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+import dominio.Equipo;
 import dominio.Jefe;
 import dominio.Usuario;
+import servicios.wsequipos;
 import servicios.wsjefes;
 import servicios.wsusuarios;
 import sqlite.WSqlite;
@@ -60,6 +70,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
+    private static final int REQUEST_EXIT = 2;
+
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -104,6 +116,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 cargarUsuarios();
                 cargarJefes();
+                cargarEquipos();
+                cargarVentas();
             }else{
                 cargarUsuarios();
             }
@@ -250,6 +264,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch(requestCode){
+            case REQUEST_EXIT:{
+                if(resultCode == RESULT_OK){
+                    finish();
+                }
+            }break;
+        }
+    }
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -291,7 +317,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 Intent obj = new Intent(this, MainActivity.class);
                 obj.putExtra("TIPO", user.get(0).get("TIPO"));
-                startActivity(obj);
+                startActivityForResult(obj, REQUEST_EXIT);
             } else {
                 List<HashMap<String, String>> jefe = wsqlite.GET_LOGINJEFE(this, email, password);
                 if (jefe.size() == 1) {
@@ -302,7 +328,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     } else {
                         obj.putExtra("TIPO", "Administrador");
                     }
-                    startActivity(obj);
+                    startActivityForResult(obj, REQUEST_EXIT);
                 } else {
                     Toast.makeText(this, "Usuario o contraseña incorrecta.", Toast.LENGTH_LONG).show();
                 }
@@ -322,7 +348,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 Intent obj = new Intent(this, MainActivity.class);
                 obj.putExtra("TIPO", user.get(0).get("TIPO"));
-                startActivity(obj);
+                startActivityForResult(obj, REQUEST_EXIT);
             }
         }
     }
@@ -539,6 +565,53 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         }.execute();
     }
+    public void cargarEquipos()
+    {
+        final ProgressDialog pd = ProgressDialog.show(LoginActivity.this, "Por favor espere", "Sincronizando Informacion de Equipos....", true,false);
+        pd.show();
+
+
+        new CallService() {
+            @Override
+            protected void onPostExecute(Object result) {
+
+                pd.dismiss();
+                if(result==null)
+                {
+                    Toast.makeText(LoginActivity.this,"Data vacia", Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    WSqlite sqlite=new WSqlite();
+
+                    List<Equipo> ListaEquipos=(List<Equipo>)result;
+                    sqlite.DELETE_EQUIPOS(LoginActivity.this);
+                    for(Iterator<Equipo> i = ListaEquipos.iterator(); i.hasNext();)
+                    {
+                        Equipo item = i.next();
+                        //Log.e("SincronizarFragment-Equipo", item.getCodigoInterno());
+                        sqlite.INSERT_EQUIPO(LoginActivity.this,
+                                item.getId(),
+                                item.getCentro(),
+                                item.getPlanta(),
+                                item.getCodigoInterno(),
+                                item.getPlaca(),
+                                item.getClase());
+
+                    }
+                    final View view = findViewById(android.R.id.content).getRootView();
+                    Snackbar.make(view, "Equipos Sincronizados", Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
+                }
+            }
+
+            @Override
+            protected Object doInBackground(String... args) {
+                wsequipos ws=new wsequipos();
+                return ws.GetEquipos();
+            }
+        }.execute();
+    }
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -593,6 +666,43 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected void onCancelled() {
             mAuthTask = null;
             showProgress(false);
+        }
+    }
+    public void cargarVentas(){
+        StrictMode.ThreadPolicy policy = new
+                StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+
+        Log.d("mssql", "ventas");
+        try{
+            Class.forName("net.sourceforge.jtds.jdbc.Driver");
+            String cn = "jdbc:jtds:sqlserver://209.217.248.94;databaseName=solucionsmart;user=temporal;password=Zzb3a_12;";
+            Connection connection = DriverManager.getConnection(cn);
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select * from ggamarra.TVENTASAPP");
+            while(resultSet.next()) {
+                String id = resultSet.getString("ID");
+                String fecha = resultSet.getString("FECHA");
+                String producto = resultSet.getString("PRODUCTO");
+                String ticket = resultSet.getString("TICKET");
+                String nrogalones = resultSet.getString("NROGALONES");
+                String horometro = resultSet.getString("HOROMETRO");
+                String km = resultSet.getString("KM");
+                String equipo = resultSet.getString("EQUIPO");
+                Log.d("mssql", id);
+                WSqlite sqlite = new WSqlite();
+                sqlite.INSERT_REPLACE_VENTA(LoginActivity.this, id, fecha, producto
+                , ticket, nrogalones, horometro, km, equipo);
+            }
+            //Log.d("mssql", dato);
+            connection.close();
+        }catch(ClassNotFoundException e){
+            e.printStackTrace();
+        }catch(SQLException e){
+            e.printStackTrace();
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
         }
     }
 }

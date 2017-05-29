@@ -147,5 +147,6 @@
         <file>Iconos/trash_full_onyx.png</file>
         <file>Iconos/trash-empty-icon.png</file>
         <file>Iconos/Show document.png</file>
+        <file>Iconos/Document_50.png</file>
     </qresource>
 </RCC>

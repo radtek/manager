@@ -5,8 +5,6 @@
 
 
 
-
-
 #define APP_MAINWINDOW SINGLETON(ManagerSystem)
 
 #define CONFIGURACION SINGLETON(Configuracion)

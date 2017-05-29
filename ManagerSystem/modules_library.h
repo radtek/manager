@@ -3,14 +3,14 @@
 
 #include <QWidget>
 
-#include "mylibrary_global.h"
+#include "mylibrary/mylibrary_global.h"
 
 #include "facturacion_global.h"
 
-#include "producto_headers.h"
-#include "persona_headers.h"
-#include "compra_headers.h"
-#include "venta_headers.h"
+#include "producto/producto_headers.h"
+#include "persona/persona_headers.h"
+#include "compra/compra_headers.h"
+#include "venta/venta_headers.h"
 
 /*
 #include "ui/reportes/a_reporte.h"

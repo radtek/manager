@@ -33,8 +33,6 @@ ProductoFormTransaction::ProductoFormTransaction(QWidget *parent) :
     ui->lineEdit_marca->setReadOnly(true);
     ui->lineEdit_unidad->setReadOnly(true);
 
-    ui->lineEdit_cantidad->hide();
-    ui->lineEdit_precio->hide();
     //ui->lineEdit_nombre->setReadOnly(true);
 
     //ui->pushButton_buscar_tipo->setDisabled(true);
@@ -61,9 +59,6 @@ ProductoFormTransaction::ProductoFormTransaction(QWidget *parent) :
     ui->pushButton_limpiar_unidad->installEventFilter(this);
 
     ui->lineEdit_descripcion->installEventFilter(this);
-
-    ui->lineEdit_precio->installEventFilter(this);
-    ui->lineEdit_cantidad->installEventFilter(this);
 
     ui->pushButton_guardar->installEventFilter(this);
     ui->pushButton_salir->installEventFilter(this);    
@@ -111,21 +106,12 @@ QString ProductoFormTransaction::get_unidad()
 {
 	return ui->lineEdit_unidad->text();
 }
-QString ProductoFormTransaction::get_precio()
-{
-    return ui->lineEdit_precio->text();
-}
-QString ProductoFormTransaction::get_cantidad()
-{
-    return ui->lineEdit_cantidad->text();
-}
 void ProductoFormTransaction::set_widget_previous(QWidget *w)
 {
     this->widget_previous = w;
 }
 void ProductoFormTransaction::set_data(QString id, QString id_tipo, QString id_marca, QString id_unidad
-	, QString codigo, QString tipo, QString descripcion, QString marca, QString unidad
-	, QString precio, QString cantidad)
+    , QString codigo, QString tipo, QString descripcion, QString marca, QString unidad)
 {
     this->id = id;
     this->id_tipo = id_tipo;
@@ -137,8 +123,6 @@ void ProductoFormTransaction::set_data(QString id, QString id_tipo, QString id_m
     ui->lineEdit_marca->setText(marca);
     ui->lineEdit_unidad->setText(unidad);
     ui->lineEdit_descripcion->setText(descripcion);
-    ui->lineEdit_precio->setText(precio);
-    ui->lineEdit_cantidad->setText(cantidad);
 }
 bool ProductoFormTransaction::guardar()
 {	
@@ -168,11 +152,9 @@ bool ProductoFormTransaction::guardar()
     if(id.compare("") == 0) {
         id = "NULL";
 
-        str_query += "INSERT INTO producto(id, codigo, tipo_id, marca_id, unidad_id, descripcion, precio, cantidad, habilitado)VALUES";
+        str_query += "INSERT INTO producto(id, codigo, tipo_id, marca_id, unidad_id, descripcion, habilitado)VALUES";
         str_query += QString() + "(" + id + ", '" + codigo + "', " + id_tipo;
         str_query += ", "+id_marca+", "+id_unidad+", '"+nombre+"'";
-        str_query += ", '"+ui->lineEdit_precio->text()+"'";
-        str_query += ", '"+ui->lineEdit_cantidad->text()+"'";
         str_query += ", 1)";
         str_query += "&&END_QUERY&&";
         str_query += "SELECT MAX(id) FROM producto";
@@ -184,8 +166,6 @@ bool ProductoFormTransaction::guardar()
         str_query += ", marca_id = "+id_marca;
         str_query += ", unidad_id = "+id_unidad;
         str_query += ", descripcion = '"+nombre+"'";
-        str_query += ", precio = '"+ui->lineEdit_precio->text()+"'";
-        str_query += ", cantidad = '"+ui->lineEdit_cantidad->text()+"'";
         str_query += ", habilitado = 1";
         str_query += " WHERE id = "+id;
         str_query += "&&END_QUERY&&";
@@ -629,7 +609,7 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
             switch(KeyEvent->key())
             {
             case Qt::Key_Return:{
-                ui->lineEdit_precio->setFocus(Qt::TabFocusReason);
+                ui->pushButton_guardar->click();
                 return true;
             }break;
             case Qt::Key_Enter:{
@@ -644,57 +624,7 @@ bool ProductoFormTransaction::eventFilter(QObject *obj, QEvent *e)
         }
         return false;
     }
-    w_temp = ui->lineEdit_precio;
-	if (obj == w_temp) {        
-		if (e->type() == QEvent::KeyPress) {
-			QKeyEvent *KeyEvent = (QKeyEvent*)e;
-			switch (KeyEvent->key())
-			{
-            case Qt::Key_Return:{
-                ui->lineEdit_cantidad->setFocus(Qt::TabFocusReason);
-                return true;
-			}break;
-            case Qt::Key_Enter:{
-                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
-                QApplication::sendEvent(w_temp, key);
-                return true;
-            }break;            
-			}
 
-        } else {
-
-		}
-        if(e->type() == QEvent::FocusOut){
-
-        }
-		return false;
-	}
-    w_temp = ui->lineEdit_cantidad;
-	if (obj == w_temp) {
-		if (e->type() == QEvent::KeyPress) {
-			QKeyEvent *KeyEvent = (QKeyEvent*)e;
-
-			switch (KeyEvent->key())
-			{
-			case Qt::Key_Return: {
-				ui->pushButton_guardar->click();
-                return true;
-			}break;
-            case Qt::Key_Enter:{
-                QKeyEvent* key = new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
-                QApplication::sendEvent(w_temp, key);
-                return true;
-            }break;            
-			}
-
-        } else {
-
-		}
-        if(e->type() == QEvent::FocusOut){
-
-        }
-		return false;
-	}
     w_temp = ui->pushButton_guardar;
     if(obj == w_temp){
         if(e->type() == QEvent::KeyPress){

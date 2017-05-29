@@ -717,7 +717,24 @@ void CompraFactura::on_producto_closing()
     QString unidad = w->getUnidad();
     QString marca = w->getMarca();
     QString descripcion = w->getDescripcion()+" "+marca;
-    QString p_total = w->getPrecio();
+    QString p_total = "0.000";
+
+    QSqlQuery query;
+    QString str_query = SYSTEM->query_ultimo_costo(producto_id);
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        query.next();
+
+        double precio = query.value(5).toDouble();
+        double flete = query.value(6).toDouble();
+        double desc_nc = query.value(7).toDouble();
+        double desc_nc_monto = query.value(8).toDouble();
+        double precio_neto_val = precio + flete - desc_nc - desc_nc_monto;
+        QString precio_neto = QString().setNum(precio_neto_val, ' ', 3);
+        p_total = precio_neto;
+    }else{
+
+    }
 
     set_producto(producto_id, cantidad, unidad, descripcion, p_total);
 }
