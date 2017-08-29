@@ -105,8 +105,8 @@ INSERT INTO persona(cod, nombre, nombre_corto, fecha_nacimiento
 , 'mili'
 , 'Empleado');
 INSERT INTO datos(splitter_1, splitter_2, splitter_3
-, familia_filas, familia_columnas, plato_filas, plato_columnas)
+, familia_filas, familia_columnas, plato_filas, plato_columnas, clave_wifi)
 VALUES
 (174, 591, 582
-, 2, 8, 7, 3);
+, 2, 8, 7, 3, "ALASPERUANAS");
 

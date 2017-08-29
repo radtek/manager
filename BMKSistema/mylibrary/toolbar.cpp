@@ -82,22 +82,22 @@ void ToolBar::on_toolButton_personas_clicked()
 }
 void ToolBar::on_toolButton_reportes_clicked()
 {
-    ComprobanteBuscar* w = new ComprobanteBuscar;
-    //w->setWindowFlag(Qt::Dialog);
-    w->setAttribute(Qt::WA_DeleteOnClose);
-    //w->setWindowModality(Qt::WindowModal);
+    qDebug() << "click reportes" << endl;
+    APP_MAINWINDOW->execReportes();
 
-    //connect(cliente, SIGNAL(closing()), this, SLOT(on_cliente_closing()));
-
-    w->show();
     /*
-    ui->toolButton_reportes->setFocus();
-
-    // memory background-color: rgb(0, 151, 68);
-    QWidget* w = SYSTEM->set_center_w(new A_Reporte, "background-color: rgb(51, 255, 143)");
-    push_center_w(w);
-    APP_MAINWINDOW->setCentralWidget(w);
+    QKeyEvent *event = new QKeyEvent(QEvent::KeyPress
+                                     , Qt::Key_R
+                                     , Qt::AltModifier);
+    QApplication::sendEvent(APP_MAINWINDOW, event);
     */
+    //APP_MAINWINDOW->menuBar();
+
+    //ComprobanteBuscar* w = new ComprobanteBuscar;
+    //w->setWindowFlag(Qt::Dialog);
+    //w->setAttribute(Qt::WA_DeleteOnClose);
+
+    //w->show();
 }
 
 void ToolBar::on_toolButton_configuracion_clicked()

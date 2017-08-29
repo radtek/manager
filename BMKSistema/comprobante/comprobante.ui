@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>694</width>
-    <height>428</height>
+    <width>716</width>
+    <height>330</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,11 +20,12 @@
    <string>Sistema</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../iconos.qrc">
+   <iconset>
     <normaloff>:/new/Iconos/electronic_billing_machine_256.png</normaloff>:/new/Iconos/electronic_billing_machine_256.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">QSplitter::handle{ background-color: black }</string>
+   <string notr="true">QSplitter::handle{ background-color: black }
+QWidget{ background-color: rgb(255, 250, 239) }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_7">
    <property name="spacing">
@@ -39,252 +40,343 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-228</y>
-        <width>1012</width>
-        <height>619</height>
+        <y>0</y>
+        <width>820</width>
+        <height>627</height>
        </rect>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <property name="spacing">
-          <number>6</number>
-         </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QLabel" name="label">
-             <property name="minimumSize">
-              <size>
-               <width>80</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>CLIENTE</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEdit_codigo">
-             <property name="minimumSize">
-              <size>
-               <width>110</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>110</width>
-               <height>16777215</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_edit_cliente">
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../iconos.qrc">
-               <normaloff>:/new/Iconos/edit (2).png</normaloff>:/new/Iconos/edit (2).png</iconset>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEdit_nombre">
-             <property name="minimumSize">
-              <size>
-               <width>400</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>16777215</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>:/new/Iconos/bill_mc_quack.ico</pixmap>
+           </property>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_8">
-           <item>
-            <widget class="QLabel" name="label_direccion">
-             <property name="minimumSize">
-              <size>
-               <width>80</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>DIRECCION</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEdit_direccion"/>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_8">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="QLabel" name="label">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>CLIENTE</string>
+           </property>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0,0,0,0,0,0">
-           <item>
-            <widget class="QComboBox" name="comboBox_familia">
-             <property name="minimumSize">
-              <size>
-               <width>270</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="editable">
-              <bool>true</bool>
-             </property>
-             <property name="insertPolicy">
-              <enum>QComboBox::NoInsert</enum>
-             </property>
-             <property name="sizeAdjustPolicy">
-              <enum>QComboBox::AdjustToContents</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_edit_familia">
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../iconos.qrc">
-               <normaloff>:/new/Iconos/edit (2).png</normaloff>:/new/Iconos/edit (2).png</iconset>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_familia_filas">
-             <property name="text">
-              <string>Filas</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBox_familia_filas">
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="value">
-              <number>2</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_familia_columnas">
-             <property name="text">
-              <string>Columnas</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="spinBox_familia_columnas">
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="value">
-              <number>8</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="QLineEdit" name="lineEdit_codigo">
+           <property name="minimumSize">
+            <size>
+             <width>110</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>110</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <widget class="QPushButton" name="pushButton_edit_cliente">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>:/new/Iconos/edit (2).png</normaloff>:/new/Iconos/edit (2).png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Nombre</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit_nombre">
+           <property name="minimumSize">
+            <size>
+             <width>400</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QLabel" name="label_direccion">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>DIRECCION</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit_direccion">
+           <property name="minimumSize">
+            <size>
+             <width>400</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_google_maps">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>:/new/Iconos/google_maps.png</normaloff>:/new/Iconos/google_maps.png</iconset>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_send_msg">
+           <property name="text">
+            <string>Enviar mensaje</string>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>:/new/Iconos/send-message-button.png</normaloff>:/new/Iconos/send-message-button.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_8">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0,0,0,0,0,0,0,0,0">
+         <item>
+          <widget class="QComboBox" name="comboBox_familia">
+           <property name="minimumSize">
+            <size>
+             <width>270</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+           <property name="insertPolicy">
+            <enum>QComboBox::NoInsert</enum>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToContents</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_edit_familia">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>:/new/Iconos/edit (2).png</normaloff>:/new/Iconos/edit (2).png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_familia_filas">
+           <property name="text">
+            <string>Filas</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="spinBox_familia_filas">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="value">
+            <number>2</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_familia_columnas">
+           <property name="text">
+            <string>Columnas</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="spinBox_familia_columnas">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="value">
+            <number>8</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_clave">
+           <property name="text">
+            <string>Clave WIFI</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit_clave">
+           <property name="minimumSize">
+            <size>
+             <width>180</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>180</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_guardar_clave">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>:/new/Iconos/save.png</normaloff>:/new/Iconos/save.png</iconset>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <item>
-              <layout class="QGridLayout" name="gridLayout_familias"/>
-             </item>
-             <item>
-              <spacer name="verticalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::MinimumExpanding</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
+            <layout class="QGridLayout" name="gridLayout_familias"/>
            </item>
            <item>
-            <spacer name="horizontalSpacer_6">
+            <spacer name="verticalSpacer_4">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Vertical</enum>
              </property>
              <property name="sizeType">
               <enum>QSizePolicy::MinimumExpanding</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>0</width>
-               <height>20</height>
+               <width>20</width>
+               <height>0</height>
               </size>
              </property>
             </spacer>
            </item>
           </layout>
          </item>
+         <item>
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::MinimumExpanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_11">
-         <item>
+        <widget class="QSplitter" name="splitter_mid">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <widget class="QWidget" name="layoutWidget">
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -294,7 +386,7 @@
                 <string>SUBIR</string>
                </property>
                <property name="icon">
-                <iconset resource="../iconos.qrc">
+                <iconset>
                  <normaloff>:/new/Iconos/br_up.png</normaloff>:/new/Iconos/br_up.png</iconset>
                </property>
               </widget>
@@ -305,7 +397,7 @@
                 <string>BAJAR</string>
                </property>
                <property name="icon">
-                <iconset resource="../iconos.qrc">
+                <iconset>
                  <normaloff>:/new/Iconos/br_down.png</normaloff>:/new/Iconos/br_down.png</iconset>
                </property>
               </widget>
@@ -316,7 +408,7 @@
                 <string>QUITAR</string>
                </property>
                <property name="icon">
-                <iconset resource="../iconos.qrc">
+                <iconset>
                  <normaloff>:/new/Iconos/round_minus.png</normaloff>:/new/Iconos/round_minus.png</iconset>
                </property>
               </widget>
@@ -326,9 +418,12 @@
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::MinimumExpanding</enum>
+               </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>98</width>
+                 <width>13</width>
                  <height>17</height>
                 </size>
                </property>
@@ -346,14 +441,14 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>500</width>
+               <width>320</width>
                <height>280</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>16777215</width>
-               <height>16777215</height>
+               <width>320</width>
+               <height>280</height>
               </size>
              </property>
              <property name="font">
@@ -420,9 +515,12 @@
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Expanding</enum>
+               </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>40</width>
+                 <width>20</width>
                  <height>20</height>
                 </size>
                </property>
@@ -446,7 +544,13 @@
               <widget class="QDoubleSpinBox" name="doubleSpinBox_pago">
                <property name="minimumSize">
                 <size>
-                 <width>0</width>
+                 <width>80</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
                  <height>40</height>
                 </size>
                </property>
@@ -486,7 +590,13 @@
               <widget class="QDoubleSpinBox" name="doubleSpinBox_total">
                <property name="minimumSize">
                 <size>
-                 <width>0</width>
+                 <width>80</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
                  <height>40</height>
                 </size>
                </property>
@@ -523,6 +633,9 @@
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Expanding</enum>
+               </property>
                <property name="sizeHint" stdset="0">
                 <size>
                  <width>40</width>
@@ -549,7 +662,13 @@
               <widget class="QDoubleSpinBox" name="doubleSpinBox_vuelto">
                <property name="minimumSize">
                 <size>
-                 <width>0</width>
+                 <width>80</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
                  <height>40</height>
                 </size>
                </property>
@@ -577,12 +696,9 @@
             </layout>
            </item>
           </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <property name="leftMargin">
-            <number>10</number>
-           </property>
+         </widget>
+         <widget class="QWidget" name="layoutWidget">
+          <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
@@ -610,7 +726,7 @@
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="../iconos.qrc">
+                <iconset>
                  <normaloff>:/new/Iconos/edit (2).png</normaloff>:/new/Iconos/edit (2).png</iconset>
                </property>
               </widget>
@@ -706,7 +822,7 @@
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>0</width>
+                 <width>13</width>
                  <height>20</height>
                 </size>
                </property>
@@ -715,8 +831,8 @@
             </layout>
            </item>
           </layout>
-         </item>
-        </layout>
+         </widget>
+        </widget>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -726,7 +842,7 @@
             <string>Efectivo</string>
            </property>
            <property name="icon">
-            <iconset resource="../iconos.qrc">
+            <iconset>
              <normaloff>:/new/Iconos/pago_efectivo.png</normaloff>:/new/Iconos/pago_efectivo.png</iconset>
            </property>
            <property name="iconSize">
@@ -743,7 +859,7 @@
             <string>MasterCard</string>
            </property>
            <property name="icon">
-            <iconset resource="../iconos.qrc">
+            <iconset>
              <normaloff>:/new/Iconos/MasterCard_early_1990s_logo.png</normaloff>:/new/Iconos/MasterCard_early_1990s_logo.png</iconset>
            </property>
            <property name="iconSize">
@@ -760,7 +876,7 @@
             <string>Visa</string>
            </property>
            <property name="icon">
-            <iconset resource="../iconos.qrc">
+            <iconset>
              <normaloff>:/new/Iconos/visa.jpg</normaloff>:/new/Iconos/visa.jpg</iconset>
            </property>
            <property name="iconSize">
@@ -804,13 +920,12 @@
        </item>
       </layout>
       <zorder></zorder>
+      <zorder>splitter_mid</zorder>
      </widget>
     </widget>
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../iconos.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

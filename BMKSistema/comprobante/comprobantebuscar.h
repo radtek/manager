@@ -2,6 +2,7 @@
 #define COMPROBANTEBUSCAR_H
 
 #include "mylibrary/mylibrary_global.h"
+#include "comprobante/previewticket.h"
 
 namespace Ui {
 class ComprobanteBuscar;
@@ -31,6 +32,8 @@ public slots:
 private:
     void set_buscar();
 
+    void set_total();
+
 public slots:
     void on_lineEdit_buscar_textChanged(const QString& arg);
 
@@ -48,6 +51,22 @@ signals:
 
 private slots:
     void on_pushButton_ingresar_clicked();
+
+    void on_dateTimeEdit_ini_dateTimeChanged(const QDateTime &dateTime);
+
+    void on_dateTimeEdit_fin_dateTimeChanged(const QDateTime &dateTime);
+
+    void on_checkBox_efectivo_toggled(bool checked);
+
+    void on_checkBox_visa_toggled(bool checked);
+
+    void on_checkBox_masterCard_toggled(bool checked);
+
+    void on_pushButton_anular_clicked();
+
+    void on_pushButton_ver_clicked();
+
+    void on_pushButton_habilitar_clicked();
 
 private:
     void editarItem(QTableWidgetItem* item);

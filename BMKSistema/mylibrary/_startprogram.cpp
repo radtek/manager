@@ -71,16 +71,17 @@ void _StartProgram::run()
     }
     */
     qDebug()<<"entro"<<endl;
-    /*
-    if(text.indexOf("GB D8-50-E6-3D-7B-B0") != -1
-            && QDate::currentDate() >= QDate(2017,6,1) && QDate::currentDate() <= QDate(2017,8,6)){
+    // GETMAC DE LAPTOP ALEX: 20-16-D8-E7-D1-BC
+    // GETMAC DE BILL MAC QUACK: 00-16-35-66-C3-09
+    if(text.indexOf("00-16-35-66-C3-09") != -1){
+            //&& QDate::currentDate() >= QDate(2017,6,1) && QDate::currentDate() <= QDate(2017,8,6)){
 
     }else{
         QWidget* w = new QWidget();
         w->setAttribute(Qt::WA_DeleteOnClose);
         w->show();
         return;
-    }*/
+    }
 
     APP_LOGIN->setAttribute(Qt::WA_DeleteOnClose);
     APP_LOGIN->show();

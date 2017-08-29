@@ -1,6 +1,5 @@
 #include "comprobante.h"
 #include "ui_comprobante.h"
-#include "starmicronics/StarIOPort.h"
 #include <cwchar>
 #include <comdef.h>
 
@@ -10,15 +9,17 @@ Comprobante::Comprobante(QWidget *parent) :
 {
     ui->setupUi(this);    
 
+    //view_mapa = new QWebEngineView;
+    //QWebEnginePage* page = view_mapa->page();
+    //connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+    //view_mapa->load(tr("https://www.google.com/maps/d/viewer?mid=1j-mQQ_g0HqMh7Xjvul9MWKUUzDI&hl=es&ll=-16.409078690356864%2C-71.51622014410395&z=14"));
     //connect(ui->splitter_vertical, SIGNAL(splitterMoved(int,int)), this, SLOT(on_splitter_moved(int, int)));
-    //connect(ui->splitter_horizontal, SIGNAL(splitterMoved(int,int)), this, SLOT(on_splitter_moved(int, int)));
-
+    //connect(ui->splitter_horizontal, SIGNAL(splitterMoved(int,int)), this, SLOT(on_splitter_moved(int, int)));    
 
     m_pSocket   = new QTcpSocket();
     //m_pSocket->setSocketOption(64, 1);
-    m_pSocket->connectToHost(QHostAddress("192.168.1.36"), 9100, QIODevice::WriteOnly);
 
-    m_ConnectStatus = true;
+    m_ConnectStatus = false;
 
     //ui->tableWidget->clear();
     ui->tableWidget->clearContents();
@@ -63,8 +64,12 @@ Comprobante::Comprobante(QWidget *parent) :
 Comprobante::~Comprobante()
 {
     qDebug()<<"delete comprobante"<<endl;
-    //delete ui;
-    //delete m_pSocket;
+    delete ui;
+    if(m_pSocket){
+        m_pSocket->disconnectFromHost();
+    }
+    //delete view_mapa;
+    delete m_pSocket;
 }
 void Comprobante::select_familias()
 {
@@ -132,6 +137,138 @@ void Comprobante::select_platos(QString familia)
             ui->comboBox_plato->clearEditText();
         }
     }
+}
+void Comprobante::insert_venta()
+{
+    int ret = QMessageBox::warning(this, "Advertencia", "¿Esta seguro de esta venta?", "Si", "Cancelar");
+    switch(ret){
+    case 0:{
+
+    }break;
+    case 1:{
+        return;
+    }break;
+    }
+
+    if(ui->tableWidget->rowCount() == 0){
+        QMessageBox::warning(this, "Advertencia", "No hay detalle en la venta.", "Aceptar");
+        return;
+    }
+    QString str_query = "";
+    QSqlQuery query;
+
+    str_query += "SELECT MAX(numero) + 1 FROM comprobante";
+    if(query.exec(str_query)){
+        if(query.next()){
+            nro_ticket = QString().setNum(query.value(0).toInt());
+            int n = 7 - nro_ticket.length();
+            nro_ticket = SYSTEM->zeros(n) + nro_ticket;
+        }
+    }else{
+        QMessageBox::critical(this, "Error", "Error inesperado", "Ok");
+        return;
+    }
+    str_query = "SET autocommit = 0";
+    str_query += "&&END_QUERY&&";
+
+    str_query += "INSERT INTO comprobante(serie, numero, fecha_emision";
+    str_query += ", anulado, pago_item_nombre, estado_item_nombre";
+    str_query += ", operacion_item_nombre, tipo_item_nombre, nombre)";
+    str_query += "VALUES(";
+    str_query += QString() + "'" + "0000" + "'";
+    str_query += QString() + ", '" + nro_ticket + "'";
+    str_query += ", '" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm-ss") + "'";
+    str_query += QString() + ", '" + "1" + "'";
+    str_query += QString() + ", '" + pago + "'";
+    str_query += QString() + ", '" + "Activo" + "'";
+    str_query += QString() + ", '" + "Venta" + "'";
+    str_query += QString() + ", '" + "Ticket" + "'";
+    str_query += ", '" + ui->lineEdit_nombre->text() + "'";
+    str_query += ")";
+    str_query += "&&END_QUERY&&";
+    if(ui->lineEdit_codigo->text().length() == 11){
+        str_query += "INSERT INTO persona(cod, nombre, direccion";
+        str_query += ", estado_item_nombre, tipo_item_nombre)";
+        str_query += "VALUES(";
+        str_query += "'" + ui->lineEdit_codigo->text() + "'";
+        str_query += ", '" + ui->lineEdit_nombre->text() + "'";
+        str_query += ", '" + ui->lineEdit_direccion->text() + "'";
+        str_query += ", 'Activo'";
+        str_query += ", 'Cliente_RUC'";
+        str_query += ")";
+        str_query += " ON DUPLICATE KEY UPDATE cod = '" + ui->lineEdit_codigo->text() + "'";
+        str_query += "&&END_QUERY&&";
+
+        str_query += "INSERT INTO comprobante_has_persona(";
+        str_query += "comprobante_id, persona_cod)";
+        str_query += "VALUES(";
+        str_query += "(SELECT MAX(t.id) FROM comprobante AS t)";
+        str_query += ", '" + ui->lineEdit_codigo->text() + "'";
+        str_query += ")";
+        str_query += "&&END_QUERY&&";
+    }
+    if(ui->lineEdit_codigo->text().length() == 8){
+        str_query += "INSERT INTO persona(cod, nombre, direccion";
+        str_query += ", estado_item_nombre, tipo_item_nombre)";
+        str_query += "VALUES(";
+        str_query += "'" + ui->lineEdit_codigo->text() + "'";
+        str_query += ", '" + ui->lineEdit_nombre->text() + "'";
+        str_query += ", '" + ui->lineEdit_direccion->text() + "'";
+        str_query += ", 'Activo'";
+        str_query += ", 'Cliente_DNI'";
+        str_query += ")";
+        str_query += " ON DUPLICATE KEY UPDATE cod = '" + ui->lineEdit_codigo->text() + "'";
+        str_query += "&&END_QUERY&&";
+
+        str_query += "INSERT INTO comprobante_has_persona(";
+        str_query += "comprobante_id, persona_cod)";
+        str_query += "VALUES(";
+        str_query += "(SELECT MAX(t.id) FROM comprobante AS t)";
+        str_query += ", '" + ui->lineEdit_codigo->text() + "'";
+        str_query += ")";
+        str_query += "&&END_QUERY&&";
+    }
+    if(ui->lineEdit_codigo->text().length() != 11 && ui->lineEdit_codigo->text().length() != 8){
+
+    }
+
+    for(int i = 0; i < ui->tableWidget->rowCount(); i++){
+        str_query += "INSERT INTO comprobante_has_plato(comprobante_id, plato_item_nombre";
+        str_query += ", cantidad)";
+        str_query += "VALUES(";
+        str_query += "(SELECT MAX(t.id) FROM comprobante AS t)";
+        str_query += ", '" + ui->tableWidget->item(i, 1)->text() + "'";
+        str_query += ", '" + ui->tableWidget->item(i, 0)->text() + "'";
+        str_query += ")";
+        str_query += "&&END_QUERY&&";
+    }
+
+    SYSTEM->multiple_query(str_query);
+
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        qDebug()<<"query ok"<<endl;
+
+
+        //QMessageBox::information(this, "Información", "Se guardo la venta.", "Aceptar");
+    }else{
+        return;
+        QMessageBox::critical(this, "Error", "Error inesperado", "Ok");
+    }
+    str_query = "SET autocommit = 1";
+    if(query.exec(str_query)){
+        //print_caja();
+        //print_comanda();
+
+        //print_star_asa();
+    }else{
+        return;
+        QMessageBox::critical(this, "Error", "Error inesperado", "Ok");
+    }
+
+
+    ui->tableWidget->clearContents();
+    ui->tableWidget->setRowCount(0);
 }
 
 void Comprobante::on_familia_closing()
@@ -387,6 +524,22 @@ void Comprobante::on_comboBox_plato_activated(const QString &arg1)
             disconnect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*))
                        , this, SLOT(on_tableWidget_itemChanged(QTableWidgetItem*)));
 
+            for(int i = 0; i < ui->tableWidget->rowCount(); i++){
+                if(arg1.compare(ui->tableWidget->item(i, 1)->text()) == 0){
+                    int cant = ui->tableWidget->item(i, 0)->text().toInt();
+                    cant++;
+                    ui->tableWidget->item(i, 0)->setText(QString().setNum(cant));
+
+                    double total = 0.0;
+                    for(int i = 0; i < ui->tableWidget->rowCount(); i++){
+                        double cantidad = ui->tableWidget->item(i, 0)->text().toDouble();
+                        total += cantidad * ui->tableWidget->item(i, 2)->text().toDouble();
+                    }
+                    ui->doubleSpinBox_total->setValue(total);
+                    return;
+                }
+            }
+
             int rowCount = ui->tableWidget->rowCount();
             ui->tableWidget->setRowCount(rowCount+1);
 
@@ -394,8 +547,10 @@ void Comprobante::on_comboBox_plato_activated(const QString &arg1)
             QTableWidgetItem* item_desc = new QTableWidgetItem(arg1);
             QTableWidgetItem* item_precio = new QTableWidgetItem("");
             ui->tableWidget->setItem(rowCount, 0, item_cant);
-            ui->tableWidget->setItem(rowCount, 1, item_desc);
+            ui->tableWidget->item(rowCount, 0)->setFlags(Qt::ItemIsSelectable
+                                                         | Qt::ItemIsEnabled);
 
+            ui->tableWidget->setItem(rowCount, 1, item_desc);
             ui->tableWidget->item(rowCount, 1)->setFlags(Qt::ItemIsSelectable
                                                          | Qt::ItemIsEnabled);
             QString precio = query.value(0).toString();
@@ -410,7 +565,8 @@ void Comprobante::on_comboBox_plato_activated(const QString &arg1)
             SYSTEM->table_resize_to_contents(0, ui->tableWidget);
             double total = 0.0;
             for(int i = 0; i < ui->tableWidget->rowCount(); i++){
-                total += ui->tableWidget->item(i, 2)->text().toDouble();
+                double cantidad = ui->tableWidget->item(i, 0)->text().toDouble();
+                total += cantidad * ui->tableWidget->item(i, 2)->text().toDouble();
             }
             ui->doubleSpinBox_total->setValue(total);
         }
@@ -433,23 +589,27 @@ void Comprobante::on_spinBox_familia_filas_valueChanged(int arg1)
             tb->setPopupMode(QToolButton::MenuButtonPopup);
             QAction* fontAct = new QAction(tr("&Fuente"), this);
             //fontAct->setCheckable(true);
-            fontAct->setShortcut(tr("Alt+f"));
+            //fontAct->setShortcut(QKeySequence(tr("ctrl+f","&Fuente")));
             fontAct->setStatusTip(tr("Cambiar fuente..."));
-            tb->addAction(fontAct);            
-            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_familia_fontAct_triggered(QAction*)));
+            tb->addAction(fontAct);
+
 
             QAction* colorAct = new QAction(tr("&Color"), this);
             //fontAct->setCheckable(true);
-            colorAct->setShortcut(tr("Alt+c"));
+            //colorAct->setShortcut(QKeySequence(tr("ctrl+c","Color")));
             colorAct->setStatusTip(tr("Cambiar color..."));
             tb->addAction(colorAct);
-            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_familia_colorAct_triggered(QAction*)));
 
-            QAction* colorFondoAct = new QAction(tr("&Color de Fondo"), this);
+
+            QAction* colorFondoAct = new QAction(tr("Color de Fon&do"), this);
             //fontAct->setCheckable(true);
-            colorFondoAct->setShortcut(tr("Alt+b"));
+            //colorFondoAct->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+            //colorFondoAct->setShortcut(QKeySequence(tr("ctrl+d","Color de Fon&do")));
             colorFondoAct->setStatusTip(tr("Cambiar color de fondo..."));
             tb->addAction(colorFondoAct);
+
+            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_familia_fontAct_triggered(QAction*)));
+            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_familia_colorAct_triggered(QAction*)));
             connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_familia_color_de_fondo_Act_triggered(QAction*)));
 
             connect(tb, SIGNAL(clicked()), this, SLOT(on_toolButton_familia_clicked()));
@@ -462,46 +622,8 @@ void Comprobante::on_spinBox_familia_filas_valueChanged(int arg1)
 
 void Comprobante::on_spinBox_familia_columnas_valueChanged(int arg1)
 {
-    for(int i = 0; i < 99; i++){
-        for(int j = 0; j < 99; j++){
-            SYSTEM->remove(ui->gridLayout_familias, i, j, true);
-        }
-    }
-    int x = ui->spinBox_familia_filas->value();
-    int y = arg1;
-    for(int i = 0; i < x; i++){
-        for(int j = 0; j < y; j++){
-            QToolButton* tb = new QToolButton;
-            tb->setText("____");
-            tb->setPopupMode(QToolButton::MenuButtonPopup);
-
-            QAction* fontAct = new QAction(tr("&Fuente"), this);
-            //fontAct->setCheckable(true);
-            fontAct->setShortcut(tr("Alt+f"));
-            fontAct->setStatusTip(tr("Cambiar fuente..."));
-            tb->addAction(fontAct);            
-            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_familia_fontAct_triggered(QAction*)));
-
-            QAction* colorAct = new QAction(tr("&Color"), this);
-            //fontAct->setCheckable(true);
-            colorAct->setShortcut(tr("Alt+c"));
-            colorAct->setStatusTip(tr("Cambiar color..."));
-            tb->addAction(colorAct);
-            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_familia_colorAct_triggered(QAction*)));
-
-            QAction* colorFondoAct = new QAction(tr("&Color de Fondo"), this);
-            //fontAct->setCheckable(true);
-            colorFondoAct->setShortcut(tr("Alt+b"));
-            colorFondoAct->setStatusTip(tr("Cambiar color de fondo..."));
-            tb->addAction(colorFondoAct);
-            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_familia_color_de_fondo_Act_triggered(QAction*)));
-
-            connect(tb, SIGNAL(clicked()), this, SLOT(on_toolButton_familia_clicked()));
-
-            ui->gridLayout_familias->addWidget(tb, i, j);
-        }
-    }
-    select_familias();
+    arg1 = 0;
+    on_spinBox_familia_filas_valueChanged(ui->spinBox_familia_filas->value());
 }
 
 void Comprobante::on_spinBox_plato_filas_valueChanged(int arg1)
@@ -520,23 +642,26 @@ void Comprobante::on_spinBox_plato_filas_valueChanged(int arg1)
             tb->setPopupMode(QToolButton::MenuButtonPopup);
             QAction* fontAct = new QAction(tr("&Fuente"), this);
             //fontAct->setCheckable(true);
-            fontAct->setShortcut(tr("Alt+f"));
+            //fontAct->setShortcut(QKeySequence(tr("ctrl+f","Fuente")));
             fontAct->setStatusTip(tr("Cambiar fuente..."));
             tb->addAction(fontAct);
-            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_plato_fontAct_triggered(QAction*)));
+
 
             QAction* colorAct = new QAction(tr("&Color"), this);
             //fontAct->setCheckable(true);
-            colorAct->setShortcut(tr("Alt+c"));
+            //colorAct->setShortcut(QKeySequence(tr("ctrl+c","Color")));
             colorAct->setStatusTip(tr("Cambiar color..."));
             tb->addAction(colorAct);
-            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_plato_colorAct_triggered(QAction*)));
 
-            QAction* colorFondoAct = new QAction(tr("&Color de Fondo"), this);
+            QAction* colorFondoAct = new QAction(tr("Color de Fon&do"), this);
             //fontAct->setCheckable(true);
-            colorFondoAct->setShortcut(tr("Alt+b"));
+            //colorFondoAct->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+            //colorFondoAct->setShortcut(QKeySequence(tr("ctrl+d","Color de Fon&do")));
             colorFondoAct->setStatusTip(tr("Cambiar color de fondo..."));
             tb->addAction(colorFondoAct);
+
+            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_plato_fontAct_triggered(QAction*)));
+            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_plato_colorAct_triggered(QAction*)));
             connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_plato_color_de_fondo_Act_triggered(QAction*)));
 
             connect(tb, SIGNAL(clicked()), this, SLOT(on_toolButton_plato_clicked()));
@@ -549,182 +674,25 @@ void Comprobante::on_spinBox_plato_filas_valueChanged(int arg1)
 
 void Comprobante::on_spinBox_plato_columnas_valueChanged(int arg1)
 {
-    for(int i = 0; i < 99; i++){
-        for(int j = 0; j < 99; j++){
-            SYSTEM->remove(ui->gridLayout_platos, i, j, true);
-        }
-    }
-    int x = ui->spinBox_plato_filas->value();
-    int y = arg1;
-    for(int i = 0; i < x; i++){
-        for(int j = 0; j < y; j++){
-            QToolButton* tb = new QToolButton;
-            tb->setText("____");
-            tb->setPopupMode(QToolButton::MenuButtonPopup);
-
-            QAction* fontAct = new QAction(tr("&Fuente"), this);
-            //fontAct->setCheckable(true);
-            fontAct->setShortcut(tr("Alt+f"));
-            fontAct->setStatusTip(tr("Cambiar fuente..."));
-            tb->addAction(fontAct);
-            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_plato_fontAct_triggered(QAction*)));
-
-            QAction* colorAct = new QAction(tr("&Color"), this);
-            //fontAct->setCheckable(true);
-            colorAct->setShortcut(tr("Alt+c"));
-            colorAct->setStatusTip(tr("Cambiar color..."));
-            tb->addAction(colorAct);
-            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_plato_colorAct_triggered(QAction*)));
-
-            QAction* colorFondoAct = new QAction(tr("&Color de Fondo"), this);
-            //fontAct->setCheckable(true);
-            colorFondoAct->setShortcut(tr("Alt+b"));
-            colorFondoAct->setStatusTip(tr("Cambiar color de fondo..."));
-            tb->addAction(colorFondoAct);
-
-            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_plato_color_de_fondo_Act_triggered(QAction*)));
-
-            connect(tb, SIGNAL(clicked()), this, SLOT(on_toolButton_plato_clicked()));
-
-            ui->gridLayout_platos->addWidget(tb, i, j);
-        }
-    }
-    select_platos(ui->comboBox_familia->currentText());
+    arg1 = 0;
+    on_spinBox_plato_filas_valueChanged(ui->spinBox_familia_filas->value());
 }
 void Comprobante::on_pushButton_efectivo_clicked()
 {
-    int ret = QMessageBox::warning(this, "Advertencia", "¿Esta seguro de esta venta?", "Si", "Cancelar");
-    switch(ret){
-    case 0:{
-
-    }break;
-    case 1:{
-        return;
-    }break;
-    }
-
-    if(ui->tableWidget->rowCount() == 0){
-        QMessageBox::warning(this, "Advertencia", "No hay detalle en la venta.", "Aceptar");
-        return;
-    }
-    QString str_query = "";
-    QSqlQuery query;
-
-    str_query += "INSERT INTO comprobante(serie, numero, fecha_emision";
-    str_query += ", anulado, pago_item_nombre, estado_item_nombre";
-    str_query += ", operacion_item_nombre, tipo_item_nombre, nombre)";
-    str_query += "VALUES(";
-    str_query += QString() + "'" + "0000" + "'";
-    str_query += QString() + ", '" + "00000000" + "'";
-    str_query += ", '" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm-ss") + "'";
-    str_query += QString() + ", '" + "1" + "'";
-    str_query += QString() + ", '" + "Efectivo" + "'";
-    str_query += QString() + ", '" + "Activo" + "'";
-    str_query += QString() + ", '" + "Venta" + "'";
-    str_query += QString() + ", '" + "Ticket" + "'";
-    str_query += ", '" + ui->lineEdit_nombre->text() + "'";
-    str_query += ")";
-    str_query += "&&END_QUERY&&";
-    if(ui->lineEdit_codigo->text().length() == 11){
-        str_query += "INSERT INTO persona(cod, nombre, direccion";
-        str_query += ", estado_item_nombre, tipo_item_nombre)";
-        str_query += "VALUES(";
-        str_query += "'" + ui->lineEdit_codigo->text() + "'";
-        str_query += ", '" + ui->lineEdit_nombre->text() + "'";
-        str_query += ", '" + ui->lineEdit_direccion->text() + "'";
-        str_query += ", 'Activo'";
-        str_query += ", 'Cliente_RUC'";
-        str_query += ")";
-        str_query += " ON DUPLICATE KEY UPDATE cod = '" + ui->lineEdit_codigo->text() + "'";
-        str_query += "&&END_QUERY&&";
-
-        str_query += "INSERT INTO comprobante_has_persona(";
-        str_query += "comprobante_id, persona_cod)";
-        str_query += "VALUES(";
-        str_query += "(SELECT MAX(t.id) FROM comprobante AS t)";
-        str_query += ", '" + ui->lineEdit_codigo->text() + "'";
-        str_query += ")";
-        str_query += "&&END_QUERY&&";
-    }
-    if(ui->lineEdit_codigo->text().length() == 8){
-        str_query += "INSERT INTO persona(cod, nombre, direccion";
-        str_query += ", estado_item_nombre, tipo_item_nombre)";
-        str_query += "VALUES(";
-        str_query += "'" + ui->lineEdit_codigo->text() + "'";
-        str_query += ", '" + ui->lineEdit_nombre->text() + "'";
-        str_query += ", '" + ui->lineEdit_direccion->text() + "'";
-        str_query += ", 'Activo'";
-        str_query += ", 'Cliente_DNI'";
-        str_query += ")";
-        str_query += " ON DUPLICATE KEY UPDATE cod = '" + ui->lineEdit_codigo->text() + "'";
-        str_query += "&&END_QUERY&&";
-
-        str_query += "INSERT INTO comprobante_has_persona(";
-        str_query += "comprobante_id, persona_cod)";
-        str_query += "VALUES(";
-        str_query += "(SELECT MAX(t.id) FROM comprobante AS t)";
-        str_query += ", '" + ui->lineEdit_codigo->text() + "'";
-        str_query += ")";
-        str_query += "&&END_QUERY&&";
-    }
-    if(ui->lineEdit_codigo->text().length() != 11 && ui->lineEdit_codigo->text().length() != 8){
-
-    }
-
-    for(int i = 0; i < ui->tableWidget->rowCount(); i++){
-        str_query += "INSERT INTO comprobante_has_plato(comprobante_id, plato_item_nombre";
-        str_query += ", cantidad)";
-        str_query += "VALUES(";
-        str_query += "(SELECT MAX(t.id) FROM comprobante AS t)";
-        str_query += ", '" + ui->tableWidget->item(i, 1)->text() + "'";
-        str_query += ", '" + ui->tableWidget->item(i, 0)->text() + "'";
-        str_query += ")";
-        str_query += "&&END_QUERY&&";
-    }
-
-    SYSTEM->multiple_query(str_query);
-
-    qDebug()<<str_query<<endl;
-    if(query.exec(str_query)){
-        qDebug()<<"query ok"<<endl;
-
-        const int Timeout = 5 * 1000;
-
-        if (!m_ConnectStatus)
-        {
-            //m_pSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
-            m_pSocket->connectToHost(QHostAddress("192.168.1.36"), 9100, QIODevice::WriteOnly);
-        }
-
-        if (!m_pSocket->waitForConnected(Timeout))
-        {
-            //sent error
-            qDebug ("error in waitForConnected()");
-            qDebug (qPrintable(m_pSocket->errorString()));
-            m_ConnectStatus = false;
-            return;
-        }
-        m_ConnectStatus = true;
-
-
-        //print_caja();
-        print_comanda();
-        //QMessageBox::information(this, "Información", "Se guardo la venta.", "Aceptar");
-    }else{
-        QMessageBox::critical(this, "Error", "Error inesperado", "Ok");
-    }
-    ui->tableWidget->clearContents();
-    ui->tableWidget->setRowCount(0);
+    this->pago = "Efectivo";
+    insert_venta();
 }
 
 void Comprobante::on_pushButton_masterCard_clicked()
 {
-    on_pushButton_efectivo_clicked();
+    this->pago = "Master Card";
+    insert_venta();
 }
 
 void Comprobante::on_pushButton_visa_clicked()
 {
-    on_pushButton_efectivo_clicked();
+    this->pago = "Visa";
+    insert_venta();
 }
 void Comprobante::showEvent(QShowEvent *event)
 {
@@ -732,7 +700,7 @@ void Comprobante::showEvent(QShowEvent *event)
 
     afterShow = true;    
 
-    if(isMaximized()){
+    //if(isMaximized()){
         qDebug()<<"isMaximized"<<endl;
 
         QString str_query = "";
@@ -740,7 +708,7 @@ void Comprobante::showEvent(QShowEvent *event)
 
         str_query += "SELECT splitter_1, splitter_2, splitter_3";
         str_query += ", familia_filas, familia_columnas";
-        str_query += ", plato_filas, plato_columnas FROM datos";
+        str_query += ", plato_filas, plato_columnas, clave_wifi FROM datos";
 
         qDebug()<<str_query<<endl;
         if(query.exec(str_query)){
@@ -756,15 +724,19 @@ void Comprobante::showEvent(QShowEvent *event)
             int familia_columnas = query.value(4).toInt();
             int plato_filas = query.value(5).toInt();
             int plato_columnas = query.value(6).toInt();
+            QString clave_wifi = query.value(7).toString();
 
+            //const QRect mainScreenSize = this->rect();
+            ui->splitter_mid->setSizes(QList<int>() << splitter_1_val << splitter_2_val);
             ui->spinBox_familia_filas->setValue(familia_filas);
             ui->spinBox_familia_columnas->setValue(familia_columnas);
             ui->spinBox_plato_filas->setValue(plato_filas);
             ui->spinBox_plato_columnas->setValue(plato_columnas);
+            ui->lineEdit_clave->setText(clave_wifi);
         }else{
             qDebug()<<"query bad"<<endl;
         }
-    }
+    //}
 }
 void Comprobante::closeEvent(QCloseEvent *event)
 {
@@ -773,18 +745,17 @@ void Comprobante::closeEvent(QCloseEvent *event)
     QString str_query = "";
     QSqlQuery query;
 
-    str_query += "INSERT INTO datos(";
-    str_query += "familia_filas, familia_columnas";
-    str_query += ", plato_filas, plato_columnas";
-    str_query += ")VALUES(";
-    str_query += ""+QString(ui->spinBox_familia_filas->value())+"";
-    str_query += ", "+QString(ui->spinBox_familia_columnas->value())+"";
-    str_query += ", "+QString(ui->spinBox_plato_filas->value())+"";
-    str_query += ", "+QString(ui->spinBox_plato_columnas->value())+"";
-    str_query += ")";
+    str_query += "UPDATE datos SET";
+    str_query += " splitter_1 = " + QString().setNum(ui->splitter_mid->sizes()[0]);
+    str_query += ", splitter_2 = " + QString().setNum(ui->splitter_mid->sizes()[1]);
+    str_query += ", familia_filas = " + QString().setNum(ui->spinBox_familia_filas->value());
+    str_query += ", familia_columnas = " + QString().setNum(ui->spinBox_familia_columnas->value());
+    str_query += ", plato_filas = " + QString().setNum(ui->spinBox_plato_filas->value());
+    str_query += ", plato_columnas = " + QString().setNum(ui->spinBox_plato_columnas->value());
 
+    qDebug() << ui->splitter_mid->sizes()[0] << endl;
     qDebug()<<str_query<<endl;
-    if(query.exec(str_query)){
+    if(query.exec(str_query)){        
         qDebug()<<"query ok"<<endl;
     }else{
         qDebug()<<"query bad"<<endl;
@@ -827,6 +798,7 @@ bool Comprobante::eventFilter(QObject *watched, QEvent *event)
             }
             if(!firstShow) {
                 firstShow = true;
+
                 QLabel* label_captcha = new QLabel(this);
 
                 QLineEdit* lineEdit_captcha = new QLineEdit(this);
@@ -846,7 +818,7 @@ bool Comprobante::eventFilter(QObject *watched, QEvent *event)
 
                 reniec_consultDNI.set_data(label_captcha, ui->lineEdit_codigo
                                            , lineEdit_captcha, ui->lineEdit_nombre
-                                           , ui->lineEdit_direccion);
+                                           , ui->lineEdit_direccion);                                           
             }
 
             return true;
@@ -977,61 +949,116 @@ void Comprobante::on_thread_finished()
     delete sender();
 
 }
+void Comprobante::on_myProccess_started()
+{
+    qDebug() << "started" << endl;
+}
+void Comprobante::on_myProccess_finished(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    qDebug() << "Exit Code: " << exitCode;
+    qDebug() << "Exit Status: " << exitStatus;
+
+    if (exitCode == 0) {
+        QMessageBox::information(this, "Información", "Felicidades. Finalizo la operacion sin errores.", "Ok");
+    } else {
+        QMessageBox::critical(this, "Error", "No finalizo corretamente.");
+    }
+
+    delete sender();
+}
 void Comprobante::print_caja()
 {
-    QFile file("print_caja.txt");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-      return;
-
-    QTextStream out(&file);
+    QFile file("print_caja.dat");
+    if (!file.open(QFile::WriteOnly)) {
+        qDebug() << "Could not open file for writing";
+        return;
+    }
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_4_8);    
 
     QVector<QString> centerTexts;
     centerTexts.push_back("BILL MC QUACK");
     centerTexts.push_back("de Giancarlo Miguel Figueroa Nuñes");
     centerTexts.push_back("Coop. Daniel Alcides Carrion M-14");
     centerTexts.push_back("RUC: 10430252718");
-    centerTexts.push_back("----------------------------------");
+    centerTexts.push_back("----------------------------------------");
     centerTexts.push_back("Ticket Boleta");
-    centerTexts.push_back("Maq.Regist.No: ");
-    centerTexts.push_back("Autorizacion Sunat: ");
-    centerTexts.push_back("Ticket Nro.: ");
-    centerTexts.push_back("NOM CLI : " + ui->lineEdit_nombre->text());
+    centerTexts.push_back("Maq.Regist.No: FFGF006292");
+    centerTexts.push_back("Autorizacion Sunat: 0053845106569");
+    centerTexts.push_back("Ticket Nro.: 012-2-" + nro_ticket);
+    QString nombre = "NOM CLI : " + ui->lineEdit_nombre->text();
+    centerTexts.push_back(nombre);
+    /*
+    while((nombre.length() % 40) == 0){
+        QString temp = nombre.mid(0, 40);
+        centerTexts.push_back(temp);
+        nombre.remove(0, 40);
+    }*/
+
     centerTexts.push_back("Fecha: " + QDate::currentDate().toString("dd/MM/yyyy"));
     centerTexts.push_back("Hora: " + QDateTime::currentDateTime().toString("hh:mm:ss"));
-    centerTexts.push_back("==================================");
-    centerTexts.push_back("Cant: Descripcion        : Precio");
-    centerTexts.push_back("----------------------------------");
+    centerTexts.push_back("========================================");
+    centerTexts.push_back("Cant  Descripcion                Importe");
+    centerTexts.push_back("----------------------------------------");
+
     SYSTEM->centerTexts(centerTexts);
 
+    out << (qint64)0x1D4C0002;
+
     SYSTEM->epson_lineFeed(out);
-    SYSTEM->epson_lineFeed(out);
+
     for(int i = 0; i < centerTexts.size(); i++){
         //SYSTEM->insert_left_spaces(centerTexts[i], 3);
         //SYSTEM->insert_right_spaces(centerTexts[i], 3);
 
         SYSTEM->epson_printText(out, centerTexts[i]);
-        SYSTEM->epson_lineFeed(out);
+        //SYSTEM->epson_lineFeed(out);
     }
-    SYSTEM->epson_lineFeed(out);
+    //SYSTEM->epson_lineFeed(out);
     double total = 0.0, igv = 0.18;
     for(int i = 0; i < ui->tableWidget->rowCount(); i++){
         QString cantidad = ui->tableWidget->item(i, 0)->text();
         QString descripcion = ui->tableWidget->item(i, 1)->text();
         double p_total = cantidad.toDouble() * ui->tableWidget->item(i, 2)->text().toDouble();
+        QString str_p_total = QString().setNum(p_total, ' ', 1);
 
+        SYSTEM->epson_just_descripcion(descripcion),
         total += cantidad.toDouble() * p_total;
 
         SYSTEM->justified(cantidad, 5);
+        SYSTEM->justified(str_p_total, 6);
 
-        SYSTEM->epson_printText(out, cantidad + " " + descripcion);
+        QString text = cantidad + " "
+                + descripcion + " " + str_p_total;
+        SYSTEM->epson_printText(out, text);
 
-        SYSTEM->epson_lineFeed(out);
+        //SYSTEM->epson_lineFeed(out);
     }
+    QString str_st = QString().setNum(total - (total * igv), ' ', 1);
+    SYSTEM->justified(str_st, 6);
+    QString str_i = QString().setNum(total * igv, ' ', 1);
+    SYSTEM->justified(str_i, 6);
+    QString str_t = QString().setNum(total, ' ', 1);
+    SYSTEM->justified(str_t, 6);
+    QString str_v = QString().setNum(ui->doubleSpinBox_vuelto->value(), ' ', 1);
+    SYSTEM->justified(str_v, 6);
+    SYSTEM->justified(str_t, 6);
+    QString str_sub_total = "Sub-Total: " + str_st;
+    QString str_igv = "IGV: " + str_i;
+    QString str_total = "Total: " + str_t;
+    QString str_vuelto = "Vuelto: " + str_v;
     QVector<QString> totales;
-    totales.push_back("----------------------------------");
-    totales.push_back("Sub-Total: " + QString().setNum(total - (total * igv), ' ', 1) );
-    totales.push_back("IGV: " + QString().setNum(total * igv, ' ', 1));
-    totales.push_back("Total: " + QString().setNum(total, ' ', 1));
+    totales.push_back("----------------------------------------");
+    totales.push_back(str_sub_total);
+    totales.push_back(str_igv);
+    totales.push_back(str_total);
+    totales.push_back("----------------------------------------");
+    totales.push_back(str_vuelto);
+    QString forma_de_pago = QString("Forma de Pago:" + pago.toUpper());
+    totales.push_back(SYSTEM->centerText(forma_de_pago));
+    totales.push_back(" ");
+    QString clave_wifi = "*** Clave Wifi: " + ui->lineEdit_clave->text() + " ***";
+    totales.push_back(SYSTEM->centerText(clave_wifi));
 
     SYSTEM->rightTexts(totales);
 
@@ -1039,53 +1066,104 @@ void Comprobante::print_caja()
 
     for(int i = 0; i < totales.size(); i++){
         SYSTEM->epson_printText(out, totales[i]);
-        SYSTEM->epson_lineFeed(out);
+        //SYSTEM->epson_lineFeed(out);
     }
+    //SYSTEM->epson_lineFeed(out);
 
     SYSTEM->epson_lineFeed(out);
     SYSTEM->epson_lineFeed(out);
+    SYSTEM->epson_lineFeed(out);
+    SYSTEM->epson_lineFeed(out);
+    SYSTEM->epson_lineFeed(out);
+    SYSTEM->epson_lineFeed(out);
+    SYSTEM->epson_lineFeed(out);
+    SYSTEM->epson_lineFeed(out);
+    //SYSTEM->epson_lineFeed(out);
 
     SYSTEM->epson_paperCut(out);
-    SYSTEM->epson_lineFeed(out);
 
     file.close();
 
-    QProcess *myProcess = new QProcess(this);
-    QString command = "copy";
-    QStringList arguments = QStringList()
-        << QCoreApplication::applicationFilePath() + "/" + file.fileName()
-        << "LPT1";
+    QString app_dir = QCoreApplication::applicationDirPath();
 
+    QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+    QString str_rel = "";
+    qDebug() << cmp_release << endl;
+    if(cmp_release.compare("/release") == 0){
+        str_rel = "/release";
+        qDebug() << str_rel << endl;
+    }
+
+    app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+    app_dir.replace("/","\\");
+    app_dir = "\"" + app_dir + "\\" + file.fileName() + "\"";
+
+    //app_dir = QDir::fromNativeSeparators(app_dir);
+
+    //QString lpt_print = QDir::fromNativeSeparators("\\\\localhost\\caja001");
+    QString lpt_print = "\\\\localhost\\caja001";
+
+    //FILE * pFile;
+    //char buffer[] = { (char)0x0a };
+    //pFile = fopen ("c:\\test.txt", "wb");
+    //fwrite (buffer , sizeof(char), sizeof(buffer), pFile);
+    //fclose (pFile);
+    //system(command.toStdString().c_str());
+
+    //QProcess *myProcess = new QProcess();
+    QString command = "copy /b " + app_dir
+                        + " " + lpt_print + " < nul";
+
+    /*
+    QStringList arguments = QStringList();
+    arguments << argument_1;
+    connect(myProcess, SIGNAL(started())
+        , this, SLOT(on_myProccess_started()));
     connect(myProcess, SIGNAL(finished(int, QProcess::ExitStatus))
         , this, SLOT(on_myProccess_finished(int, QProcess::ExitStatus)));
+*/
+    //WinExec(command.toStdString().c_str(), SW_HIDE);
+    qDebug() << command << endl;
+    system(command.toStdString().c_str());
+    //qDebug() << command << " " << argument_1 << endl;
+    //myProcess->waitForFinished(10000);
+    //myProcess->start(command, QStringList(), QIODevice::ReadWrite | QIODevice::Text);
+    //myProcess->waitForFinished();
+    //myProcess->waitForReadyRead();
 
-    qDebug() << command << " " << arguments << endl;
-    myProcess->start(command, arguments);
 }
 void Comprobante::print_comanda()
 {
+    const int Timeout = 5 * 1000;
+
+    if (!m_ConnectStatus)
+    {
+        //m_pSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+        m_pSocket->connectToHost(QHostAddress("192.168.1.36"), 9100, QIODevice::WriteOnly);
+    }
+
+    if (!m_pSocket->waitForConnected(Timeout))
+    {
+        //sent error
+        qDebug ("error in waitForConnected()");
+        qDebug (qPrintable(m_pSocket->errorString()));
+        m_ConnectStatus = false;
+        return;
+    }
+    m_ConnectStatus = true;
+
     QByteArray block;
 
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
 
-    //StarMicronics sm;
-    //sm.openPortHelper("tcp:192.168.1.36", "", 1 * 1000);
-    //sm.printSampleReceipt();
-    //out << '/n';
-    //out << '/n';
-    //out << '/n';
-    //out << '/n';
-    //out << '/n';
-    //out << '/n';
-
-
     QVector<QString> topText;
     SYSTEM->star_line_feed(out);
     SYSTEM->star_line_feed(out);
-    topText.push_back("DESPACHAR: " + ui->lineEdit_nombre->text());
-    topText.push_back("HORA: " + QDateTime::currentDateTime().toString("hh:mm:ss"));
-    topText.push_back("==================================");
+    QString nombre = "NOM CLI : " + ui->lineEdit_nombre->text();
+    topText.push_back(nombre);
+    topText.push_back("FECHA: " + QDate::currentDate().toString("dd-MM-yyyy"));
+    topText.push_back("========================================");
 
     SYSTEM->centerTexts(topText);
 
@@ -1093,11 +1171,6 @@ void Comprobante::print_comanda()
         SYSTEM->star_print_text(out, topText[i]);
         SYSTEM->star_line_feed(out);
     }
-    SYSTEM->star_line_feed(out);
-    SYSTEM->star_print_text(out, "Cant: Descripcion");
-    SYSTEM->star_line_feed(out);
-    SYSTEM->star_print_text(out, "----------------------------------");
-    SYSTEM->star_line_feed(out);
 
     for(int i = 0; i < ui->tableWidget->rowCount(); i++){
         QString cantidad = ui->tableWidget->item(i, 0)->text();
@@ -1108,18 +1181,24 @@ void Comprobante::print_comanda()
         SYSTEM->justified(cantidad, 5);
         SYSTEM->star_print_text(out, cantidad + " " + descripcion);
         SYSTEM->star_line_feed(out);
-    }
-    //SYSTEM->star_print_text(out, "----------------------------------");
+    }    
+
     SYSTEM->star_line_feed(out);
-    SYSTEM->star_line_feed(out);    
+    QVector<QString> bottomText;
+    bottomText.push_back("HORA: " + QDateTime::currentDateTime().toString("hh:mm:ss"));
+    SYSTEM->centerTexts(bottomText);
+    for(int i = 0; i < bottomText.size(); i++){
+        SYSTEM->star_print_text(out, bottomText[i]);
+        SYSTEM->star_line_feed(out);
+    }
 
-
-    //SYSTEM->star_line_feed(out);
-    //SYSTEM->star_line_feed(out);
-
-    //const WCHAR* wc = L"\\x1bm" ;
-    //_bstr_t b(wc);
-    //const char* c = b;
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
 
     out << (qint64)0x001D5601;
 
@@ -1139,5 +1218,236 @@ void Comprobante::print_comanda()
     m_pSocket->disconnectFromHost();
 
     m_ConnectStatus = false;
+
+}
+void Comprobante::print_star_asa()
+{
+    QFile file("print_caja_asa.dat");
+    if (!file.open(QFile::WriteOnly)) {
+        qDebug() << "Could not open file for writing";
+        return;
+    }
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_4_8);
+
+    QVector<QString> centerTexts;
+    centerTexts.push_back("BILL MC QUACK");
+    centerTexts.push_back("de Patricia Cristal Guerra Guerra");
+    centerTexts.push_back("RUC: 10702899457");
+    centerTexts.push_back("LOS ANDES 503");
+    centerTexts.push_back("A.S.A. - AREQUIPA - AREQUIPA");
+    centerTexts.push_back("----------------------------------------");
+    centerTexts.push_back("Ticket Boleta");
+    //centerTexts.push_back("Maq.Regist.No: ");
+    centerTexts.push_back("Aut: 0053845087990   38 49 29");
+    centerTexts.push_back("Ticket Nro.: " + nro_ticket);
+    centerTexts.push_back("Serie: 150230600349P");
+    QString nombre = "NOM CLI : " + ui->lineEdit_nombre->text();
+    while((nombre.length() % 40) == 0){
+        QString temp = nombre.mid(0, 40);
+        qDebug()<<temp<<endl;
+        centerTexts.push_back(temp);
+        nombre.remove(0, 40);
+    }
+
+    centerTexts.push_back("Fecha: " + QDate::currentDate().toString("dd/MM/yyyy"));
+    centerTexts.push_back("Hora: " + QDateTime::currentDateTime().toString("hh:mm:ss"));
+    centerTexts.push_back("========================================");
+    centerTexts.push_back("Cant: Descripcion                :Precio");
+    centerTexts.push_back("----------------------------------------");
+
+    SYSTEM->centerTexts(centerTexts);
+
+    //out << (qint64)0x1D4C0002;
+
+    SYSTEM->star_line_feed(out);
+
+    for(int i = 0; i < centerTexts.size(); i++){
+        //SYSTEM->insert_left_spaces(centerTexts[i], 3);
+        //SYSTEM->insert_right_spaces(centerTexts[i], 3);
+
+        SYSTEM->star_print_text(out, centerTexts[i]);
+        SYSTEM->star_line_feed(out);
+    }
+    //SYSTEM->epson_lineFeed(out);
+    double total = 0.0, igv = 0.18;
+    for(int i = 0; i < ui->tableWidget->rowCount(); i++){
+        QString cantidad = ui->tableWidget->item(i, 0)->text();
+        QString descripcion = ui->tableWidget->item(i, 1)->text();
+        double p_total = cantidad.toDouble() * ui->tableWidget->item(i, 2)->text().toDouble();
+        QString str_p_total = QString().setNum(p_total, ' ', 1);
+
+        SYSTEM->epson_just_descripcion(descripcion),
+        total += cantidad.toDouble() * p_total;
+
+        SYSTEM->justified(cantidad, 5);
+        SYSTEM->justified(str_p_total, 6);
+
+        QString text = cantidad + " "
+                + descripcion + " " + str_p_total;
+        SYSTEM->star_print_text(out, text);
+
+        SYSTEM->star_line_feed(out);
+    }
+    QString str_st = QString().setNum(total - (total * igv), ' ', 1);
+    SYSTEM->justified(str_st, 6);
+    QString str_i = QString().setNum(total * igv, ' ', 1);
+    SYSTEM->justified(str_i, 6);
+    QString str_t = QString().setNum(total, ' ', 1);
+    SYSTEM->justified(str_t, 6);
+    QString str_v = QString().setNum(ui->doubleSpinBox_vuelto->value(), ' ', 1);
+    SYSTEM->justified(str_v, 6);
+    SYSTEM->justified(str_t, 6);
+    QString str_sub_total = "Sub-Total: " + str_st;
+    QString str_igv = "IGV: " + str_i;
+    QString str_total = "Total: " + str_t;
+    QString str_vuelto = "Vuelto: " + str_v;
+    QVector<QString> totales;
+    totales.push_back("----------------------------------------");
+    totales.push_back(str_sub_total);
+    totales.push_back(str_igv);
+    totales.push_back(str_total);
+    totales.push_back("----------------------------------------");
+    totales.push_back(str_vuelto);
+    totales.push_back(" ");
+    totales.push_back(QString() + "*** Clave Wifi: " + ui->lineEdit_clave->text() + " ***");
+
+    SYSTEM->rightTexts(totales);
+
+    SYSTEM->star_line_feed(out);
+
+    for(int i = 0; i < totales.size(); i++){
+        SYSTEM->star_print_text(out, totales[i]);
+        SYSTEM->star_line_feed(out);
+    }
+    //SYSTEM->epson_lineFeed(out);    
+
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+
+    out << (qint64)0x001B6401;
+    //SYSTEM->star_line_feed(out);
+    //SYSTEM->star_line_feed(out);
+
+    //SYSTEM->epson_lineFeed(out);
+
+    file.close();
+
+    QString app_dir = QCoreApplication::applicationDirPath();
+
+    QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+    QString str_rel = "";
+    qDebug() << cmp_release << endl;
+    if(cmp_release.compare("/release") == 0){
+        str_rel = "/release";
+        qDebug() << str_rel << endl;
+    }
+
+    app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+    app_dir.replace("/","\\");
+    app_dir = "\"" + app_dir + "\\" + file.fileName() + "\"";
+
+    //app_dir = QDir::fromNativeSeparators(app_dir);
+
+    //QString lpt_print = QDir::fromNativeSeparators("\\\\localhost\\caja001");
+    QString lpt_print = "LPT1";
+
+    //FILE * pFile;
+    //char buffer[] = { (char)0x0a };
+    //pFile = fopen ("c:\\test.txt", "wb");
+    //fwrite (buffer , sizeof(char), sizeof(buffer), pFile);
+    //fclose (pFile);
+    //system(command.toStdString().c_str());
+
+    //QProcess *myProcess = new QProcess();
+    QString command = "copy /b " + app_dir
+                        + " " + lpt_print + " < nul";
+
+    /*
+    QStringList arguments = QStringList();
+    arguments << argument_1;
+    connect(myProcess, SIGNAL(started())
+        , this, SLOT(on_myProccess_started()));
+    connect(myProcess, SIGNAL(finished(int, QProcess::ExitStatus))
+        , this, SLOT(on_myProccess_finished(int, QProcess::ExitStatus)));
+*/
+    //WinExec(command.toStdString().c_str(), SW_HIDE);
+    qDebug() << command << endl;
+    //system(command.toStdString().c_str());
+    //qDebug() << command << " " << argument_1 << endl;
+    //myProcess->waitForFinished(10000);
+    //myProcess->start(command, QStringList(), QIODevice::ReadWrite | QIODevice::Text);
+    //myProcess->waitForFinished();
+    //myProcess->waitForReadyRead();
+
+}
+void Comprobante::print_msg()
+{
+
+}
+
+void Comprobante::on_pushButton_google_maps_clicked()
+{
+    //QString link = "https://www.google.com/maps/d/viewer?mid=1j-mQQ_g0HqMh7Xjvul9MWKUUzDI&hl=es&ll=-16.409078690356864%2C-71.51622014410395&z=14";
+    //QDesktopServices::openUrl(QUrl(link));
+
+
+    qDebug() << "gg" << endl;
+    //if(view_mapa){
+
+    //}
+    system("start chrome https://www.google.com/maps/d/viewer?mid=1j-mQQ_g0HqMh7Xjvul9MWKUUzDI&hl=es&ll=-16.409078690356864%2C-71.51622014410395&z=14");
+
+    qDebug() << "uhm" << endl;
+
+    //view_mapa->show();
+    //view_mapa->raise();
+    /*
+    QThread* thread = new QThread;
+    connect(thread, SIGNAL(started()), this, SLOT(on_thread_loadWeb()));
+    connect(thread, SIGNAL(finished()), this, SLOT(on_thread_finished()));
+
+    thread->start();
+    */
+}
+
+void Comprobante::on_thread_loadWeb()
+{
+    /*
+    view_mapa->load(tr("https://www.google.com/maps/d/viewer?mid=1j-mQQ_g0HqMh7Xjvul9MWKUUzDI&hl=es&ll=-16.409078690356864%2C-71.51622014410395&z=14"));
+    view_mapa->showMaximized();
+    view_mapa->raise();
+    */
+}
+void Comprobante::loadFinished(bool b)
+{
+    /*
+    if(b){
+        view_mapa->showMaximized();
+        view_mapa->raise();
+    }*/
+
+}
+
+void Comprobante::on_pushButton_guardar_clave_clicked()
+{
+    QSqlQuery query;
+    QString str_query = "";
+
+    str_query += "UPDATE datos SET";
+    str_query += " clave_wifi = \"" + ui->lineEdit_clave->text() + "\"";
+
+    if(query.exec(str_query)){
+        QMessageBox::information(this, "Información", "Clave cambiada.", "Ya");
+    }else{
+        QMessageBox::critical(this, "Error", "!", "Ok");
+    }
+}
+
+void Comprobante::on_pushButton_send_msg_clicked()
+{
 
 }

@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>274</width>
-    <height>300</height>
+    <width>592</width>
+    <height>398</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Venta - Producto</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../iconos.qrc">
+    <normaloff>:/new/Iconos/Journal.png</normaloff>:/new/Iconos/Journal.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -59,7 +63,224 @@
     </layout>
    </item>
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <spacer name="horizontalSpacer_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QDateTimeEdit" name="dateTimeEdit_ini">
+       <property name="displayFormat">
+        <string>dd-MM-yyyy hh:mm:ss</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>al</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDateTimeEdit" name="dateTimeEdit_fin">
+       <property name="displayFormat">
+        <string>dd-MM-yyyy hh:mm:ss</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox_efectivo">
+       <property name="text">
+        <string>Efectivo</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox_visa">
+       <property name="text">
+        <string>Visa</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox_masterCard">
+       <property name="text">
+        <string>Master Card</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_6">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <spacer name="horizontalSpacer_7">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_habilitar">
+       <property name="text">
+        <string>Habilitar</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../iconos.qrc">
+         <normaloff>:/new/Iconos/advice_accept_ok_theaction_10829.png</normaloff>:/new/Iconos/advice_accept_ok_theaction_10829.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_anular">
+       <property name="text">
+        <string>Anular</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../iconos.qrc">
+         <normaloff>:/new/Iconos/anular.png</normaloff>:/new/Iconos/anular.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_10">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_ver">
+       <property name="text">
+        <string>Ver</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../iconos.qrc">
+         <normaloff>:/new/Iconos/eye_web.png</normaloff>:/new/Iconos/eye_web.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_8">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Cliente</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_buscar"/>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Total</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_totalTop">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>100000000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="QTableWidget" name="tableWidget">
+     <column>
+      <property name="text">
+       <string>ID</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Estado</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Numero</string>
+      </property>
+     </column>
      <column>
       <property name="text">
        <string>Cantidad</string>
@@ -88,12 +309,9 @@
     </widget>
    </item>
    <item>
-    <layout class="QGridLayout" name="gridLayout_3">
-     <item row="0" column="0">
-      <widget class="QLineEdit" name="lineEdit_buscar"/>
-     </item>
-     <item row="0" column="1">
-      <spacer name="horizontalSpacer_4">
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <spacer name="horizontalSpacer_9">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -105,11 +323,35 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Total</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_total">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>100000000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
       <spacer name="horizontalSpacer_3">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -122,7 +364,7 @@
        </property>
       </spacer>
      </item>
-     <item row="0" column="1">
+     <item>
       <widget class="QPushButton" name="pushButton_salir">
        <property name="text">
         <string>Salir</string>
@@ -133,6 +375,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../iconos.qrc"/>
+ </resources>
  <connections/>
 </ui>

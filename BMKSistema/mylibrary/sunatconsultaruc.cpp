@@ -194,10 +194,11 @@ void SunatConsultaRUC::on_le_consulta_ruc_textEdited()
 
                 le_razonSocial->setText(nombre);
                 le_direccion->setText(direccion);
-                return;
+                //return;
             }
         }
     }
+
     if (ruc.length() == 11 && captcha.length() == 4){
 		QWebEngineView* view = view_consultaRuc;
 		
@@ -352,8 +353,14 @@ void SunatConsultaRUC::setImage()
 
         tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
 
+        QString name = qgetenv("USER");
+        if (name.isEmpty())
+            name = qgetenv("USERNAME");
         // Initialize tesseract-ocr with English, without specifying tessdata path
-        int r = api->Init("C:/Users/lorda/Desktop/VS2015_Tesseract-master/tesseract_3.04/tessdata/", "eng", tesseract::OEM_DEFAULT, NULL, 0, NULL, NULL, true);
+        QString dir = "C:/Users/" + name + "/Desktop/VS2015_Tesseract-master/tesseract_3.04/tessdata/";
+        qDebug() << dir << endl;
+        qDebug() << name << endl;
+        int r = api->Init(dir.toStdString().c_str(), "eng", tesseract::OEM_DEFAULT, NULL, 0, NULL, NULL, true);
         //qDebug() << "r: " << r << endl;
         if (r) {
             qDebug() << "NOT initialize TESSERACT" << endl;
@@ -415,7 +422,7 @@ void SunatConsultaRUC::setImage()
 
         //le_ruc->selectAll();
         //le_ruc->setFocus();
-
+        time_transcurred = 0;
         timer_datos->start(100);
     }
     //} else {
@@ -516,11 +523,13 @@ void SunatConsultaRUC::setDatos()
     QString ruc = ruc_razon.mid(0, posMinus-1);
 
     if (this->le_ruc->text().compare(ruc) == 0) {
+        qDebug() << ruc_razon << endl;
         this->ruc = le_ruc->text();
 
 		time_transcurred = 0;
         timer_datos->stop();
 	} else {
+        qDebug() << ruc_razon << endl;
 		return;
 	}
 

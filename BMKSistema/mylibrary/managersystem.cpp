@@ -10,6 +10,7 @@ ManagerSystem::ManagerSystem(QWidget *parent) :
     //ui->statusBar->addWidget(new SnackBarInfo);
     afterShow = false;
 
+
     //QThread* thread = new QThread;
     //connect(thread, SIGNAL (started()), worker, SLOT (process()));
 
@@ -35,6 +36,11 @@ ManagerSystem::~ManagerSystem()
     delete DATABASE;
     delete shortCut_salir;
     delete ui;
+}
+
+void ManagerSystem::execReportes()
+{
+    ui->menuReportes->showTearOffMenu();
 }
 
 void ManagerSystem::set_toolBar(QWidget* w)
@@ -172,3 +178,13 @@ bool ManagerSystem::eventFilter(QObject *obj, QEvent *e)
     return QWidget::eventFilter(obj, e);
 }
 
+
+void ManagerSystem::on_actionPor_Producto_triggered()
+{
+    ComprobanteBuscar* w = new ComprobanteBuscar;
+    w->setWindowFlag(Qt::Dialog);
+    w->setAttribute(Qt::WA_DeleteOnClose);
+
+    w->showMaximized();
+    w->raise();
+}

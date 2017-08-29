@@ -265,6 +265,17 @@ QString& Sistema::justified(QString &str, int lenght)
     }
     return str;
 }
+QString& Sistema::epson_just_descripcion(QString & str)
+{
+    QString str_len = "Descripcion                ";
+    if(str_len.length() > str.length()){
+        insert_right_spaces(str, str_len.length() - str.length());
+    }else{
+        str = str.mid(0, str_len.length());
+    }
+    return str;
+}
+
 QString& Sistema::insert_left_spaces(QString &str, int n)
 {
     for(int i = 0; i < n; i++){
@@ -279,18 +290,63 @@ QString& Sistema::insert_right_spaces(QString &str, int n)
     }
     return str;
 }
-QVector<QString>& Sistema::centerTexts(QVector<QString>& v)
+QString& Sistema::rightText(QString& text)
 {
     int maxLenght = 0;
+    /*
     for(int i = 0; i < v.length(); i++){
         if(v[i].length() > maxLenght){
             maxLenght = v[i].length();
         }
     }
-    maxLenght /= 2;
+    */
+    //maxLenght /= 2;
+    maxLenght = 40;
+
+    int spaces = maxLenght - text.length();
+
+    insert_left_spaces(text, spaces);
+
+    return text;
+}
+QString& Sistema::centerText(QString& text)
+{
+    int maxLenght = 0;
+    /*
     for(int i = 0; i < v.length(); i++){
-        int spaces = maxLenght - v[i].length()/2;
+        if(v[i].length() > maxLenght){
+            maxLenght = v[i].length();
+        }
+    }
+    */
+    //maxLenght /= 2;
+    maxLenght = 40;
+
+        int unit = (maxLenght - text.length()) % 2;
+        int spaces = (maxLenght - text.length())/2;
+        insert_left_spaces(text, spaces);
+        insert_right_spaces(text, spaces + unit);
+
+    return text;
+}
+
+QVector<QString>& Sistema::centerTexts(QVector<QString>& v)
+{
+    int maxLenght = 0;
+    /*
+    for(int i = 0; i < v.length(); i++){
+        if(v[i].length() > maxLenght){
+            maxLenght = v[i].length();
+        }
+    }
+    */
+    //maxLenght /= 2;
+    maxLenght = 40;
+    for(int i = 0; i < v.length(); i++){
+        int unit = (maxLenght - v[i].length()) % 2;
+        int spaces = (maxLenght - v[i].length())/2;
         insert_left_spaces(v[i], spaces);
+        insert_right_spaces(v[i], spaces + unit);
     }
 
     return v;
@@ -298,11 +354,15 @@ QVector<QString>& Sistema::centerTexts(QVector<QString>& v)
 QVector<QString>& Sistema::rightTexts(QVector<QString>& v)
 {
     int maxLenght = 0;
+    /*
     for(int i = 0; i < v.length(); i++){
         if(v[i].length() > maxLenght){
             maxLenght = v[i].length();
         }
     }
+    */
+    //maxLenght /= 2;
+    maxLenght = 40;
     for(int i = 0; i < v.length(); i++){
         int spaces = maxLenght - v[i].length();
         insert_left_spaces(v[i], spaces);
@@ -1079,21 +1139,21 @@ void Sistema::star_paper_cut(QDataStream& out, int n)
     str.toLatin1();
     out << 29 << 86 << 1;
 }
-void Sistema::epson_lineFeed(QTextStream& out)
+void Sistema::epson_lineFeed(QDataStream& out)
+{
+    out << 10;
+}
+void Sistema::epson_linesFeed(QDataStream& out, int n)
 {
 
 }
-void Sistema::epson_linesFeed(QTextStream& out, int n)
-{
-
-}
-void Sistema::epson_printText(QTextStream& out, QString str)
+void Sistema::epson_printText(QDataStream& out, QString str)
 {
     for(int i = 0; i < str.length(); i++){
         out << str[i];
     }
 }
-void Sistema::epson_paperCut(QTextStream& out)
+void Sistema::epson_paperCut(QDataStream& out)
 {
-    out << 27 << 109;
+    out << (qint64)0x001D5601;
 }

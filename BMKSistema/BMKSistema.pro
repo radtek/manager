@@ -61,7 +61,8 @@ SOURCES += \
     comprobante/cliente.cpp \
     comprobante/comprobantebuscar.cpp \
     mylibrary/adminpass.cpp \
-    mylibrary/starmicronics.cpp
+    comprobante/previewticket.cpp \
+    comprobante/sendmsg.cpp
 
 HEADERS += \
     mylibrary/comboboxdelegate.h \
@@ -108,7 +109,8 @@ HEADERS += \
     comprobante/cliente.h \
     comprobante/comprobantebuscar.h \
     mylibrary/adminpass.h \
-    mylibrary/starmicronics.h
+    comprobante/previewticket.h \
+    comprobante/sendmsg.h
 
 FORMS += \
     mylibrary/snackbarinfo.ui \
@@ -126,7 +128,9 @@ FORMS += \
     comprobante/plato.ui \
     comprobante/cliente.ui \
     comprobante/comprobantebuscar.ui \
-    mylibrary/adminpass.ui
+    mylibrary/adminpass.ui \
+    comprobante/previewticket.ui \
+    comprobante/sendmsg.ui
 
 RESOURCES += \
     iconos.qrc
@@ -172,9 +176,6 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_9_1_MSVC2015_64bit-Debug/debug/ -lQtXlsxWriter
     else:unix: LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_9_1_MSVC2015_64bit-Debug/ -lQtXlsxWriter
 
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-BMKSistema-Desktop_Qt_5_9_1_MSVC2015_64bit-Release/release/ -lStarIOPort
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-BMKSistema-Desktop_Qt_5_9_1_MSVC2015_64bit-Release/debug/ -lStarIOPort
-    else:unix: LIBS += -L$$PWD/../build-BMKSistema-Desktop_Qt_5_9_1_MSVC2015_64bit-Release/ -lStarIOPort
 } else {
     win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../VS2015_Tesseract-master/release/ -lzlib
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../VS2015_Tesseract-master/debug/ -lzlib
@@ -279,6 +280,3 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
 
     INCLUDEPATH += $$PWD/../QtXlsxWriter
     DEPENDPATH += $$PWD/../QtXlsxWriter
-
-INCLUDEPATH += $$PWD/../StarIO_Cpp_SDK_Win_V210/Software/Dependencies
-DEPENDPATH += $$PWD/../StarIO_Cpp_SDK_Win_V210/Software/Dependencies

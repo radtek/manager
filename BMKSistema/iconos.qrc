@@ -144,5 +144,10 @@
         <file>Iconos/nuevo.jpg</file>
         <file>Iconos/nuevo.png</file>
         <file>Iconos/edit (3).png</file>
+        <file>Iconos/google_maps.png</file>
+        <file>Iconos/bill_mc_quack.ico</file>
+        <file>Iconos/send-message-button.png</file>
+        <file>Iconos/new_doc.png</file>
+        <file>Iconos/advice_accept_ok_theaction_10829.png</file>
     </qresource>
 </RCC>

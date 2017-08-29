@@ -27,6 +27,25 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuReportes">
+    <property name="tearOffEnabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string>&amp;reportes</string>
+    </property>
+    <property name="separatorsCollapsible">
+     <bool>false</bool>
+    </property>
+    <widget class="QMenu" name="menuVentas">
+     <property name="title">
+      <string>Ventas</string>
+     </property>
+     <addaction name="actionPor_Producto"/>
+    </widget>
+    <addaction name="menuVentas"/>
+   </widget>
+   <addaction name="menuReportes"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -37,6 +56,11 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionPor_Producto">
+   <property name="text">
+    <string>Por Producto</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>511</width>
-    <height>210</height>
+    <width>533</width>
+    <height>226</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -328,21 +328,27 @@
         <iconset resource="../iconos.qrc">
          <normaloff>:/new/Iconos/edit (3).png</normaloff>:/new/Iconos/edit (3).png</iconset>
        </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_guardar">
        <property name="text">
-        <string>Guardar</string>
+        <string>Ingresar</string>
        </property>
        <property name="icon">
         <iconset resource="../iconos.qrc">
-         <normaloff>:/new/Iconos/save.png</normaloff>:/new/Iconos/save.png</iconset>
+         <normaloff>:/new/Iconos/new_doc.png</normaloff>:/new/Iconos/new_doc.png</iconset>
        </property>
        <property name="iconSize">
         <size>
-         <width>16</width>
-         <height>16</height>
+         <width>32</width>
+         <height>32</height>
         </size>
        </property>
       </widget>

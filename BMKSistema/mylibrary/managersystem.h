@@ -16,6 +16,8 @@ public:
     explicit ManagerSystem(QWidget *parent = 0);
     ~ManagerSystem();
 
+    void execReportes();
+
     void set_toolBar(QWidget* w);
 
     void showToolBar();
@@ -35,6 +37,9 @@ protected:
     void showEvent(QShowEvent *se);
 
     void closeEvent(QCloseEvent* ce);
+
+private slots:
+    void on_actionPor_Producto_triggered();
 
 private:
     bool eventFilter(QObject *, QEvent *);

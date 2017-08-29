@@ -52,9 +52,15 @@ public:
 
     QString& justified(QString &str, int lenght);
 
+    QString& epson_just_descripcion(QString & str);
+
     QString& insert_left_spaces(QString& str, int n);
 
     QString& insert_right_spaces(QString& str, int n);
+
+    QString& rightText(QString& text);
+
+    QString& centerText(QString& text);
 
     QVector<QString>& centerTexts(QVector<QString>& v);
 
@@ -167,13 +173,13 @@ public:
 
     void star_paper_cut(QDataStream& out, int n);
 
-    void epson_lineFeed(QTextStream& out);
+    void epson_lineFeed(QDataStream& out);
 
-    void epson_linesFeed(QTextStream& out, int n);
+    void epson_linesFeed(QDataStream& out, int n);
 
-    void epson_printText(QTextStream& out, QString str);
+    void epson_printText(QDataStream& out, QString str);
 
-    void epson_paperCut(QTextStream& out);
+    void epson_paperCut(QDataStream& out);
 };
 
 template class MYLIBRARYSHARED_EXPORT singleton<Sistema>;

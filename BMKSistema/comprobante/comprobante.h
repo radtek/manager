@@ -9,7 +9,6 @@
 #include "familia.h"
 #include "plato.h"
 #include "mylibrary/adminpass.h"
-#include "mylibrary/starmicronics.h"
 
 namespace Ui {
 class Comprobante;
@@ -26,6 +25,8 @@ public:
     void select_familias();
 
     void select_platos(QString familia);
+
+    void insert_venta();
 
 private slots:    
     void on_familia_closing();
@@ -88,10 +89,28 @@ private slots:
 
     void on_thread_finished();
 
+    void on_myProccess_started();
+
+    void on_myProccess_finished(int, QProcess::ExitStatus);
+
+    void on_pushButton_google_maps_clicked();
+
+    void on_thread_loadWeb();
+
+    void loadFinished(bool b);
+
+    void on_pushButton_guardar_clave_clicked();
+
+    void on_pushButton_send_msg_clicked();
+
 private:
     void print_caja();
 
     void print_comanda();
+
+    void print_star_asa();
+
+    void print_msg();
 
 protected:
     void showEvent(QShowEvent *event);
@@ -111,6 +130,10 @@ private:
 
     QTcpSocket* m_pSocket;
     bool m_ConnectStatus;
+
+    QString pago;
+    QString nro_ticket;
+    //QWebEngineView* view_mapa;
 };
 
 #endif // COMPROBANTE_H

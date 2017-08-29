@@ -10,6 +10,8 @@
 #include <QLineEdit>
 #include <QString>
 #include <QStatusBar>
+#include <QMenuBar>
+#include <QMenu>
 #include <QWebEngineView>
 #include <QWebEnginePage>
 #include <QWebEngineProfile>

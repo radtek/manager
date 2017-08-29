@@ -200,8 +200,14 @@ void ReniecConsultaDNI::setImage()
 
         tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
 
+        QString name = qgetenv("USER");
+        if (name.isEmpty())
+            name = qgetenv("USERNAME");
         // Initialize tesseract-ocr with English, without specifying tessdata path
-        int r = api->Init("C:/Users/lorda/Desktop/VS2015_Tesseract-master/tesseract_3.04/tessdata/", "eng", tesseract::OEM_DEFAULT, NULL, 0, NULL, NULL, true);
+        QString dir = "C:/Users/" + name + "/Desktop/VS2015_Tesseract-master/tesseract_3.04/tessdata/";
+        qDebug() << dir << endl;
+        qDebug() << name << endl;
+        int r = api->Init(dir.toStdString().c_str(), "eng", tesseract::OEM_DEFAULT, NULL, 0, NULL, NULL, true);
         //qDebug() << "r: " << r << endl;
         if (r) {
             qDebug() << "NOT initialize TESSERACT" << endl;
@@ -336,6 +342,7 @@ void ReniecConsultaDNI::setDatos()
 
     QString nombre = list_result[0];
     QString dni = list_result[1];
+    QString direccion = "";
 
     if (le_dni->text().compare(dni) == 0) {
         time_transcurred = 0;
@@ -345,6 +352,9 @@ void ReniecConsultaDNI::setDatos()
     }
     if (le_nombre)
         le_nombre->setText(nombre);
+
+    if (le_direccion)
+        le_direccion->setText(direccion);
 }
 
 void ReniecConsultaDNI::show_time_datos()
@@ -388,7 +398,7 @@ void ReniecConsultaDNI::on_le_consulta_dni_textEdited()
                 le_nombre->setText(nombre);
                 if(le_direccion)
                     le_direccion->setText(direccion);
-                return;
+                //return;
             }
         }
 
