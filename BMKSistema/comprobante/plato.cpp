@@ -7,6 +7,7 @@ Plato::Plato(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    is_eliminar = false;
     /*
     QString str_regExp_ruc = "[a-zA-Z "+QString(char(160))
             +QString(QChar(130))
@@ -30,6 +31,7 @@ Plato::Plato(QWidget *parent) :
     //ui->pushButton_eliminar->setDisabled(true);
     //ui->comboBox_buscar->hide();
     //ui->label_buscar->hide();
+    //ui->pushButton_eliminar->hide();
     ui->pushButton_nuevo->hide();
 }
 
@@ -37,6 +39,81 @@ Plato::~Plato()
 {
     qDebug()<<"delete plato"<<endl;
     delete ui;
+}
+void Plato::modo_ingresar(QString familia, int x, int y)
+{
+    ui->label_buscar->hide();
+
+    this->familia = familia;
+
+    ui->label_familia->setText(familia);
+
+    ui->spinBox_x->setValue(x);
+    ui->spinBox_y->setValue(y);
+    ui->label_x->hide();
+    ui->label_y->hide();
+    ui->spinBox_x->hide();
+    ui->spinBox_y->hide();
+    ui->comboBox_buscar->hide();
+
+    //ui->pushButton_guardar->hide();
+    ui->pushButton_modificar->hide();
+    ui->pushButton_eliminar->hide();
+}
+void Plato::modo_modificacion(QString familia, QString plato, int x, int y)
+{
+    ui->label_buscar->hide();
+
+    this->familia = familia;
+
+    current_plato = plato;
+
+    ui->label_titulo->setText(familia + " - " + plato);
+    ui->lineEdit_nombre->setText(plato);
+
+    QString str_query;
+    QSqlQuery query;
+    str_query += "SELECT precio, descripcion FROM plato WHERE item_nombre = '" + ui->lineEdit_nombre->text() + "'";
+
+    if(query.exec(str_query)){
+        query.next();
+        double precio = query.value(0).toDouble();
+        QString descripcion = query.value(1).toString();
+        ui->doubleSpinBox_precio->setValue(precio);
+        ui->lineEdit_descripcion->setText(descripcion);
+    }
+    ui->spinBox_x->setValue(x);
+    ui->spinBox_y->setValue(y);
+    ui->label_x->hide();
+    ui->label_y->hide();
+    ui->spinBox_x->hide();
+    ui->spinBox_y->hide();
+    ui->comboBox_buscar->hide();
+
+    ui->pushButton_guardar->hide();
+    //ui->pushButton_modificar->hide();
+    ui->pushButton_eliminar->hide();
+}
+void Plato::modo_eliminacion(QString familia, QString plato)
+{
+    ui->label_buscar->hide();
+
+    this->familia = familia;
+
+    current_plato = plato;
+
+    ui->label_titulo->setText(familia + " - " + plato);
+    ui->lineEdit_nombre->setText(plato);
+
+    ui->label_x->hide();
+    ui->label_y->hide();
+    ui->spinBox_x->hide();
+    ui->spinBox_y->hide();
+
+    ui->comboBox_buscar->hide();
+    ui->pushButton_guardar->hide();
+    ui->pushButton_modificar->hide();
+    //ui->pushButton_eliminar->hide();
 }
 void Plato::select_all()
 {
@@ -61,6 +138,11 @@ void Plato::select_all()
         ui->comboBox_buscar->setCurrentText(ui->lineEdit_nombre->text());
     }
 }
+void Plato::set_familia_(QString familia)
+{
+    this->familia = familia;
+}
+
 void Plato::set_familia(QString familia)
 {
     this->familia = familia;
@@ -74,6 +156,7 @@ void Plato::ingresar()
     QString nombre = ui->lineEdit_nombre->text();
     int x = ui->spinBox_x->value();
     int y = ui->spinBox_y->value();
+    QString descripcion = ui->lineEdit_descripcion->text();
     QString str_query = "";
     QSqlQuery query;
     str_query += "INSERT INTO item(nombre, grupo_nombre)";
@@ -81,10 +164,11 @@ void Plato::ingresar()
     str_query += "'"+nombre+"'";
     str_query += ", 'familia'";
     str_query += ")";
+    str_query += " ON DUPLICATE KEY UPDATE nombre = '" + ui->lineEdit_nombre->text() + "'";
     str_query += "&&END_QUERY&&";
     str_query += "INSERT INTO plato(item_nombre";
     str_query += ", familia_item_nombre, marca_item_nombre, unidad_item_nombre, x, y";
-    str_query += ", precio)";
+    str_query += ", precio, descripcion)";
     str_query += "VALUES(";
     str_query += "'"+nombre+"'";
     str_query += ", '"+this->familia+"'";
@@ -93,6 +177,7 @@ void Plato::ingresar()
     str_query += ", "+QString().setNum(x)+"";
     str_query += ", "+QString().setNum(y)+"";
     str_query += ", "+QString().setNum(ui->doubleSpinBox_precio->value(), ' ', 2)+"";
+    str_query += ", '"+descripcion+"'";
     str_query += ")";
     str_query += "&&END_QUERY&&";
 
@@ -100,15 +185,16 @@ void Plato::ingresar()
     qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
         QMessageBox::information(this, "Info", "Se guardo.", "ok");
-        select_all();
+        //select_all();
     }else{
         QMessageBox::warning(this, "Advertencia", "Ingrese correctamente los datos.", "ok");
     }
 }
 void Plato::modificar()
 {
-    QString nombre_old = ui->comboBox_buscar->currentText();
+    QString nombre_old = this->current_plato;
     QString nombre = ui->lineEdit_nombre->text();
+    QString descripcion = ui->lineEdit_descripcion->text();
     QString precio = QString().setNum(ui->doubleSpinBox_precio->value(), ' ', 2);
     int x = ui->spinBox_x->value();
     int y = ui->spinBox_y->value();
@@ -116,7 +202,7 @@ void Plato::modificar()
     QSqlQuery query;
     str_query += "UPDATE item";
     str_query += " SET";
-    str_query += " nombre = '"+nombre+"'";    
+    str_query += " nombre = '"+nombre+"'";
     str_query += " WHERE nombre = '"+nombre_old+"'";
     str_query += "&&END_QUERY&&";
     str_query += "UPDATE plato";
@@ -124,6 +210,7 @@ void Plato::modificar()
     str_query += " x = "+QString().setNum(x)+"";
     str_query += ", y = "+QString().setNum(y)+"";
     str_query += ", precio = '"+precio+"'";
+    str_query += ", descripcion = '"+descripcion+"'";
     str_query += " WHERE item_nombre = '"+nombre+"'";
     str_query += "&&END_QUERY&&";
 
@@ -131,14 +218,14 @@ void Plato::modificar()
     qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
         QMessageBox::information(this, "Info", "Se guardo.", "ok");
-        select_all();
+        //select_all();
     }else{
         QMessageBox::warning(this, "Advertencia", "Ingrese correctamente los datos.", "ok");
     }
 }
 void Plato::eliminar()
 {
-    QString nombre = ui->comboBox_buscar->currentText();
+    QString nombre = ui->lineEdit_nombre->text();
 
     QString str_query = "";
     QSqlQuery query;
@@ -147,7 +234,7 @@ void Plato::eliminar()
 
     if(query.exec(str_query)){
         QMessageBox::information(this, "Info", "Se elimino.", "ok");
-        select_all();
+        //select_all();
     }else{
         QMessageBox::warning(this, "Advertencia", "Ingrese correctamente los datos.", "ok");
     }
@@ -162,7 +249,7 @@ void Plato::on_comboBox_buscar_activated(const QString &arg1)
     ui->lineEdit_nombre->setText(arg1);
     QString str_query = "";
     QSqlQuery query;
-    str_query += "SELECT x, y, precio FROM plato";
+    str_query += "SELECT x, y, precio, descripcion FROM plato";
     str_query += " WHERE item_nombre = '" + arg1 + "'";
 
     qDebug()<<str_query<<endl;
@@ -172,10 +259,12 @@ void Plato::on_comboBox_buscar_activated(const QString &arg1)
             int x = query.value(0).toInt();
             int y = query.value(1).toInt();
             double precio = query.value(2).toDouble();
+            QString descripcion = query.value(3).toString();
 
             ui->spinBox_x->setValue(x);
             ui->spinBox_y->setValue(y);
             ui->doubleSpinBox_precio->setValue(precio);
+            ui->lineEdit_descripcion->setText(descripcion);
         }
     }
 }
@@ -194,7 +283,19 @@ void Plato::on_pushButton_eliminar_clicked()
     int ret = QMessageBox::warning(this, "Advertencia", "¿Esta seguro de eliminar?", "Si", "Cancelar");
     switch(ret){
     case 0:{
+        AdminPass* ap = new AdminPass(this);
+        //ap->setAttribute(Qt::WA_DeleteOnClose);
+        ap->exec();
+        bool confirmado = ap->get_confirmado();
+
+        if(!confirmado){
+            return;
+        }
+        delete ap;
+
+        is_eliminar = true;
         eliminar();
+        this->close();
     }break;
     case 1:{
 
@@ -212,6 +313,7 @@ void Plato::on_pushButton_modificar_clicked()
     switch(ret){
     case 0:{
         modificar();
+        this->close();
     }break;
     case 1:{
 
@@ -224,6 +326,7 @@ void Plato::on_pushButton_guardar_clicked()
     switch(ret){
     case 0:{
         ingresar();
+        this->close();
     }break;
     case 1:{
 

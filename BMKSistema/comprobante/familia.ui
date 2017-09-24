@@ -151,7 +151,7 @@
         </size>
        </property>
        <property name="text">
-        <string>X:</string>
+        <string>FILA:</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -177,7 +177,7 @@
         </size>
        </property>
        <property name="text">
-        <string>Y:</string>
+        <string>COLUMNA:</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

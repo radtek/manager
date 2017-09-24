@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
-    <height>398</height>
+    <width>651</width>
+    <height>395</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,6 +16,20 @@
   <property name="windowIcon">
    <iconset resource="../iconos.qrc">
     <normaloff>:/new/Iconos/Journal.png</normaloff>:/new/Iconos/Journal.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QSplitter::handle{ background-color: black }
+QWidget{ background-color: rgb(170, 255, 127) }
+QLineEdit{ background-color: rgb(255, 255, 255) }
+QLineEdit{ color: rgb(0, 0, 0) }
+QTableWidget{ background-color: rgb(255, 255, 255) }
+QComboBox{ background-color: rgb(255, 255, 255) }
+QSpinBox{ background-color: rgb(255, 255, 255) }
+QDoubleSpinBox{ background-color: rgb(255, 255, 255) }
+QHeaderView{ background-color: rgb(255, 255, 255) }
+QScrollBar{ background-color: rgb(255, 255, 255) }
+QPushButton{ background-color: rgb(255, 255, 255) }
+QDateTimeEdit{ background-color: rgb(255, 255, 255) }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -79,6 +93,11 @@
      </item>
      <item>
       <widget class="QDateTimeEdit" name="dateTimeEdit_ini">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="displayFormat">
         <string>dd-MM-yyyy hh:mm:ss</string>
        </property>
@@ -86,6 +105,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>al</string>
        </property>
@@ -93,6 +117,11 @@
      </item>
      <item>
       <widget class="QDateTimeEdit" name="dateTimeEdit_fin">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="displayFormat">
         <string>dd-MM-yyyy hh:mm:ss</string>
        </property>
@@ -100,6 +129,11 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBox_efectivo">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Efectivo</string>
        </property>
@@ -107,6 +141,11 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBox_visa">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Visa</string>
        </property>
@@ -114,6 +153,11 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBox_masterCard">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Master Card</string>
        </property>
@@ -151,6 +195,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_habilitar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Habilitar</string>
        </property>
@@ -162,6 +211,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_anular">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Anular</string>
        </property>
@@ -189,6 +243,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_ver">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Ver</string>
        </property>
@@ -217,6 +276,11 @@
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
       <widget class="QLabel" name="label_4">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Cliente</string>
        </property>
@@ -254,6 +318,12 @@
          <bold>true</bold>
         </font>
        </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
        <property name="decimals">
         <number>1</number>
        </property>
@@ -266,44 +336,105 @@
    </item>
    <item>
     <widget class="QTableWidget" name="tableWidget">
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
      <column>
       <property name="text">
        <string>ID</string>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
       </property>
      </column>
      <column>
       <property name="text">
        <string>Estado</string>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
      </column>
      <column>
       <property name="text">
        <string>Numero</string>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
       </property>
      </column>
      <column>
       <property name="text">
        <string>Cantidad</string>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
      </column>
      <column>
       <property name="text">
        <string>Descripción</string>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
       </property>
      </column>
      <column>
       <property name="text">
        <string>Total</string>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
      </column>
      <column>
       <property name="text">
        <string>Nombre</string>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
      </column>
      <column>
       <property name="text">
        <string>Fecha</string>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
       </property>
      </column>
     </widget>
@@ -325,6 +456,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_3">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Total</string>
        </property>
@@ -338,6 +474,12 @@
          <weight>75</weight>
          <bold>true</bold>
         </font>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
        </property>
        <property name="decimals">
         <number>1</number>
@@ -366,6 +508,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_salir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Salir</string>
        </property>

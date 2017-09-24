@@ -928,6 +928,21 @@ void Sistema::remove(QGridLayout *layout, int row, int column, bool deleteWidget
         }
     }
 }
+void Sistema::set_pushButton_css(QGridLayout *layout, QString text
+                                 , int row, int column, QFont font, QString color, QString bg_color)
+{
+    QLayoutItem *item = layout->itemAtPosition(row, column);
+    if(!item){
+        return;
+    }
+    QPushButton* w = (QPushButton*)item->widget();
+    if(!w){
+        return;
+    }
+    w->setText(text);
+    w->setFont(font);
+    w->setStyleSheet("QPushButton{ color: " + color + "; background-color: " + bg_color + "; }");
+}
 void Sistema::set_toolButton_css(QGridLayout *layout, QString text
                                  , int row, int column, QFont font, QString color, QString bg_color)
 {
@@ -942,6 +957,19 @@ void Sistema::set_toolButton_css(QGridLayout *layout, QString text
     w->setText(text);
     w->setFont(font);
     w->setStyleSheet("QToolButton{ color: " + color + "; background-color: " + bg_color + "; }");
+}
+QToolButton* Sistema::return_tb(QGridLayout *layout
+                                 , int row, int column)
+{
+    QLayoutItem *item = layout->itemAtPosition(row, column);
+    if(!item){
+        return 0;
+    }
+    QToolButton* w = (QToolButton*)item->widget();
+    if(!w){
+        return w;
+    }
+    return 0;
 }
 QString Sistema::extract_background_color(QString styleSheet)
 {

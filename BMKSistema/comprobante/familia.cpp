@@ -22,10 +22,14 @@ Familia::Familia(QWidget *parent) :
     QRegExp regExp_ruc(str_regExp_ruc);
 
     qDebug()<<str_regExp_ruc<<endl;*/
-    select_all();
+    is_ingresar = false;
+    is_modificar = false;
+    is_eliminar = false;
+    //select_all();
 
     //ui->lineEdit_nombre->setValidator(new QRegExpValidator(regExp_ruc));
 
+    //ui->pushButton_eliminar->hide();
     ui->lineEdit_nombre->setFocus();
     //ui->pushButton_guardar->setDisabled(true);
     //ui->pushButton_eliminar->setDisabled(true);
@@ -38,6 +42,69 @@ Familia::~Familia()
 {
     qDebug()<<"delete familia"<<endl;
     delete ui;
+}
+void Familia::modo_ingresar(int x, int y)
+{
+    ui->label_buscar->hide();
+
+    ui->spinBox_x->setValue(x);
+    ui->spinBox_y->setValue(y);
+
+    ui->spinBox_x->hide();
+    ui->spinBox_y->hide();
+    ui->label_x->hide();
+    ui->label_y->hide();
+    ui->comboBox_buscar->hide();
+    //ui->pushButton_guardar->hide();
+    ui->pushButton_modificar->hide();
+    ui->pushButton_eliminar->hide();
+}
+void Familia::modo_modificacion(QString familia, int x, int y)
+{
+    ui->label_buscar->hide();
+
+    current_familia = familia;
+
+    ui->label_titulo->setText(familia);
+
+    ui->lineEdit_nombre->setText(familia);
+
+    ui->spinBox_x->setValue(x);
+    ui->spinBox_y->setValue(y);
+    //ui->lineEdit_nombre->setText(familia);
+
+    //on_comboBox_buscar_activated(familia);
+
+    ui->comboBox_buscar->hide();
+    ui->pushButton_guardar->hide();
+    ui->spinBox_x->hide();
+    ui->spinBox_y->hide();
+    ui->label_x->hide();
+    ui->label_y->hide();
+    //ui->pushButton_modificar->hide();
+    ui->pushButton_eliminar->hide();
+}
+void Familia::modo_eliminacion(QString familia)
+{
+    ui->label_buscar->hide();
+
+    current_familia = familia;
+
+    ui->label_titulo->setText(familia);
+
+    ui->lineEdit_nombre->setText(familia);
+
+    //on_comboBox_buscar_activated(familia);
+
+    ui->spinBox_x->hide();
+    ui->spinBox_y->hide();
+    ui->label_x->hide();
+    ui->label_y->hide();
+
+    ui->comboBox_buscar->hide();
+    ui->pushButton_guardar->hide();
+    ui->pushButton_modificar->hide();
+    //ui->pushButton_eliminar->hide();
 }
 void Familia::select_all()
 {
@@ -85,14 +152,14 @@ void Familia::ingresar()
     qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
         QMessageBox::information(this, "Info", "Se guardo.", "ok");
-        select_all();
+        //select_all();
     }else{
         QMessageBox::warning(this, "Advertencia", "Ingrese correctamente los datos.", "ok");
     }
 }
 void Familia::modificar()
 {
-    QString nombre_old = ui->comboBox_buscar->currentText();
+    QString nombre_old = current_familia;
     QString nombre = ui->lineEdit_nombre->text();
     int x = ui->spinBox_x->value();
     int y = ui->spinBox_y->value();
@@ -114,14 +181,14 @@ void Familia::modificar()
     qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
         QMessageBox::information(this, "Info", "Se guardo.", "ok");
-        select_all();
+        //select_all();
     }else{
         QMessageBox::warning(this, "Advertencia", "Ingrese correctamente los datos.", "ok");
     }
 }
 void Familia::eliminar()
 {
-    QString nombre = ui->comboBox_buscar->currentText();
+    QString nombre = ui->lineEdit_nombre->text();
 
     QString str_query = "";
     QSqlQuery query;
@@ -130,7 +197,7 @@ void Familia::eliminar()
 
     if(query.exec(str_query)){
         QMessageBox::information(this, "Info", "Se elimino.", "ok");
-        select_all();
+        //select_all();
     }else{
         QMessageBox::warning(this, "Advertencia", "Ingrese correctamente los datos.", "ok");
     }
@@ -174,7 +241,9 @@ void Familia::on_pushButton_guardar_clicked()
     int ret = QMessageBox::warning(this, "Advertencia", "¿Esta seguro de guardar?", "Si", "Cancelar");
     switch(ret){
     case 0:{
+        is_ingresar = true;
         ingresar();
+        this->close();
     }break;
     case 1:{
 
@@ -192,7 +261,9 @@ void Familia::on_pushButton_modificar_clicked()
     int ret = QMessageBox::warning(this, "Advertencia", "¿Esta seguro de modificar?", "Si", "Cancelar");
     switch(ret){
     case 0:{
+        is_modificar = true;
         modificar();
+        this->close();
     }break;
     case 1:{
 
@@ -214,7 +285,19 @@ void Familia::on_pushButton_eliminar_clicked()
     int ret = QMessageBox::warning(this, "Advertencia", "¿Esta seguro de eliminar?", "Si", "Cancelar");
     switch(ret){
     case 0:{
+        AdminPass* ap = new AdminPass(this);
+        //ap->setAttribute(Qt::WA_DeleteOnClose);
+        ap->exec();
+        bool confirmado = ap->get_confirmado();
+
+        if(!confirmado){
+            return;
+        }
+        delete ap;
+
+        is_eliminar = true;
         eliminar();
+        this->close();
     }break;
     case 1:{
 

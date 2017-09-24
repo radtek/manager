@@ -15,6 +15,7 @@ ComprobanteBuscar::ComprobanteBuscar(QWidget *parent) :
     ui->dateTimeEdit_ini->setDateTime(dt_ini);
     connect(ui->dateTimeEdit_ini, SIGNAL(dateTimeChanged(QDateTime)), this, SLOT(on_dateTimeEdit_ini_dateTimeChanged(QDateTime)));
     QDateTime dt_fin = QDateTime::currentDateTime();
+    dt_fin.setTime(QTime(23, 59, 59));
     disconnect(ui->dateTimeEdit_fin, SIGNAL(dateTimeChanged(QDateTime)), this, SLOT(on_dateTimeEdit_fin_dateTimeChanged(QDateTime)));
     ui->dateTimeEdit_fin->setDateTime(dt_fin);
     connect(ui->dateTimeEdit_fin, SIGNAL(dateTimeChanged(QDateTime)), this, SLOT(on_dateTimeEdit_fin_dateTimeChanged(QDateTime)));
@@ -114,7 +115,7 @@ void ComprobanteBuscar::set_buscar()
         check_masterCard = "Master Card";
     }
     QString str_query = "SELECT c.id, c.estado_item_nombre, c.numero, c_h_pla.cantidad, pla.item_nombre, c_h_pla.cantidad * pla.precio";
-    str_query += ", c.nombre, c.fecha_emision";
+    str_query += ", c.nombre, c.pago_item_nombre, c.fecha_emision";
     str_query += " FROM comprobante c";
     str_query += " LEFT JOIN comprobante_has_persona c_h_per ON c.id = c_h_per.comprobante_id";
     str_query += " LEFT JOIN persona per ON c_h_per.persona_cod = per.cod";
@@ -159,9 +160,17 @@ void ComprobanteBuscar::set_buscar()
         ui->tableWidget->setColumnCount(columnCount);
 
         ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID" << "Estado" << "Numero" << "Cantidad" << "Descripción"
-                                                   << "Total" << "Nombre" << "Fecha");
+                                                   << "Total" << "Nombre" << "Pago" << "Fecha");
 
-
+        ui->tableWidget->setColumnWidth(0, 0);
+        ui->tableWidget->setColumnWidth(1, 100);
+        ui->tableWidget->setColumnWidth(2, 80);
+        ui->tableWidget->setColumnWidth(3, 100);
+        ui->tableWidget->setColumnWidth(4, 200);
+        ui->tableWidget->setColumnWidth(5, 100);
+        ui->tableWidget->setColumnWidth(6, 500);
+        ui->tableWidget->setColumnWidth(7, 150);
+        ui->tableWidget->setColumnWidth(8, 150);
         while (query.next()) {
             QString id = query.value(0).toString();
             QString estado = query.value(1).toString();
@@ -172,8 +181,9 @@ void ComprobanteBuscar::set_buscar()
             QString cantidad = query.value(3).toString();
             QString descripcion = query.value(4).toString();
             QString total = query.value(5).toString();
-            QString nombre = query.value(6).toString();
-            QString fecha = query.value(7).toDateTime().toString("dd-MM-yyyy hh:mm:ss");
+            QString nombre = query.value(6).toString();            
+            QString pago = query.value(7).toString();
+            QString fecha = query.value(8).toDateTime().toString("dd-MM-yyyy hh:mm:ss");
 
             cantidad = QString().setNum(cantidad.toDouble(), ' ', 3);
             total = QString().setNum(total.toDouble(), ' ', 2);
@@ -184,18 +194,21 @@ void ComprobanteBuscar::set_buscar()
             ui->tableWidget->setItem(pos, 4, new QTableWidgetItem(descripcion));
             ui->tableWidget->setItem(pos, 5, new QTableWidgetItem(total));
             ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(nombre));
-            ui->tableWidget->setItem(pos, 7, new QTableWidgetItem(fecha));
+            ui->tableWidget->setItem(pos, 7, new QTableWidgetItem(pago));
+            ui->tableWidget->setItem(pos, 8, new QTableWidgetItem(fecha));
 
             if(ui->tableWidget->item(pos, 1)->text().compare("Suspendido") == 0){
-                ui->tableWidget->item(pos, 1)->setTextColor(QColor(255, 0, 0));
-                ui->tableWidget->item(pos, 1)->setBackgroundColor(QColor(30, 255, 50));
-                for(int j=0; j<ui->tableWidget->columnCount(); j++)
-                    ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
-                                                                 | Qt::ItemIsSelectable);
+                for(int j = 0; j < ui->tableWidget->columnCount(); j++) {
+                    ui->tableWidget->item(pos, j)->setTextColor(QColor(255, 0, 0));
+                    ui->tableWidget->item(pos, j)->setBackgroundColor(QColor(200, 255, 255));
+                }
             }
+            for(int j=0; j < ui->tableWidget->columnCount(); j++)
+                ui->tableWidget->item(pos, j)->setFlags(Qt::ItemIsEnabled
+                                                             | Qt::ItemIsSelectable);
             ++pos;
         }
-        SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
+        //SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
 
         set_total();
     }else{
@@ -537,15 +550,19 @@ void ComprobanteBuscar::on_pushButton_anular_clicked()
     str_query += " WHERE id = " + id;
 
     if(query.exec(str_query)){
-        ui->tableWidget->item(item->row(), 1)->setTextColor(QColor(255, 0, 0));
-        ui->tableWidget->item(item->row(), 1)->setBackgroundColor(QColor(30, 255, 50));
+        for(int j = 0; j < ui->tableWidget->columnCount(); j++) {
+            ui->tableWidget->item(item->row(), j)->setTextColor(QColor(255, 0, 0));
+            ui->tableWidget->item(item->row(), j)->setBackgroundColor(QColor(200, 255, 255));
+        }
         ui->tableWidget->item(item->row(), 1)->setText("Suspendido");
 
         QString id = ui->tableWidget->item(item->row(), 0)->text();
         for(int i = item->row()-1; i >= 0; i--){
             if(id.compare(ui->tableWidget->item(i, 0)->text()) == 0){
-                ui->tableWidget->item(i, 1)->setTextColor(QColor(255, 0, 0));
-                ui->tableWidget->item(i, 1)->setBackgroundColor(QColor(30, 255, 50));
+                for(int j = 0; j < ui->tableWidget->columnCount(); j++) {
+                    ui->tableWidget->item(i, j)->setTextColor(QColor(255, 0, 0));
+                    ui->tableWidget->item(i, j)->setBackgroundColor(QColor(200, 255, 255));
+                }
                 ui->tableWidget->item(i, 1)->setText("Suspendido");
             }else{
                 break;
@@ -553,15 +570,17 @@ void ComprobanteBuscar::on_pushButton_anular_clicked()
         }
         for(int i = item->row()+1; i < ui->tableWidget->rowCount(); i++){
             if(id.compare(ui->tableWidget->item(i, 0)->text()) == 0){
-                ui->tableWidget->item(i, 1)->setTextColor(QColor(255, 0, 0));
-                ui->tableWidget->item(i, 1)->setBackgroundColor(QColor(30, 255, 50));
+                for(int j = 0; j < ui->tableWidget->columnCount(); j++) {
+                    ui->tableWidget->item(i, j)->setTextColor(QColor(255, 0, 0));
+                    ui->tableWidget->item(i, j)->setBackgroundColor(QColor(200, 255, 255));
+                }
                 ui->tableWidget->item(i, 1)->setText("Suspendido");
             }else{
                 break;
             }
         }
 
-        SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
+        //SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
 
         set_total();
         //on_lineEdit_buscar_textChanged(ui->lineEdit_buscar->text());
@@ -584,13 +603,15 @@ void ComprobanteBuscar::on_pushButton_ver_clicked()
     QString id = ui->tableWidget->item(item->row(), 0)->text();
     QString estado = ui->tableWidget->item(item->row(), 1)->text();
     QString numero = ui->tableWidget->item(item->row(), 2)->text();
-    QString nombre = ui->tableWidget->item(item->row(), 6)->text();
-    QString fecha = ui->tableWidget->item(item->row(), 7)->text();
+    QString nombre = ui->tableWidget->item(item->row(), 6)->text();    
+    QString pago = ui->tableWidget->item(item->row(), 7)->text();
+    QString fecha = ui->tableWidget->item(item->row(), 8)->text();
 
-    w->set_cabecera(numero, fecha, nombre);
+    w->set_cabecera(numero, fecha, nombre, pago);
+
     w->set_detalle(id);
 
-    w->ver_documento();
+    w->ver_documento_asa();
 
     w->show();
 }
@@ -621,15 +642,19 @@ void ComprobanteBuscar::on_pushButton_habilitar_clicked()
     str_query += " WHERE id = " + id;
 
     if(query.exec(str_query)){
-        ui->tableWidget->item(item->row(), 1)->setTextColor(QColor(0, 0, 0));
-        ui->tableWidget->item(item->row(), 1)->setBackgroundColor(QColor(255, 255, 255));
+        for(int j = 0; j < ui->tableWidget->columnCount(); j++) {
+            ui->tableWidget->item(item->row(), j)->setTextColor(QColor(0, 0, 0));
+            ui->tableWidget->item(item->row(), j)->setBackgroundColor(QColor(255, 255, 255));
+        }
         ui->tableWidget->item(item->row(), 1)->setText("Activo");
 
         QString id = ui->tableWidget->item(item->row(), 0)->text();
         for(int i = item->row()-1; i >= 0; i--){
             if(id.compare(ui->tableWidget->item(i, 0)->text()) == 0){
-                ui->tableWidget->item(i, 1)->setTextColor(QColor(0, 0, 0));
-                ui->tableWidget->item(i, 1)->setBackgroundColor(QColor(255, 255, 255));
+                for(int j = 0; j < ui->tableWidget->columnCount(); j++) {
+                    ui->tableWidget->item(i, j)->setTextColor(QColor(0, 0, 0));
+                    ui->tableWidget->item(i, j)->setBackgroundColor(QColor(255, 255, 255));
+                }
                 ui->tableWidget->item(i, 1)->setText("Activo");
             }else{
                 break;
@@ -637,15 +662,17 @@ void ComprobanteBuscar::on_pushButton_habilitar_clicked()
         }
         for(int i = item->row()+1; i < ui->tableWidget->rowCount(); i++){
             if(id.compare(ui->tableWidget->item(i, 0)->text()) == 0){
-                ui->tableWidget->item(i, 1)->setTextColor(QColor(0, 0, 0));
-                ui->tableWidget->item(i, 1)->setBackgroundColor(QColor(255, 255, 255));
+                for(int j = 0; j < ui->tableWidget->columnCount(); j++) {
+                    ui->tableWidget->item(i, j)->setTextColor(QColor(0, 0, 0));
+                    ui->tableWidget->item(i, j)->setBackgroundColor(QColor(255, 255, 255));
+                }
                 ui->tableWidget->item(i, 1)->setText("Activo");
             }else{
                 break;
             }
         }
 
-        SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
+        //SYSTEM->table_resize_to_contents(0, ui->tableWidget, size_query);
 
         set_total();
     }

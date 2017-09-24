@@ -114,8 +114,14 @@ public:
 
     void remove(QGridLayout *layout, int row, int column, bool deleteWidgets);
 
+    void set_pushButton_css(QGridLayout *layout, QString text
+                            , int row, int column, QFont font, QString color, QString bg_color);
+
     void set_toolButton_css(QGridLayout *layout, QString text
                             , int row, int column, QFont font, QString color, QString bg_color);
+
+    QToolButton* return_tb(QGridLayout *layout
+                                     , int row, int column);
 
     QString extract_background_color(QString styleSheet);
 

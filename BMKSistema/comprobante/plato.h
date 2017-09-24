@@ -2,6 +2,7 @@
 #define PLATO_H
 
 #include "mylibrary/mylibrary_global.h"
+#include "mylibrary/adminpass.h"
 
 namespace Ui {
 class Plato;
@@ -14,6 +15,17 @@ class MYLIBRARYSHARED_EXPORT Plato : public QWidget
 public:
     explicit Plato(QWidget *parent = 0);
     ~Plato();
+
+    QString getPlato() { return current_plato; }
+    bool isEliminar() { return is_eliminar; }
+
+    void modo_ingresar(QString familia, int x, int y);
+
+    void modo_modificacion(QString familia, QString plato, int x, int y);
+
+    void modo_eliminacion(QString familia, QString plato);
+
+    void set_familia_(QString familia);
 
     void set_familia(QString familia);
 
@@ -53,6 +65,10 @@ private:
     Ui::Plato *ui;
 
     QString familia;
+
+    QString current_plato;
+
+    bool is_eliminar;
 };
 
 #endif // PLATO_H

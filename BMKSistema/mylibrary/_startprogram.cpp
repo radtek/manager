@@ -72,8 +72,9 @@ void _StartProgram::run()
     */
     qDebug()<<"entro"<<endl;
     // GETMAC DE LAPTOP ALEX: 20-16-D8-E7-D1-BC
-    // GETMAC DE BILL MAC QUACK: 00-16-35-66-C3-09
-    if(text.indexOf("00-16-35-66-C3-09") != -1){
+    // GETMAC DE BILL MAC QUACK de ALAS PERUANAS: 00-16-35-66-C3-09
+    // GETMAC DE BILL MAC QUACK de ASA: 00-1E-C9-30-03-DB
+    if(text.indexOf("00-1E-C9-30-03-DB") != -1){
             //&& QDate::currentDate() >= QDate(2017,6,1) && QDate::currentDate() <= QDate(2017,8,6)){
 
     }else{

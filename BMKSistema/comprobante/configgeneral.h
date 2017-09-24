@@ -1,27 +1,40 @@
-#ifndef COMPROBANTE_H
-#define COMPROBANTE_H
+#ifndef CONFIGGENERAL_H
+#define CONFIGGENERAL_H
 
 #include "mylibrary/mylibrary_global.h"
 #include "mylibrary/widgetevents.h"
 #include "mylibrary/sunatconsultaruc.h"
 #include "mylibrary/reniecconsultadni.h"
-#include "configgeneral.h"
 #include "cliente.h"
 #include "familia.h"
 #include "plato.h"
 #include "mylibrary/adminpass.h"
 
 namespace Ui {
-class Comprobante;
+class ConfigGeneral;
 }
 
-class MYLIBRARYSHARED_EXPORT Comprobante : public QWidget
+class MYLIBRARYSHARED_EXPORT ConfigGeneral : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Comprobante(QWidget *parent = 0);
-    ~Comprobante();
+    explicit ConfigGeneral(QWidget *parent = 0);
+    ~ConfigGeneral();
+
+    void setFondoTapiz(QString fondoTapiz);
+
+    QString getClave();
+
+    int getFamiliaFilas();
+
+    int getFamiliaColumnas();
+
+    int getPlatoFilas();
+
+    int getPlatoColumnas();
+
+    QString getFondoTapiz();
 
     void delayedPopup();
 
@@ -31,17 +44,11 @@ public:
 
     void clean_platos();
 
-    void clean_void_familias();
-
-    void clean_void_platos();
-
     void select_familias();
 
     void select_platos(QString familia);
 
-    void insert_venta();
-
-private slots:    
+private slots:
     void on_familia_closing();
 
     void on_plato_closing();
@@ -82,66 +89,29 @@ private slots:
 
     void on_spinBox_plato_columnas_valueChanged(int arg1);
 
-    void on_pushButton_efectivo_clicked();
-
-    void on_pushButton_masterCard_clicked();
-
-    void on_pushButton_visa_clicked();
-
     void on_cliente_closing();
-
-    void on_pushButton_edit_cliente_clicked();
-
-    void on_pushButton_subir_clicked();
-
-    void on_pushButton_bajar_clicked();
-
-    void on_pushButton_quitar_clicked();
 
     void on_toolButton_familia_clicked();
 
     void on_toolButton_plato_clicked();
 
-    void on_tableWidget_itemChanged(QTableWidgetItem *item);
-
-    void on_doubleSpinBox_pago_valueChanged(double arg1);
-
-    void on_doubleSpinBox_total_valueChanged(double arg1);
-
-    void on_thread_finished();
-
-    void on_myProccess_started();
-
-    void on_myProccess_finished(int, QProcess::ExitStatus);
-
-    void on_pushButton_google_maps_clicked();
-
-    void on_thread_loadWeb();
-
-    void loadFinished(bool b);
-
-    void print_comanda_aux();
-
-    void on_socket_bytesWritten(qint64 bytes);
+    void on_pushButton_guardar_clave_clicked();
 
     void on_comboBox_familia_currentTextChanged(const QString &arg1);
 
-    void on_configGeneral_closing();
+    void on_pushButton_fondoTapiz_clicked();
 
-    void on_pushButton_imageLogo_clicked();
+    void on_pushButton_formatoFamilia_clicked();
 
-    void on_lineEdit_pago_textEdited(const QString &arg1);
+    void on_pushButton_colorFamilia_clicked();
 
-    void on_lineEdit_pago_textChanged(const QString &arg1);
+    void on_pushButton_fondoFamilia_clicked();
 
-private:
-    void print_caja();
+    void on_pushButton_formatoPlato_clicked();
 
-    void print_comanda();
+    void on_pushButton_colorPlato_clicked();
 
-    void print_star_asa();
-
-    void print_msg();
+    void on_pushButton_fondoPlato_clicked();
 
 protected:
     void showEvent(QShowEvent *event);
@@ -150,29 +120,16 @@ protected:
 
     bool eventFilter(QObject *watched, QEvent *event);
 
+signals:
+    void closing();
+
 private:
-    Ui::Comprobante *ui;
-
-    SunatConsultaRUC sunat_consultaRUC;
-    ReniecConsultaDNI reniec_consultDNI;
-
-    QString clave;
+    Ui::ConfigGeneral *ui;
 
     bool afterShow;
     bool firstShow;
 
-    QTcpSocket* m_pSocket;
-    bool m_ConnectStatus;
-
-    QString pago;
-    QString nro_ticket;
-    //QWebEngineView* view_mapa;
-
-    QByteArray blockWritten;
-
-    int countPrintComanda;
-
     QString fondoTapiz;
 };
 
-#endif // COMPROBANTE_H
+#endif // CONFIGGENERAL_H

@@ -62,7 +62,8 @@ SOURCES += \
     comprobante/comprobantebuscar.cpp \
     mylibrary/adminpass.cpp \
     comprobante/previewticket.cpp \
-    comprobante/sendmsg.cpp
+    comprobante/sendmsg.cpp \
+    comprobante/configgeneral.cpp
 
 HEADERS += \
     mylibrary/comboboxdelegate.h \
@@ -110,7 +111,8 @@ HEADERS += \
     comprobante/comprobantebuscar.h \
     mylibrary/adminpass.h \
     comprobante/previewticket.h \
-    comprobante/sendmsg.h
+    comprobante/sendmsg.h \
+    comprobante/configgeneral.h
 
 FORMS += \
     mylibrary/snackbarinfo.ui \
@@ -130,7 +132,8 @@ FORMS += \
     comprobante/comprobantebuscar.ui \
     mylibrary/adminpass.ui \
     comprobante/previewticket.ui \
-    comprobante/sendmsg.ui
+    comprobante/sendmsg.ui \
+    comprobante/configgeneral.ui
 
 RESOURCES += \
     iconos.qrc
