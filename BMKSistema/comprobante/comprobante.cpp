@@ -30,12 +30,16 @@ Comprobante::Comprobante(QWidget *parent) :
     ui->spinBox_plato_columnas->hide();
     ui->horizontalSpacer_plato->changeSize(0, 0);
 
-    ui->tableWidget->hideColumn(3);
+    ui->tableWidget->hideColumn(DESCRIPCION_PLATO);
+    ui->tableWidget->setColumnWidth(UNIDAD, 90);
+    ui->tableWidget->setColumnWidth(NOMBRE, 200);
+    ui->tableWidget->setColumnWidth(CANTIDAD, 90);
+    ui->tableWidget->setColumnWidth(PRECIO, 90);
 
     //ui->doubleSpinBox_pago->hide();
-    ui->lineEdit_pago->hide();
+    //ui->lineEdit_pago->hide();
 
-    ui->lineEdit_pago->setDecimals(2);
+    //ui->lineEdit_pago->setDecimals(2);
     //view_mapa = new QWebEngineView;
     //QWebEnginePage* page = view_mapa->page();
     //connect(page, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
@@ -54,26 +58,16 @@ Comprobante::Comprobante(QWidget *parent) :
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(0);
 
-    LineEditNumberDelegate* delegate = new LineEditNumberDelegate;
-    delegate->setDecimals(0);
-    delegate->setMinimumWidth(100);
-    delegate->setMaximumWidth(100);
-    delegate->setMinimumHeight(100);
-    delegate->setMaximumHeight(100);
-    ui->tableWidget->setItemDelegateForColumn(1, delegate);
-    delegate = new LineEditNumberDelegate;
-    delegate->setDecimals(1);
-    delegate->setMinimumWidth(100);
-    delegate->setMaximumWidth(100);
-    delegate->setMinimumHeight(100);
-    delegate->setMaximumHeight(100);
-    ui->tableWidget->setItemDelegateForColumn(2, delegate);
+    DoubleSpinBoxDelegate* delegate = new DoubleSpinBoxDelegate;
+    delegate->setDecimals(0);    
+    ui->tableWidget->setItemDelegateForColumn(CANTIDAD, delegate);
+    delegate = new DoubleSpinBoxDelegate;
+    delegate->setDecimals(1);    
+    ui->tableWidget->setItemDelegateForColumn(PRECIO, delegate);
 
     afterShow = false;
 
     firstShow = false;
-
-    qDebug()<<"hola"<<endl;
 
     QRegExp regExp_ruc("[0-9]{11,11}");
     ui->lineEdit_codigo->setValidator(new QRegExpValidator(regExp_ruc));
@@ -81,12 +75,6 @@ Comprobante::Comprobante(QWidget *parent) :
     ui->lineEdit_codigo->setFocus();    
 
     this->installEventFilter(this);
-
-    /*
-    select_familias();
-    ui->comboBox_familia->setCurrentIndex(1);
-    select_platos(ui->comboBox_familia->currentText());
-    */
 }
 
 Comprobante::~Comprobante()
@@ -99,6 +87,19 @@ Comprobante::~Comprobante()
     //delete view_mapa;
     delete m_pSocket;
 }
+
+void Comprobante::when_detalleModified()
+{
+    double total = 0.0;
+    for(int i = 0; i < ui->tableWidget->rowCount(); i++) {
+        double precio = ui->tableWidget->item(i, PRECIO)->text().toDouble();
+        total += precio;
+    }
+    ui->doubleSpinBox_total->setValue(total);
+
+    on_doubleSpinBox_pago_valueChanged(ui->doubleSpinBox_pago->value());
+}
+
 void Comprobante::delayedPopup()
 {
     int val_x = ui->spinBox_familia_filas->value();
@@ -184,10 +185,11 @@ void Comprobante::select_familias()
 {
     QSqlQuery query;
     QString str_query = "";
-    str_query += "SELECT item_nombre, x, y";
+    str_query += "SELECT nombre, x, y";
     str_query += ", font , color, background_color";
     str_query += " FROM familia";
 
+    qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
         QString familita = ui->comboBox_familia->currentText();
         ui->comboBox_familia->clear();
@@ -226,13 +228,14 @@ void Comprobante::select_platos(QString familia)
 {
     QSqlQuery query;
     QString str_query = "";
-    str_query += "SELECT plato.item_nombre, plato.x, plato.y";
-    str_query += ", plato.font , plato.color, plato.background_color";
-    str_query += ", plato.precio, plato.descripcion";
+    str_query += "SELECT plato.nombre, plato.x, plato.y";
+    str_query += ", plato.font, plato.color, plato.background_color";
+    str_query += ", plato.descripcion";
     str_query += " FROM plato";
-    str_query += " JOIN familia ON familia.item_nombre = plato.familia_item_nombre";
-    str_query += " WHERE familia.item_nombre = '"+familia+"'";
+    str_query += " JOIN familia ON familia.nombre = plato.familia_nombre";
+    str_query += " WHERE familia.nombre = '"+familia+"'";
 
+    qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
         ui->comboBox_plato->clear();
 
@@ -246,19 +249,20 @@ void Comprobante::select_platos(QString familia)
             font.fromString(str_font);
             QString color = query.value(4).toString();
             QString background_color = query.value(5).toString();
-            QString precio = query.value(6).toString();
-            QString descripcion = query.value(7).toString();
+            QString precio = "0.0";
+            QString descripcion = query.value(6).toString();
 
+            /*
             for(int i = 0; i < ui->tableWidget->rowCount(); i++){
-                if(nombre.compare(ui->tableWidget->item(i, 0)->text()) == 0){
+                if(nombre.compare(ui->tableWidget->item(i, NOMBRE)->text()) == 0){
                     platos_existentes.push_back(nombre);
-                    double cant = ui->tableWidget->item(i, 1)->text().toDouble();
+                    double cant = ui->tableWidget->item(i, CANTIDAD)->text().toDouble();
                     double value_precio = precio.toDouble() * cant;
-                    ui->tableWidget->item(i, 2)->setText(QString().setNum(value_precio, ' ', 1));
-                    ui->tableWidget->item(i, 3)->setText(descripcion);
+                    ui->tableWidget->item(i, PRECIO)->setText(QString().setNum(value_precio, ' ', 1));
+                    ui->tableWidget->item(i, DESCRIPCION_PLATO)->setText(descripcion);
                     break;
                 }
-            }
+            }*/
 
             int val_x = ui->spinBox_plato_filas->value();
             int val_y = ui->spinBox_plato_columnas->value();
@@ -300,17 +304,7 @@ void Comprobante::select_platos(QString familia)
     }
 }
 void Comprobante::insert_venta()
-{
-    /*
-    int ret = QMessageBox::warning(this, "Advertencia", "¿Esta seguro de esta venta?", "Si", "Cancelar");
-    switch(ret){
-    case 0:{
-
-    }break;
-    case 1:{
-        return;
-    }break;
-    }*/
+{    
     if(ui->lineEdit_nombre->text().compare("") == 0) {
         QMessageBox::warning(this, "Advertencia", "Ingrese nombre.", "Aceptar");
         return;
@@ -320,6 +314,61 @@ void Comprobante::insert_venta()
         QMessageBox::warning(this, "Advertencia", "No hay detalle en la venta.", "Aceptar");
         return;
     }
+
+    QMessageBox msgBox(this);
+    msgBox.setIcon(QMessageBox::Warning);
+    //msgBox.setParent();
+    //msgBox.setStandardButtons(QMessageBox::Ok);
+    QFont font;
+    font.setFamily("MS Shell Dlg 2");
+    font.setBold(false);
+    font.setPointSize(11);
+    msgBox.setFont(font);
+    //msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Yes
+    //                          | QMessageBox::Cancel);
+    //msgBox.setButtonText(QMessageBox::Ok, "Servirse");
+    //msgBox.setButtonText(QMessageBox::Yes, "LLevar");
+    //msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
+    QPushButton* bt_llevar = new QPushButton("Llevar");
+    QPushButton* bt_servirse = new QPushButton("Servirse(Return)");
+    QPushButton* bt_cancelar = new QPushButton("Cancelar(Esc)");
+    //bt_cancelar->hide();
+
+    bt_llevar->setFont(font);
+    bt_servirse->setFont(font);
+    msgBox.addButton(bt_llevar, QMessageBox::YesRole);
+    msgBox.addButton(bt_servirse, QMessageBox::AcceptRole);
+    msgBox.addButton(bt_cancelar, QMessageBox::RejectRole);
+    msgBox.setDefaultButton(bt_servirse);
+    msgBox.setEscapeButton(bt_cancelar);
+
+    msgBox.setWindowTitle("Advertencia");
+    msgBox.setText("¿Es para servirse o para llevar?");
+
+
+    int ret = msgBox.exec();
+    qDebug()<<"ret: "<<ret<<endl;
+    switch(ret){
+    case 0:{
+        qDebug()<<"LLevar"<<endl;
+        if(ui->lineEdit_codigo->text().length() == 11 || ui->lineEdit_codigo->text().length() == 8){
+            ui->lineEdit_nombre->setText(ui->lineEdit_codigo->text() + " - " + ui->lineEdit_nombre->text());
+        }else{
+            ui->lineEdit_nombre->setText(ui->lineEdit_nombre->text()+" para llevar");
+        }
+    }break;
+    case 1:{
+        if(ui->lineEdit_codigo->text().length() == 11 || ui->lineEdit_codigo->text().length() == 8){
+            ui->lineEdit_nombre->setText(ui->lineEdit_codigo->text() + " - " + ui->lineEdit_nombre->text());
+        }
+        qDebug()<<"Servirse"<<endl;
+    }break;
+    case 2:{
+        qDebug()<<"Cancel"<<endl;
+        return;
+    }break;
+    }
+
     QString str_query = "";
     QSqlQuery query;
 
@@ -344,7 +393,7 @@ void Comprobante::insert_venta()
 
     str_query = "INSERT INTO comprobante(serie, numero, fecha_emision";
     str_query += ", anulado, pago_item_nombre, estado_item_nombre";
-    str_query += ", operacion_item_nombre, tipo_item_nombre, nombre)";
+    str_query += ", operacion_item_nombre, tipo_item_nombre, nombre, direccion)";
     str_query += "VALUES(";
     str_query += QString() + "'" + "0000" + "'";
     str_query += QString() + ", '" + nro_ticket + "'";
@@ -355,6 +404,7 @@ void Comprobante::insert_venta()
     str_query += QString() + ", '" + "Venta" + "'";
     str_query += QString() + ", '" + "Ticket" + "'";
     str_query += ", '" + nombre + "'";
+    str_query += ", '" + ui->lineEdit_direccion->text() + "'";
     str_query += ")";
     str_query += "&&END_QUERY&&";
     if(ui->lineEdit_codigo->text().length() == 11){
@@ -404,38 +454,42 @@ void Comprobante::insert_venta()
     }
 
     for(int i = 0; i < ui->tableWidget->rowCount(); i++){
-        str_query += "INSERT INTO comprobante_has_plato(comprobante_id, plato_item_nombre";
-        str_query += ", cantidad)";
+        str_query += "INSERT INTO comprobante_has_plato(comprobante_id, plato_nombre, unidad_item_nombre";
+        str_query += ", cantidad, precio)";
         str_query += "VALUES(";
         str_query += "(SELECT MAX(t.id) FROM comprobante AS t)";
-        str_query += ", '" + ui->tableWidget->item(i, 0)->text() + "'";
-        str_query += ", '" + ui->tableWidget->item(i, 1)->text() + "'";
-        //str_query += ", '" + ui->tableWidget->item(i, 2)->text() + "'";
+        str_query += ", '" + ui->tableWidget->item(i, NOMBRE)->text() + "'";
+        str_query += ", '" + ui->tableWidget->item(i, UNIDAD)->text() + "'";
+        str_query += ", '" + ui->tableWidget->item(i, CANTIDAD)->text() + "'";
+        str_query += ", '" + ui->tableWidget->item(i, PRECIO)->text() + "'";
         str_query += ")";
         str_query += "&&END_QUERY&&";
     }
 
     SYSTEM->multiple_query(str_query);
 
-    qDebug()<<str_query<<endl;
+    SYSTEM->start_transaction();
+    //qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
         qDebug()<<"query ok"<<endl;        
+        SYSTEM->commit();
+        //print_caja();
+        //print_comanda_alas();
 
-        //str_query = "SET autocommit = 1";
-        //if(query.exec(str_query)){
-            //print_caja();
+        print_caja_frap();
+        //print_comanda();
 
-            //print_caja();
-            print_star_asa();
-            print_comanda();
+        ui->lineEdit_codigo->clear();
+        ui->lineEdit_direccion->clear();
+        ui->lineEdit_nombre->clear();
+        ui->tableWidget->clearContents();
+        ui->tableWidget->setRowCount(0);
 
-        //}else{
-            //QMessageBox::critical(this, "Error", "Error inesperado", "Ok");
-        //}
-
-
-        //QMessageBox::information(this, "Información", "Se guardo la venta.", "Aceptar");
+        ui->doubleSpinBox_pago->setValue(0.0);
+        ui->doubleSpinBox_total->setValue(0.0);
+        ui->doubleSpinBox_vuelto->setValue(0.0);
     }else{
+        SYSTEM->rollback();
         return;
     }
     /*
@@ -450,11 +504,7 @@ void Comprobante::insert_venta()
         QMessageBox::critical(this, "Error", "Error inesperado", "Ok");
     }
     */
-    ui->lineEdit_codigo->clear();
-    ui->lineEdit_direccion->clear();
-    ui->lineEdit_nombre->clear();
-    ui->tableWidget->clearContents();
-    ui->tableWidget->setRowCount(0);
+
 }
 
 void Comprobante::on_familia_closing()
@@ -510,390 +560,9 @@ void Comprobante::on_plato_closing()
     ui->spinBox_plato_filas->setValue(ui->spinBox_plato_filas->value()-1);
     select_platos(ui->comboBox_familia->currentText());
 }
-void Comprobante::on_familia_fontAct_triggered(QAction* act)
-{
-    if(act->text().compare("&Fuente") == 0){        
-        bool ok;
-        QFont font = QFontDialog::getFont(
-                      &ok, QFont("MS Shell Dlg 2", 8, -1, false), this);
-        if (ok) {
-            QPushButton* tButton = (QPushButton*)sender();
-            tButton->setFont(font);
 
-            QString str_query = "";
-            QSqlQuery query;
-            str_query += "UPDATE familia";
-            str_query += " SET font = '" + font.toString() + "'";
-            str_query += " WHERE item_nombre = '" + tButton->text() + "'";
-
-            qDebug()<<str_query<<endl;
-            if(query.exec(str_query)){
-                qDebug()<<"query ok"<<endl;
-            }
-        } else {
-
-        }
-    }
-}
-void Comprobante::on_familia_colorAct_triggered(QAction* act)
-{
-    if(act->text().compare("&Color") == 0){
-        QColor color = QColorDialog::getColor(Qt::black, this, "Pick Color");
-
-        QPushButton* tButton = (QPushButton*)sender();
-
-        QString bg_color = SYSTEM->extract_background_color(tButton->styleSheet());
-        QString str_color = color.name();
-
-        QString ss = "QPushButton{ color: "+str_color+"; background-color: "+bg_color+"; }";
-        tButton->setStyleSheet(ss);
-
-        QString str_query = "";
-        QSqlQuery query;
-        str_query += "UPDATE familia";
-        str_query += " SET color = '" + color.name() + "'";
-        str_query += " WHERE item_nombre = '" + tButton->text() + "'";
-
-        qDebug()<<str_query<<endl;
-        if(query.exec(str_query)){
-            qDebug()<<"query ok"<<endl;
-        }
-    }
-}
-void Comprobante::on_familia_color_de_fondo_Act_triggered(QAction* act)
-{
-    if(act->text().compare("&Color de Fondo") == 0){
-        QColor color = QColorDialog::getColor(Qt::black, this, "Pick Color");
-
-        QPushButton* tButton = (QPushButton*)sender();
-
-        QString bg_color = color.name();
-        QString str_color = SYSTEM->extract_color(tButton->styleSheet());
-
-        QString ss = "QPushButton{ color: "+str_color+"; background-color: "+bg_color+"; }";
-        tButton->setStyleSheet(ss);
-
-        QString str_query = "";
-        QSqlQuery query;
-        str_query += "UPDATE familia";
-        str_query += " SET background_color = '" + color.name() + "'";
-        str_query += " WHERE item_nombre = '" + tButton->text() + "'";
-
-        qDebug()<<str_query<<endl;
-        if(query.exec(str_query)){
-            qDebug()<<"query ok"<<endl;
-        }
-    }
-}
-void Comprobante::on_familia_nuevoAct_triggered(QAction* act)
-{
-    if(act->text().compare("&Nuevo") == 0){
-        AdminPass* ap = new AdminPass(this);
-        //ap->setAttribute(Qt::WA_DeleteOnClose);
-        ap->exec();
-        bool confirmado = ap->get_confirmado();
-
-        if(!confirmado){
-            return;
-        }
-        delete ap;
-
-        Familia* familia = new Familia(this);
-        familia->setWindowFlag(Qt::Dialog);
-        familia->setAttribute(Qt::WA_DeleteOnClose);
-        familia->setWindowModality(Qt::WindowModal);
-
-        QPushButton* tb = (QPushButton*)sender();
-
-        int x = 0;
-        int y = 0;
-        for(int i = 0; i < ui->gridLayout_familias->rowCount(); i++){
-            bool flag = false;
-            for(int j = 0; j < ui->gridLayout_familias->columnCount(); j++){
-                if(ui->gridLayout_familias->itemAtPosition(i, j)->widget() == tb){
-                    x = i+1;
-                    y = j+1;
-                    flag = true;
-                    break;
-                }
-            }
-            if(flag)break;
-        }
-        familia->modo_ingresar(x, y);
-
-        connect(familia, SIGNAL(closing()), this, SLOT(on_familia_closing()));
-
-        familia->show();
-    }
-}
-void Comprobante::on_familia_modificarAct_triggered(QAction* act)
-{
-    if(act->text().compare("&Modificar") == 0){
-        QPushButton* tb = (QPushButton*)sender();
-
-        if(tb->text().compare("____") == 0)
-            return;
-
-        AdminPass* ap = new AdminPass(this);
-        //ap->setAttribute(Qt::WA_DeleteOnClose);
-        ap->exec();
-        bool confirmado = ap->get_confirmado();
-
-        if(!confirmado){
-            return;
-        }
-
-        Familia* familia = new Familia(this);
-        familia->setWindowFlag(Qt::Dialog);
-        familia->setAttribute(Qt::WA_DeleteOnClose);
-        familia->setWindowModality(Qt::WindowModal);
-
-        int x = 0;
-        int y = 0;
-        for(int i = 0; i < ui->gridLayout_familias->rowCount(); i++){
-            bool flag = false;
-            for(int j = 0; j < ui->gridLayout_familias->columnCount(); j++){
-                if(ui->gridLayout_familias->itemAtPosition(i, j)->widget() == tb){
-                    x = i+1;
-                    y = j+1;
-                    flag = true;
-                    break;
-                }
-            }
-            if(flag)break;
-        }
-        familia->modo_modificacion(tb->text(), x, y);
-
-        connect(familia, SIGNAL(closing()), this, SLOT(on_familia_closing()));
-
-        familia->show();
-    }
-}
-void Comprobante::on_familia_quitarAct_triggered(QAction* act)
-{
-    if(act->text().compare("&Quitar") == 0){
-        QPushButton* tb = (QPushButton*)sender();
-        if(tb->text().compare("____") == 0)
-            return;
-
-        AdminPass* ap = new AdminPass(this);
-        //ap->setAttribute(Qt::WA_DeleteOnClose);
-        ap->exec();
-        bool confirmado = ap->get_confirmado();
-
-        if(!confirmado){
-            return;
-        }
-        delete ap;        
-
-        Familia* familia = new Familia(this);
-        familia->setWindowFlag(Qt::Dialog);
-        familia->setAttribute(Qt::WA_DeleteOnClose);
-        familia->setWindowModality(Qt::WindowModal);
-
-        familia->modo_eliminacion(tb->text());
-
-        ui->comboBox_familia->setCurrentText(tb->text());
-
-        connect(familia, SIGNAL(closing()), this, SLOT(on_familia_closing()));
-
-        familia->show();
-    }
-}
-void Comprobante::on_plato_fontAct_triggered(QAction* act)
-{
-    if(act->text().compare("&Fuente") == 0){
-        bool ok;
-        QFont font = QFontDialog::getFont(
-                      &ok, QFont("MS Shell Dlg 2", 8, -1, false), this);
-        if (ok) {
-            QPushButton* tButton = (QPushButton*)sender();
-            tButton->setFont(font);
-
-            QString str_query = "";
-            QSqlQuery query;
-            str_query += "UPDATE plato";
-            str_query += " SET font = '" + font.toString() + "'";
-            str_query += " WHERE item_nombre = '" + tButton->text() + "'";
-
-            qDebug()<<str_query<<endl;
-            if(query.exec(str_query)){
-                qDebug()<<"query ok"<<endl;
-            }
-        } else {
-
-        }
-    }
-}
-void Comprobante::on_plato_colorAct_triggered(QAction* act)
-{
-    if(act->text().compare("&Color") == 0){
-        QColor color = QColorDialog::getColor(Qt::black, this, "Pick Color");
-
-        QPushButton* tButton = (QPushButton*)sender();
-
-        QString bg_color = SYSTEM->extract_background_color(tButton->styleSheet());
-        QString str_color = color.name();
-
-        QString ss = "QPushButton{ color: "+str_color+"; background-color: "+bg_color+"; }";
-        tButton->setStyleSheet(ss);
-
-        QString str_query = "";
-        QSqlQuery query;
-        str_query += "UPDATE plato";
-        str_query += " SET color = '" + color.name() + "'";
-        str_query += " WHERE item_nombre = '" + tButton->text() + "'";
-
-        qDebug()<<str_query<<endl;
-        if(query.exec(str_query)){
-            qDebug()<<"query ok"<<endl;
-        }
-    }
-}
-void Comprobante::on_plato_color_de_fondo_Act_triggered(QAction* act)
-{
-    if(act->text().compare("&Color de Fondo") == 0){
-        QColor color = QColorDialog::getColor(Qt::black, this, "Pick Color");
-
-        QPushButton* tButton = (QPushButton*)sender();
-
-        QString bg_color = color.name();
-        QString str_color = SYSTEM->extract_color(tButton->styleSheet());
-
-        QString ss = "QPushButton{ color: "+str_color+"; background-color: "+bg_color+"; }";
-        tButton->setStyleSheet(ss);
-
-        QString str_query = "";
-        QSqlQuery query;
-        str_query += "UPDATE plato";
-        str_query += " SET background_color = '" + color.name() + "'";
-        str_query += " WHERE item_nombre = '" + tButton->text() + "'";
-
-        qDebug()<<str_query<<endl;
-        if(query.exec(str_query)){
-            qDebug()<<"query ok"<<endl;
-        }
-    }
-}
-void Comprobante::on_plato_nuevoAct_triggered(QAction* act)
-{    
-    if(act->text().compare("&Nuevo") == 0){
-        AdminPass* ap = new AdminPass(this);
-        //ap->setAttribute(Qt::WA_DeleteOnClose);
-        ap->exec();
-        bool confirmado = ap->get_confirmado();
-
-        if(!confirmado){
-            return;
-        }
-        delete ap;
-
-        Plato* plato = new Plato(this);
-        plato->setWindowFlag(Qt::Dialog);
-        plato->setAttribute(Qt::WA_DeleteOnClose);
-        plato->setWindowModality(Qt::WindowModal);
-
-        QPushButton* tb = (QPushButton*)sender();
-
-        int x = 0;
-        int y = 0;
-        for(int i = 0; i < ui->gridLayout_platos->rowCount(); i++){
-            bool flag = false;
-            for(int j = 0; j < ui->gridLayout_platos->columnCount(); j++){
-                if(ui->gridLayout_platos->itemAtPosition(i, j)->widget() == tb){
-                    x = i+1;
-                    y = j+1;
-                    flag = true;
-                    break;
-                }
-            }
-            if(flag)break;
-        }
-        plato->modo_ingresar(ui->comboBox_familia->currentText(), x, y);
-
-        //plato->set_familia_(ui->comboBox_familia->currentText());
-
-        connect(plato, SIGNAL(closing()), this, SLOT(on_plato_closing()));
-
-        plato->show();
-    }
-
-}
-void Comprobante::on_plato_modificarAct_triggered(QAction* act)
-{    
-    if(act->text().compare("&Modificar") == 0){
-        QPushButton* tb = (QPushButton*)sender();
-        if(tb->text().compare("____") == 0)
-            return;
-
-        AdminPass* ap = new AdminPass(this);
-        //ap->setAttribute(Qt::WA_DeleteOnClose);
-        ap->exec();
-        bool confirmado = ap->get_confirmado();
-
-        if(!confirmado){
-            return;
-        }
-        delete ap;
-
-        Plato* plato = new Plato(this);
-        plato->setWindowFlag(Qt::Dialog);
-        plato->setAttribute(Qt::WA_DeleteOnClose);
-        plato->setWindowModality(Qt::WindowModal);
-
-
-        int x = 0;
-        int y = 0;
-        for(int i = 0; i < ui->gridLayout_platos->rowCount(); i++){
-            bool flag = false;
-            for(int j = 0; j < ui->gridLayout_platos->columnCount(); j++){
-                if(ui->gridLayout_platos->itemAtPosition(i, j)->widget() == tb){
-                    x = i+1;
-                    y = j+1;
-                    flag = true;
-                    break;
-                }
-            }
-            if(flag)break;
-        }
-        plato->modo_modificacion(ui->comboBox_familia->currentText(), tb->text(), x, y);
-
-        connect(plato, SIGNAL(closing()), this, SLOT(on_plato_closing()));
-
-        plato->show();
-    }
-}
-void Comprobante::on_plato_quitarAct_triggered(QAction* act)
-{
-    if(act->text().compare("&Quitar") == 0){
-        QPushButton* tb = (QPushButton*)sender();
-        if(tb->text().compare("____") == 0)
-            return;
-
-        AdminPass* ap = new AdminPass(this);
-        //ap->setAttribute(Qt::WA_DeleteOnClose);
-        ap->exec();
-        bool confirmado = ap->get_confirmado();
-
-        if(!confirmado){
-            return;
-        }
-        delete ap;
-
-        Plato* plato = new Plato(this);
-        plato->setWindowFlag(Qt::Dialog);
-        plato->setAttribute(Qt::WA_DeleteOnClose);
-        plato->setWindowModality(Qt::WindowModal);
-
-        plato->modo_eliminacion(ui->comboBox_familia->currentText(), tb->text());
-
-        connect(plato, SIGNAL(closing()), this, SLOT(on_plato_closing()));
-
-        plato->show();
-    }
-}
 void Comprobante::on_cliente_closing()
-{
+{    
     Cliente* cliente = (Cliente*)sender();
     QString cod = cliente->get_cod();
 
@@ -911,7 +580,7 @@ void Comprobante::on_cliente_closing()
 }
 
 void Comprobante::on_pushButton_edit_cliente_clicked()
-{
+{    
     Cliente* cliente = new Cliente(this);
     cliente->setWindowFlag(Qt::Dialog);
     cliente->setAttribute(Qt::WA_DeleteOnClose);
@@ -919,7 +588,7 @@ void Comprobante::on_pushButton_edit_cliente_clicked()
 
     connect(cliente, SIGNAL(closing()), this, SLOT(on_cliente_closing()));
 
-    cliente->show();
+    cliente->showMaximized();
 }
 
 void Comprobante::on_comboBox_familia_activated(const QString &arg1)
@@ -935,75 +604,111 @@ void Comprobante::on_comboBox_familia_activated(const QString &arg1)
 }
 
 void Comprobante::on_comboBox_plato_activated(const QString &arg1)
-{    
+{
     QString str_query = "";
-    QSqlQuery query;
-    str_query += "SELECT precio, descripcion FROM plato";
-    str_query += " WHERE item_nombre = '"+arg1+"'";
+    QSqlQuery query;/*
+    str_query = "SELECT com_h_pla.precio/com_h_pla.cantidad, plato.descripcion FROM plato plato";
+    str_query += " JOIN comprobante_has_plato com_h_pla ON plato.nombre = com_h_pla.plato_nombre";
+    str_query += " JOIN comprobante com ON com.id = com_h_pla.comprobante_id";
+    str_query += " WHERE plato.nombre = '"+arg1+"'";
+    str_query += " AND com_h_pla.unidad_item_nombre = 'UND'";
+    str_query += " ORDER BY com.fecha_emision DESC";
+    str_query += " LIMIT 1";*/
+    str_query  = "SELECT plato.precio, plato.descripcion";
+    str_query += " FROM plato";
+    str_query += " WHERE plato.nombre = '"+arg1+"'";
+
+    qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
+        QString precio = "0.0", descripcion;
         if(query.next()){
-            disconnect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*))
-                       , this, SLOT(on_tableWidget_itemChanged(QTableWidgetItem*)));
+            precio = QString().setNum(query.value(0).toDouble(), ' ', 1);
+            descripcion = query.value(1).toString();
+        }else{
+            /*
+            str_query  = "SELECT plato.precio, plato.descripcion";
+            str_query += " FROM plato";
+            str_query += " WHERE plato.nombre = '"+arg1+"'";
 
-            for(int i = 0; i < ui->tableWidget->rowCount(); i++){
-                if(arg1.compare(ui->tableWidget->item(i, 0)->text()) == 0){
-                    int cant = ui->tableWidget->item(i, 1)->text().toInt();
-
-                    ui->tableWidget->item(i, 1)->setText(QString().setNum(cant+1));
-                    double precio = ui->tableWidget->item(i, 2)->text().toDouble();
-                    precio /= cant;
-                    precio *= (cant+1);
-                    ui->tableWidget->item(i, 2)->setText(QString().setNum(precio, ' ', 1));
-
-                    double total = 0.0;
-                    for(int i = 0; i < ui->tableWidget->rowCount(); i++){                        
-                        double precio = ui->tableWidget->item(i, 2)->text().toDouble();
-                        total += precio;
-                    }
-                    ui->doubleSpinBox_total->setValue(total);
-                    return;
+            qDebug()<<str_query<<endl;
+            if(query.exec(str_query)){
+                if(query.next()){
+                    precio = QString().setNum(query.value(0).toDouble(), ' ', 1);
+                    descripcion = query.value(1).toString();
                 }
-            }
-
-            int rowCount = ui->tableWidget->rowCount();
-            ui->tableWidget->setRowCount(rowCount+1);
-
-            QTableWidgetItem* item_desc = new QTableWidgetItem(arg1);
-            QTableWidgetItem* item_cant = new QTableWidgetItem("1");
-            QTableWidgetItem* item_precio = new QTableWidgetItem("");
-            QTableWidgetItem* item_descripcion = new QTableWidgetItem("");
-
-            ui->tableWidget->setItem(rowCount, 0, item_desc);
-            ui->tableWidget->item(rowCount, 0)->setFlags(Qt::ItemIsSelectable
-                                                         | Qt::ItemIsEnabled);
-
-            ui->tableWidget->setItem(rowCount, 1, item_cant);
-            ui->tableWidget->item(rowCount, 1)->setFlags(Qt::ItemIsSelectable
-                                                         | Qt::ItemIsEnabled);
-
-            QString precio = query.value(0).toString();
-            item_precio->setText(precio);
-            ui->tableWidget->setItem(rowCount, 2, item_precio);
-            ui->tableWidget->item(rowCount, 2)->setFlags(Qt::ItemIsSelectable
-                                                         | Qt::ItemIsEnabled);
-                                                         //| Qt::ItemIsEditable);
-
-            QString descripcion = query.value(1).toString();
-            item_descripcion->setText(descripcion);
-            ui->tableWidget->setItem(rowCount, 3, item_descripcion);
-
-            connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*))
-                       , this, SLOT(on_tableWidget_itemChanged(QTableWidgetItem*)));
-
-            SYSTEM->table_resize_to_contents(0, ui->tableWidget);
-
-            double total = 0.0;
-            for(int i = 0; i < ui->tableWidget->rowCount(); i++){
-                double precio = ui->tableWidget->item(i, 2)->text().toDouble();
-                total += precio;
-            }
-            ui->doubleSpinBox_total->setValue(total);
+            }*/
         }
+
+        disconnect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*))
+                   , this, SLOT(on_tableWidget_itemChanged(QTableWidgetItem*)));
+
+        for(int i = 0; i < ui->tableWidget->rowCount(); i++){
+            if(arg1.compare(ui->tableWidget->item(i, NOMBRE)->text()) == 0){
+                int cant = ui->tableWidget->item(i, CANTIDAD)->text().toInt();
+
+                ui->tableWidget->item(i,  CANTIDAD)->setText(QString().setNum(cant+1));
+                double precio = ui->tableWidget->item(i, PRECIO)->text().toDouble();
+                precio /= cant;
+                precio *= (cant+1);
+                qDebug()<<cant<<endl;
+                qDebug()<<precio<<endl;
+                ui->tableWidget->item(i, PRECIO)->setText(QString().setNum(precio, ' ', 1));
+
+                double total = 0.0;
+                for(int i = 0; i < ui->tableWidget->rowCount(); i++){
+                    double precio = ui->tableWidget->item(i, PRECIO)->text().toDouble();
+                    total += precio;
+                }
+                ui->doubleSpinBox_total->setValue(total);
+
+                connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*))
+                           , this, SLOT(on_tableWidget_itemChanged(QTableWidgetItem*)));
+                return;
+            }
+        }
+
+        int rowCount = ui->tableWidget->rowCount();
+        ui->tableWidget->setRowCount(rowCount+1);
+
+        QTableWidgetItem* item_desc = new QTableWidgetItem(arg1);
+        QTableWidgetItem* item_unidad = new QTableWidgetItem("UND");
+        QTableWidgetItem* item_cant = new QTableWidgetItem("1");
+        QTableWidgetItem* item_precio = new QTableWidgetItem("0.0");
+        QTableWidgetItem* item_descripcion = new QTableWidgetItem("");
+
+        ui->tableWidget->setItem(rowCount, NOMBRE, item_desc);
+        ui->tableWidget->item(rowCount, NOMBRE)->setFlags(Qt::ItemIsSelectable
+                                                     | Qt::ItemIsEnabled);
+
+        ui->tableWidget->setItem(rowCount, UNIDAD, item_unidad);
+        ui->tableWidget->item(rowCount, UNIDAD)->setFlags(Qt::ItemIsSelectable
+                                                     | Qt::ItemIsEnabled);
+
+        ui->tableWidget->setItem(rowCount, CANTIDAD, item_cant);
+        ui->tableWidget->item(rowCount, CANTIDAD)->setFlags(Qt::ItemIsSelectable
+                                                     | Qt::ItemIsEnabled);
+
+        QString precio_final = precio;
+        item_precio->setText(precio_final);
+        ui->tableWidget->setItem(rowCount, PRECIO, item_precio);
+        ui->tableWidget->item(rowCount, PRECIO)->setFlags(Qt::ItemIsSelectable
+                                                     | Qt::ItemIsEnabled);
+
+        QString descripcion_final = descripcion;
+        item_descripcion->setText(descripcion_final);
+        ui->tableWidget->setItem(rowCount, DESCRIPCION_PLATO, item_descripcion);
+
+        connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*))
+                   , this, SLOT(on_tableWidget_itemChanged(QTableWidgetItem*)));
+
+        //SYSTEM->table_resize_to_contents(0, ui->tableWidget);
+
+        double total = 0.0;
+        for(int i = 0; i < ui->tableWidget->rowCount(); i++){
+            double precio = ui->tableWidget->item(i, PRECIO)->text().toDouble();
+            total += precio;
+        }
+        ui->doubleSpinBox_total->setValue(total);
     }
 
 }
@@ -1113,7 +818,7 @@ void Comprobante::showEvent(QShowEvent *event)
             QString fondoTapiz = query.value(8).toString();
 
             //const QRect mainScreenSize = this->rect();
-            ui->splitter_mid->setSizes(QList<int>() << splitter_1_val << splitter_2_val);
+            //ui->splitter_mid->setSizes(QList<int>() << splitter_1_val << splitter_2_val);
 
             disconnect(ui->spinBox_familia_filas, SIGNAL(valueChanged(int))
                        , this, SLOT(on_spinBox_familia_filas_valueChanged()));
@@ -1176,19 +881,20 @@ void Comprobante::closeEvent(QCloseEvent *event)
 {
     event->accept();
 
+
     QString str_query = "";
     QSqlQuery query;
 
     str_query += "UPDATE datos SET";
-    str_query += " splitter_1 = " + QString().setNum(ui->splitter_mid->sizes()[0]);
-    str_query += ", splitter_2 = " + QString().setNum(ui->splitter_mid->sizes()[1]);
-    str_query += ", familia_filas = " + QString().setNum(ui->spinBox_familia_filas->value());
+    //str_query += " splitter_1 = " + QString().setNum(0.0);
+    //str_query += ", splitter_2 = " + QString().setNum(0.0);
+    str_query += " familia_filas = " + QString().setNum(ui->spinBox_familia_filas->value());
     str_query += ", familia_columnas = " + QString().setNum(ui->spinBox_familia_columnas->value());
     str_query += ", plato_filas = " + QString().setNum(ui->spinBox_plato_filas->value());
     str_query += ", plato_columnas = " + QString().setNum(ui->spinBox_plato_columnas->value());
     str_query += ", fondo_tapiz = '" + fondoTapiz + "'";
 
-    qDebug() << ui->splitter_mid->sizes()[0] << endl;
+    qDebug() << "0.0" << endl;
     qDebug()<<str_query<<endl;
     if(query.exec(str_query)){        
         qDebug()<<"query ok"<<endl;
@@ -1266,6 +972,32 @@ bool Comprobante::eventFilter(QObject *watched, QEvent *event)
 
                 return true;
             }break;
+            case Qt::Key_Return:{
+                ui->doubleSpinBox_pago->setFocus(Qt::TabFocusReason);
+                ui->doubleSpinBox_pago->selectAll();
+                return true;
+            }break;
+            case Qt::Key_Enter:{
+                ui->doubleSpinBox_pago->setFocus(Qt::TabFocusReason);
+                ui->doubleSpinBox_pago->selectAll();
+                return true;
+            }break;
+            case Qt::Key_F1:{
+                ui->pushButton_efectivo->click();
+                return true;
+            }break;
+            case Qt::Key_F2:{
+                ui->pushButton_masterCard->click();
+                return true;
+            }break;
+            case Qt::Key_F3:{
+                ui->pushButton_visa->click();
+                return true;
+            }break;
+            case Qt::Key_F4:{
+                ui->pushButton_liberarColaImpresion->click();
+                return true;
+            }break;
             }
         }
         return false;
@@ -1319,7 +1051,7 @@ void Comprobante::on_pushButton_quitar_clicked()
 
     double total = 0.0;
     for(int i = 0; i < ui->tableWidget->rowCount(); i++){
-        double precio = ui->tableWidget->item(i, 2)->text().toDouble();
+        double precio = ui->tableWidget->item(i, PRECIO)->text().toDouble();
         total += precio;
     }
     ui->doubleSpinBox_total->setValue(total);
@@ -1349,15 +1081,18 @@ void Comprobante::on_tableWidget_itemChanged(QTableWidgetItem *item)
     disconnect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*))
                , this, SLOT(on_tableWidget_itemChanged(QTableWidgetItem*)));
 
-    if(item->column() == 0){
+    if(item->column() == CANTIDAD){
+
+    }
+    if(item->column() == PRECIO){
         double total = 0.0;
         for(int i = 0; i < ui->tableWidget->rowCount(); i++){
-            double cantidad = ui->tableWidget->item(i, 0)->text().toDouble();
-            double precio = ui->tableWidget->item(i, 2)->text().toDouble();
-            total += cantidad * precio;
+            double precio = ui->tableWidget->item(i, PRECIO)->text().toDouble();
+            total += precio;
         }
         ui->doubleSpinBox_total->setValue(total);
     }
+
     connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*))
                , this, SLOT(on_tableWidget_itemChanged(QTableWidgetItem*)));
 }
@@ -1409,7 +1144,7 @@ void Comprobante::print_caja()
         return;
     }
     QDataStream out(&file);
-    out.setVersion(QDataStream::Qt_4_8);    
+    out.setVersion(QDataStream::Qt_4_8);
 
     QVector<QString> centerTexts;
     centerTexts.push_back("BILL MC QUACK");
@@ -1421,14 +1156,59 @@ void Comprobante::print_caja()
     centerTexts.push_back("Maq.Regist.No: FFGF006292");
     centerTexts.push_back("Autorizacion Sunat: 0053845106569");
     centerTexts.push_back("Ticket Nro.: 012-2-" + nro_ticket);
+
     QString nombre = "NOM CLI : " + ui->lineEdit_nombre->text();
+    nombre.replace("\t", " ");
+    nombre.replace("\n", " ");
+    nombre.replace("\r", " ");
+
     if(nombre.length() > 40){
-        centerTexts.push_back(nombre.mid(0, 40));
-        centerTexts.push_back(nombre.mid(40, nombre.length() - 40));
+        int recorrido = 0;
+        while(recorrido < nombre.length()) {
+            if(nombre[recorrido+40-1] == ' '){
+                centerTexts.push_back(nombre.mid(recorrido, 40));
+                recorrido += 40;
+            }else{
+                if(nombre[recorrido+40] == ' '){
+                    centerTexts.push_back(nombre.mid(recorrido, 40));
+                    recorrido += 40;
+                }else{
+                    int i = recorrido+40-2, count=0;
+                    while(nombre[i] != ' '){
+                        i--;
+                        count++;
+                    }
+                    if(count == 39){
+                        centerTexts.push_back(nombre.mid(recorrido, 40));
+                        recorrido += 40;
+                    }else{
+                        centerTexts.push_back(nombre.mid(recorrido, 40-count-1));
+                        recorrido += 40-count-1;
+                    }
+                }
+            }
+
+        }
+
     }else{
         centerTexts.push_back(nombre);
     }
+    //if(ui->lineEdit_direccion->text().length() > 0){
+        QString direccion = "DIRECCION : " + ui->lineEdit_direccion->text();
+        direccion.replace("\t", " ");
+        direccion.replace("\n", " ");
+        direccion.replace("\r", " ");
+        if(direccion.length() > 40){
+            int recorrido = 0;
+            while(recorrido < direccion.length()) {
+                centerTexts.push_back(direccion.mid(recorrido, 40));
+                recorrido += 40;
+            }
 
+        }else{
+            centerTexts.push_back(direccion);
+        }
+    //}
 
     /*
     while((nombre.length() % 40) == 0){
@@ -1443,7 +1223,7 @@ void Comprobante::print_caja()
     centerTexts.push_back("Cant  Descripcion                Importe");
     centerTexts.push_back("----------------------------------------");
 
-    SYSTEM->centerTexts(centerTexts);
+    SYSTEM->centerTexts(centerTexts, 40);
 
     out << (qint64)0x1D4C0002;
 
@@ -1459,12 +1239,12 @@ void Comprobante::print_caja()
     //SYSTEM->epson_lineFeed(out);
     double total = 0.0, igv = 0.18;
     for(int i = 0; i < ui->tableWidget->rowCount(); i++){
-        QString descripcion = ui->tableWidget->item(i, 0)->text();
-        QString cantidad = ui->tableWidget->item(i, 1)->text();
-        double p_total = ui->tableWidget->item(i, 2)->text().toDouble();
+        QString descripcion = ui->tableWidget->item(i, NOMBRE)->text();
+        QString cantidad = ui->tableWidget->item(i, CANTIDAD)->text();
+        double p_total = ui->tableWidget->item(i, PRECIO)->text().toDouble();
         QString str_p_total = QString().setNum(p_total, ' ', 1);
 
-        SYSTEM->epson_just_descripcion(descripcion),
+        SYSTEM->epson_just_descripcion(descripcion, 27),
         total += p_total;
 
         SYSTEM->justified(cantidad, 5);
@@ -1497,12 +1277,12 @@ void Comprobante::print_caja()
     totales.push_back("----------------------------------------");
     totales.push_back(str_vuelto);
     QString forma_de_pago = QString("Forma de Pago:" + pago.toUpper());
-    totales.push_back(SYSTEM->centerText(forma_de_pago));
+    totales.push_back(SYSTEM->centerText(forma_de_pago, 40));
     totales.push_back(" ");
     QString clave_wifi = "*** Clave Wifi: " + clave + " ***";
-    totales.push_back(SYSTEM->centerText(clave_wifi));
+    totales.push_back(SYSTEM->centerText(clave_wifi, 40));
 
-    SYSTEM->rightTexts(totales);
+    SYSTEM->rightTexts(totales, 40);
 
     SYSTEM->epson_lineFeed(out);
 
@@ -1543,7 +1323,8 @@ void Comprobante::print_caja()
     //app_dir = QDir::fromNativeSeparators(app_dir);
 
     //QString lpt_print = QDir::fromNativeSeparators("\\\\localhost\\caja001");
-    QString lpt_print = "\\\\localhost\\caja001";
+    QString lpt_print = "LPT1";
+    //QString lpt_print = "\\\\localhost\\caja001";
 
     //FILE * pFile;
     //char buffer[] = { (char)0x0a };
@@ -1565,8 +1346,28 @@ void Comprobante::print_caja()
         , this, SLOT(on_myProccess_finished(int, QProcess::ExitStatus)));
 */
     //WinExec(command.toStdString().c_str(), SW_HIDE);
+    //ShellExecuteA(0, "open", "cmd.exe", command.toStdString().c_str(), 0, SW_HIDE);
+
     qDebug() << command << endl;
-    system(command.toStdString().c_str());
+
+    {
+        QString app_dir = QCoreApplication::applicationDirPath();
+
+        QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+        QString str_rel = "";
+        qDebug() << cmp_release << endl;
+        if(cmp_release.compare("/release") == 0){
+            str_rel = "/release";
+            qDebug() << str_rel << endl;
+        }
+
+        app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+        app_dir = "\""+ app_dir + "\"/chp.exe cmd /c ";
+        command = app_dir + command;
+    }
+
+    //system(command.toStdString().c_str());
+    QProcess::execute(command);
     //qDebug() << command << " " << argument_1 << endl;
     //myProcess->waitForFinished(10000);
     //myProcess->start(command, QStringList(), QIODevice::ReadWrite | QIODevice::Text);
@@ -1574,142 +1375,9 @@ void Comprobante::print_caja()
     //myProcess->waitForReadyRead();
 
 }
-void Comprobante::print_comanda()
+void Comprobante::print_caja_frap()
 {
-    const int Timeout = 5 * 1000;
-
-    if (!m_ConnectStatus)
-    {
-        //m_pSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
-        m_pSocket->connectToHost(QHostAddress("192.168.1.39"), 9100, QIODevice::WriteOnly);
-        //m_pSocket->connectToHost(QHostAddress("192.168.1.36"), 9100, QIODevice::WriteOnly);
-    }
-
-    if (!m_pSocket->waitForConnected(Timeout))
-    {
-        //sent error
-        qDebug ("error in waitForConnected()");
-        qDebug (qPrintable(m_pSocket->errorString()));
-        m_ConnectStatus = false;
-        return;
-    }
-    m_ConnectStatus = true;    
-
-    QByteArray block;
-
-    QDataStream out(&block, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_4_0);
-
-    //out << (qint64)0x1B3F0A00;
-    // COMANDO SET TRANSMITION DATA AND INITIALIZE PRINTER
-    out << (qint64)0x00001B40;
-    out << (qint64)0x1B1E6101;
-
-    SYSTEM->star_print_text(out, SYSTEM->centerText(QString("COMANDA - COCINA")));
-    SYSTEM->star_line_feed(out);
-    SYSTEM->star_print_text(out, SYSTEM->centerText(QString("PEDIDO")));
-    SYSTEM->star_line_feed(out);
-    SYSTEM->star_line_feed(out);
-
-    QVector<QString> topText;    
-    QString nombre = "NOM CLI : " + ui->lineEdit_nombre->text();
-    if(nombre.length() > 40){
-        SYSTEM->star_print_text(out, nombre.mid(0, 40));
-        SYSTEM->star_line_feed(out);
-        SYSTEM->star_print_text(out, nombre.mid(40, nombre.length() - 40));
-    }else{
-        SYSTEM->star_print_text(out, nombre);
-    }
-    SYSTEM->star_line_feed(out);
-    SYSTEM->star_line_feed(out);
-    SYSTEM->star_print_text(out, "FECHA: " + QDate::currentDate().toString("dd-MM-yyyy"));
-    SYSTEM->star_line_feed(out);
-    SYSTEM->star_line_feed(out);
-
-    SYSTEM->star_print_text(out, "========================================");
-
-    SYSTEM->centerTexts(topText);
-
-    for(int i = 0; i < topText.size(); i++){
-        SYSTEM->star_print_text(out, topText[i]);
-        SYSTEM->star_line_feed(out);
-    }
-    SYSTEM->star_line_feed(out);
-
-    for(int i = 0; i < ui->tableWidget->rowCount(); i++){        
-        QString descripcion = ui->tableWidget->item(i, 0)->text();
-        QString cantidad = ui->tableWidget->item(i, 1)->text();
-        QString descripcion_ = ui->tableWidget->item(i, 3)->text();
-
-        QString().setNum(cantidad.toDouble(), ' ', 0);
-
-        SYSTEM->justified(cantidad, 5);
-        SYSTEM->star_print_text(out, cantidad + " " + descripcion);
-        SYSTEM->star_line_feed(out);
-
-        if(descripcion_.length() == 0) continue;
-
-        if(descripcion_.length() <= 40){
-            SYSTEM->star_print_text(out, descripcion_);
-            SYSTEM->star_line_feed(out);
-        }else{
-            SYSTEM->star_print_text(out, descripcion_.mid(0, 40));
-            SYSTEM->star_line_feed(out);
-            SYSTEM->star_print_text(out, descripcion_.mid(40, 40));
-            SYSTEM->star_line_feed(out);
-            if(descripcion_.length() > 80) {
-                SYSTEM->star_print_text(out, descripcion_.mid(80, 40));
-                SYSTEM->star_line_feed(out);
-            }
-        }
-    }    
-
-    SYSTEM->star_line_feed(out);
-    QVector<QString> bottomText;
-    bottomText.push_back("HORA: " + QDateTime::currentDateTime().toString("hh:mm:ss"));
-    SYSTEM->centerTexts(bottomText);
-    for(int i = 0; i < bottomText.size(); i++){
-        SYSTEM->star_print_text(out, bottomText[i]);
-        SYSTEM->star_line_feed(out);
-    }
-
-    SYSTEM->star_line_feed(out);
-    SYSTEM->star_line_feed(out);
-    SYSTEM->star_line_feed(out);
-    SYSTEM->star_line_feed(out);
-    SYSTEM->star_line_feed(out);
-
-    // COMANDA ALAS PERUANAS
-    //out << (qint64)0x001D5601;
-    // COMANDA ASA
-    out << (qint64)0x001B6401;
-
-    SYSTEM->star_line_feed(out);
-    SYSTEM->star_line_feed(out);
-
-    qDebug() << block.length() << endl;
-    countPrintComanda = 0;
-    blockWritten = block;
-
-
-    m_pSocket->write(block);
-
-
-
-    //m_pSocket->write(b);
-
-    m_pSocket->flush();
-
-    m_pSocket->waitForBytesWritten();
-
-    m_pSocket->disconnectFromHost();
-
-    m_ConnectStatus = false;
-
-}
-void Comprobante::print_star_asa()
-{
-    QFile file("print_caja_asa.dat");
+    QFile file("print_caja_frap.dat");
     if (!file.open(QFile::WriteOnly)) {
         qDebug() << "Could not open file for writing";
         return;
@@ -1719,10 +1387,9 @@ void Comprobante::print_star_asa()
 
     QVector<QString> centerTexts;
     centerTexts.push_back("BILL MC QUACK");
-    centerTexts.push_back("de Patricia Cristal Guerra Guerra");
-    centerTexts.push_back("RUC: 10702899457");
-    centerTexts.push_back("LOS ANDES 503");
-    centerTexts.push_back("A.S.A. - AREQUIPA - AREQUIPA");
+    centerTexts.push_back("de Giancarlo Miguel Figueroa Nuñes");
+    centerTexts.push_back("Coop. Daniel Alcides Carrion M-14");
+    centerTexts.push_back("RUC: 10430252718");
     centerTexts.push_back("----------------------------------------");
     centerTexts.push_back("Ticket Boleta");
     //centerTexts.push_back("Maq.Regist.No: ");
@@ -1730,12 +1397,57 @@ void Comprobante::print_star_asa()
     centerTexts.push_back("Ticket Nro.: " + nro_ticket);
     centerTexts.push_back("Serie: 150230600349P");
     QString nombre = "NOM CLI : " + ui->lineEdit_nombre->text();
-    if(nombre.length() > 40){
-        centerTexts.push_back(nombre.mid(0, 40));
-        centerTexts.push_back(nombre.mid(40, nombre.length() - 40));
+    nombre.replace("\t", " ");
+    nombre.replace("\n", " ");
+    nombre.replace("\r", " ");
+
+    if(nombre.length() > 42){
+        int recorrido = 0;
+        while(recorrido < nombre.length()) {
+            if(nombre[recorrido+42-1] == ' '){
+                centerTexts.push_back(nombre.mid(recorrido, 42));
+                recorrido += 42;
+            }else{
+                if(nombre[recorrido+42] == ' '){
+                    centerTexts.push_back(nombre.mid(recorrido, 42));
+                    recorrido += 42;
+                }else{
+                    int i = recorrido+42-2, count=0;
+                    while(nombre[i] != ' '){
+                        i--;
+                        count++;
+                    }
+                    if(count == 41){
+                        centerTexts.push_back(nombre.mid(recorrido, 42));
+                        recorrido += 42;
+                    }else{
+                        centerTexts.push_back(nombre.mid(recorrido, 42-count-1));
+                        recorrido += 42-count-1;
+                    }
+                }
+            }
+
+        }
+
     }else{
         centerTexts.push_back(nombre);
     }
+    //if(ui->lineEdit_direccion->text().length() > 0){
+        QString direccion = "DIRECCION : " + ui->lineEdit_direccion->text();
+        direccion.replace("\t", " ");
+        direccion.replace("\n", " ");
+        direccion.replace("\r", " ");
+        if(direccion.length() > 42){
+            int recorrido = 0;
+            while(recorrido < direccion.length()) {
+                centerTexts.push_back(direccion.mid(recorrido, 42));
+                recorrido += 42;
+            }
+
+        }else{
+            centerTexts.push_back(direccion);
+        }
+    //}
 
     centerTexts.push_back("Fecha: " + QDate::currentDate().toString("dd/MM/yyyy"));
     centerTexts.push_back("Hora: " + QDateTime::currentDateTime().toString("hh:mm:ss"));
@@ -1743,7 +1455,8 @@ void Comprobante::print_star_asa()
     centerTexts.push_back("Cant: Descripcion                Importe");
     centerTexts.push_back("----------------------------------------");
 
-    SYSTEM->centerTexts(centerTexts);
+
+    SYSTEM->centerTexts(centerTexts, 42);
 
     //out << (qint64)0x1D4C0002;
 
@@ -1758,13 +1471,13 @@ void Comprobante::print_star_asa()
     }
     //SYSTEM->epson_lineFeed(out);
     double total = 0.0, igv = 0.18;
-    for(int i = 0; i < ui->tableWidget->rowCount(); i++){        
-        QString descripcion = ui->tableWidget->item(i, 0)->text();
-        QString cantidad = ui->tableWidget->item(i, 1)->text();
-        double p_total = ui->tableWidget->item(i, 2)->text().toDouble();
+    for(int i = 0; i < ui->tableWidget->rowCount(); i++){
+        QString descripcion = ui->tableWidget->item(i, NOMBRE)->text();
+        QString cantidad = ui->tableWidget->item(i, CANTIDAD)->text();
+        double p_total = ui->tableWidget->item(i, PRECIO)->text().toDouble();
         QString str_p_total = QString().setNum(p_total, ' ', 1);
 
-        SYSTEM->epson_just_descripcion(descripcion),
+        SYSTEM->epson_just_descripcion(descripcion, 29),
         total += p_total;
 
         SYSTEM->justified(cantidad, 5);
@@ -1797,12 +1510,550 @@ void Comprobante::print_star_asa()
     totales.push_back("----------------------------------------");
     totales.push_back(str_vuelto);
     QString forma_de_pago = QString("Forma de Pago:" + pago.toUpper());
-    totales.push_back(SYSTEM->centerText(forma_de_pago));
+    totales.push_back(SYSTEM->centerText(forma_de_pago, 42));
+    totales.push_back(" ");
+    QString clave_wifi = "Clave Wifi: " + clave + "";
+    totales.push_back(SYSTEM->centerText(clave_wifi, 42));
+
+    SYSTEM->rightTexts(totales, 42);
+
+    SYSTEM->star_line_feed(out);
+
+    for(int i = 0; i < totales.size(); i++){
+        SYSTEM->star_print_text(out, totales[i]);
+        SYSTEM->star_line_feed(out);
+    }
+    //SYSTEM->epson_lineFeed(out);
+
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+
+    out << (qint64)0x001B6401;
+    //SYSTEM->star_line_feed(out);
+    //SYSTEM->star_line_feed(out);
+
+    //SYSTEM->epson_lineFeed(out);
+
+    file.close();
+
+    QString app_dir = QCoreApplication::applicationDirPath();
+
+    QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+    QString str_rel = "";
+    //qDebug() << cmp_release << endl;
+    if(cmp_release.compare("/release") == 0){
+        str_rel = "/release";
+        //qDebug() << str_rel << endl;
+    }
+
+    app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+    app_dir.replace("/","\\");
+    app_dir = "\"" + app_dir + "\\" + file.fileName() + "\"";
+
+    QString lpt_print = "LPT1";
+
+    QString command = "copy /b " + app_dir
+                        + " " + lpt_print + " < nul";
+
+    //qDebug() << command << endl;
+
+    {
+        QString app_dir = QCoreApplication::applicationDirPath();
+
+        QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+        QString str_rel = "";
+        //qDebug() << cmp_release << endl;
+        if(cmp_release.compare("/release") == 0){
+            str_rel = "/release";
+            //qDebug() << str_rel << endl;
+        }
+
+        app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+        app_dir = "\""+ app_dir + "\"/chp.exe cmd /c ";
+        command = app_dir + command;
+    }
+    QProcess::execute(command);
+}
+void Comprobante::print_comanda()
+{    
+    QFile file("print_comanda.dat");
+    if (!file.open(QFile::ReadWrite)) {
+        qDebug() << "Could not open file for writing";
+        return;
+    }
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_4_8);
+
+    QByteArray block;
+
+    //out << (qint64)0x1B3F0A00;
+    // COMANDO ESC =
+    //out << (qint64)0x001B3D01;
+    // COMANDO MECHANICALLY INITIALIZE PRINTER
+    //out << (qint64)0x00001D3C;
+
+    // COMANDO INITIALIZE PRINTER
+    out << (qint64)0x00001B40;
+
+    //out << (qint64)0x1B530000;
+
+    // COMANDO SET TRANSMITION DATA
+    out << (qint64)0x1B1E6101;
+
+    out << (qint64)0x00100402;
+    // COMANDO Real-time request to printer
+    out << (qint64)0x00100502;
+    out << (qint64)0x00101401;
+    // COMANDO INITIALIZE PRINTER
+    //out << (qint64)0x00001B40;
+    // COMANDO CAN
+    //out << (qint64)0x00000018;
+    // FF
+    //out << (qint64)0x1B1D0304;
+
+
+    SYSTEM->star_print_text(out, SYSTEM->centerText(QString("COMANDA - COCINA"), 40));
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_print_text(out, SYSTEM->centerText(QString("PEDIDO"), 40));
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+
+    QVector<QString> topText;    
+    QString nombre = "NOM CLI : " + ui->lineEdit_nombre->text();
+    nombre.replace("\t", " ");
+    nombre.replace("\n", " ");
+    nombre.replace("\r", " ");
+
+    if(nombre.length() > 40){
+        int recorrido = 0;
+        while(recorrido < nombre.length()) {
+            SYSTEM->star_print_text(out, nombre.mid(recorrido, 40));
+            SYSTEM->star_line_feed(out);
+            recorrido += 40;
+        }
+
+    }else{
+        SYSTEM->star_print_text(out, nombre);
+        SYSTEM->star_line_feed(out);
+    }
+
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_print_text(out, "FECHA: " + QDate::currentDate().toString("dd-MM-yyyy"));
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+
+    SYSTEM->star_print_text(out, "========================================");
+
+    SYSTEM->centerTexts(topText, 40);
+
+    for(int i = 0; i < topText.size(); i++){
+        SYSTEM->star_print_text(out, topText[i]);
+        SYSTEM->star_line_feed(out);
+    }
+    SYSTEM->star_line_feed(out);
+
+    for(int i = 0; i < ui->tableWidget->rowCount(); i++){        
+        QString descripcion = ui->tableWidget->item(i, NOMBRE)->text();
+        QString cantidad = ui->tableWidget->item(i, CANTIDAD)->text();
+        QString descripcion_ = ui->tableWidget->item(i, DESCRIPCION_PLATO)->text();
+
+        QString().setNum(cantidad.toDouble(), ' ', 0);
+
+        SYSTEM->justified(cantidad, 5);
+        SYSTEM->star_print_text(out, cantidad + " " + descripcion);
+        SYSTEM->star_line_feed(out);
+
+        if(descripcion_.length() == 0) continue;
+
+        if(descripcion_.length() <= 40){
+            SYSTEM->star_print_text(out, descripcion_);
+            SYSTEM->star_line_feed(out);
+        }else{
+            SYSTEM->star_print_text(out, descripcion_.mid(0, 40));
+            SYSTEM->star_line_feed(out);
+            SYSTEM->star_print_text(out, descripcion_.mid(40, 40));
+            SYSTEM->star_line_feed(out);
+            if(descripcion_.length() > 80) {
+                SYSTEM->star_print_text(out, descripcion_.mid(80, 40));
+                SYSTEM->star_line_feed(out);
+            }
+        }
+    }    
+
+    SYSTEM->star_line_feed(out);
+    QVector<QString> bottomText;
+    bottomText.push_back("HORA: " + QDateTime::currentDateTime().toString("hh:mm:ss"));
+    SYSTEM->centerTexts(bottomText, 40);
+    for(int i = 0; i < bottomText.size(); i++){
+        SYSTEM->star_print_text(out, bottomText[i]);
+        SYSTEM->star_line_feed(out);
+    }
+
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);    
+
+    // COMANDA ALAS PERUANAS
+    //out << (qint64)0x001D5601;
+    // COMANDA ASA
+    out << (qint64)0x001B6401;
+
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+
+    out >> block;
+
+    file.close();
+
+    QString app_dir = QCoreApplication::applicationDirPath();
+
+    QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+    QString str_rel = "";
+    //qDebug() << cmp_release << endl;
+    if(cmp_release.compare("/release") == 0){
+        str_rel = "/release";
+        //qDebug() << str_rel << endl;
+    }
+
+    app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+    app_dir.replace("/","\\");
+    app_dir = "\"" + app_dir + "\\" + file.fileName() + "\"";
+
+    QString lpt_print = "\\\\localhost\\COCINA_ASA";
+
+    QString command = "copy /b " + app_dir
+                        + " " + lpt_print + "";
+
+    //qDebug() << command << endl;
+
+    {
+        QString app_dir = QCoreApplication::applicationDirPath();
+
+        QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+        QString str_rel = "";
+        //qDebug() << cmp_release << endl;
+        if(cmp_release.compare("/release") == 0){
+            str_rel = "/release";
+            //qDebug() << str_rel << endl;
+        }
+
+        app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+        app_dir = "\""+ app_dir + "\"/chp.exe cmd /c ";
+        command = app_dir + command;
+    }
+
+    QProcess::execute(command);
+}
+void Comprobante::print_comanda_alas()
+{
+    QFile file("print_comanda.dat");
+    if (!file.open(QFile::WriteOnly)) {
+        qDebug() << "Could not open file for writing";
+        return;
+    }
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_4_8);
+
+    QByteArray block;
+
+    //out << (qint64)0x1B3F0A00;
+    // COMANDO ESC =
+    //out << (qint64)0x001B3D01;
+    // COMANDO MECHANICALLY INITIALIZE PRINTER
+    //out << (qint64)0x00001D3C;
+
+    // COMANDO INITIALIZE PRINTER
+    //out << (qint64)0x00001B40;
+
+    //out << (qint64)0x1B530000;
+
+    // COMANDO SET TRANSMITION DATA
+    //out << (qint64)0x1B1E6101;
+
+    //out << (qint64)0x00100402;
+    // COMANDO Real-time request to printer
+    //out << (qint64)0x00100502;
+    //out << (qint64)0x00101401;
+    // COMANDO INITIALIZE PRINTER
+    //out << (qint64)0x00001B40;
+    // COMANDO CAN
+    //out << (qint64)0x00000018;
+    // FF
+    //out << (qint64)0x1B1D0304;
+
+
+    SYSTEM->star_print_text(out, SYSTEM->centerText(QString("COMANDA - COCINA"), 40));
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_print_text(out, SYSTEM->centerText(QString("PEDIDO"), 40));
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+
+    QVector<QString> topText;
+    QString nombre = "NOM CLI : " + ui->lineEdit_nombre->text();
+    nombre.replace("\t", " ");
+    nombre.replace("\n", " ");
+    nombre.replace("\r", " ");
+
+    if(nombre.length() > 40){
+        int recorrido = 0;
+        while(recorrido < nombre.length()) {
+            SYSTEM->star_print_text(out, nombre.mid(recorrido, 40));
+            SYSTEM->star_line_feed(out);
+            recorrido += 40;
+        }
+
+    }else{
+        SYSTEM->star_print_text(out, nombre);
+        SYSTEM->star_line_feed(out);
+    }
+
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_print_text(out, "FECHA: " + QDate::currentDate().toString("dd-MM-yyyy"));
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+
+    SYSTEM->star_print_text(out, "========================================");
+
+    SYSTEM->centerTexts(topText, 40);
+
+    for(int i = 0; i < topText.size(); i++){
+        SYSTEM->star_print_text(out, topText[i]);
+        SYSTEM->star_line_feed(out);
+    }
+    SYSTEM->star_line_feed(out);
+
+    for(int i = 0; i < ui->tableWidget->rowCount(); i++){
+        QString descripcion = ui->tableWidget->item(i, NOMBRE)->text();
+        QString cantidad = ui->tableWidget->item(i, CANTIDAD)->text();
+        QString descripcion_ = ui->tableWidget->item(i, DESCRIPCION_PLATO)->text();
+
+        QString().setNum(cantidad.toDouble(), ' ', 0);
+
+        SYSTEM->justified(cantidad, 5);
+        SYSTEM->star_print_text(out, cantidad + " " + descripcion);
+        SYSTEM->star_line_feed(out);
+
+        if(descripcion_.length() == 0) continue;
+
+        if(descripcion_.length() <= 40){
+            SYSTEM->star_print_text(out, descripcion_);
+            SYSTEM->star_line_feed(out);
+        }else{
+            SYSTEM->star_print_text(out, descripcion_.mid(0, 40));
+            SYSTEM->star_line_feed(out);
+            SYSTEM->star_print_text(out, descripcion_.mid(40, 40));
+            SYSTEM->star_line_feed(out);
+            if(descripcion_.length() > 80) {
+                SYSTEM->star_print_text(out, descripcion_.mid(80, 40));
+                SYSTEM->star_line_feed(out);
+            }
+        }
+    }
+
+    SYSTEM->star_line_feed(out);
+    QVector<QString> bottomText;
+    bottomText.push_back("HORA: " + QDateTime::currentDateTime().toString("hh:mm:ss"));
+    SYSTEM->centerTexts(bottomText, 40);
+    for(int i = 0; i < bottomText.size(); i++){
+        SYSTEM->star_print_text(out, bottomText[i]);
+        SYSTEM->star_line_feed(out);
+    }
+
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+
+    // COMANDA ALAS PERUANAS
+    out << (qint64)0x001D5601;
+    // COMANDA ASA
+    //out << (qint64)0x001B6401;
+
+    SYSTEM->star_line_feed(out);
+    SYSTEM->star_line_feed(out);
+
+    file.close();
+
+    out >> block;
+
+    QString app_dir = QCoreApplication::applicationDirPath();
+
+    QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+    QString str_rel = "";
+    //qDebug() << cmp_release << endl;
+    if(cmp_release.compare("/release") == 0){
+        str_rel = "/release";
+        //qDebug() << str_rel << endl;
+    }
+
+    app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+    app_dir.replace("/","\\");
+    app_dir = "\"" + app_dir + "\\" + file.fileName() + "\"";
+
+    //app_dir = QDir::fromNativeSeparators(app_dir);
+
+    //QString lpt_print = QDir::fromNativeSeparators("\\\\localhost\\caja001");
+    QString lpt_print = "\\\\localhost\\COCINA002";
+    //QString lpt_print = "\\\\localhost\\caja001";
+
+    //FILE * pFile;
+    //char buffer[] = { (char)0x0a };
+    //pFile = fopen ("c:\\test.txt", "wb");
+    //fwrite (buffer , sizeof(char), sizeof(buffer), pFile);
+    //fclose (pFile);
+    //system(command.toStdString().c_str());
+
+    //QProcess *myProcess = new QProcess();
+    QString command = "copy " + app_dir
+                        + " " + lpt_print + " /B";
+
+    /*
+    QStringList arguments = QStringList();
+    arguments << argument_1;
+    connect(myProcess, SIGNAL(started())
+        , this, SLOT(on_myProccess_started()));
+    connect(myProcess, SIGNAL(finished(int, QProcess::ExitStatus))
+        , this, SLOT(on_myProccess_finished(int, QProcess::ExitStatus)));
+*/
+    //WinExec(command.toStdString().c_str(), SW_HIDE);
+
+    //ShowWindow(GetConsoleWindow(), SW_HIDE);
+
+    //LPCWSTR open = L"open";
+
+    //LPCWSTR program = L"cmd.exe";
+
+    //WinExec(command.toStdWString().c_str(), SW_SHOWNORMAL);
+    //ShellExecuteW(0, open, program, command.toStdWString().c_str(), 0, SW_HIDE);
+
+    //qDebug() << command << endl;
+
+    {
+        QString app_dir = QCoreApplication::applicationDirPath();
+
+        QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+        QString str_rel = "";
+        //qDebug() << cmp_release << endl;
+        if(cmp_release.compare("/release") == 0){
+            str_rel = "/release";
+            //qDebug() << str_rel << endl;
+        }
+
+        app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+        app_dir = "\""+ app_dir + "\"/chp.exe cmd /c ";
+        command = app_dir + command;
+    }
+
+    //system(command.toStdString().c_str());
+    QProcess::execute(command);
+
+}
+
+void Comprobante::print_star_asa()
+{
+    QFile file("print_caja_asa.dat");
+    if (!file.open(QFile::WriteOnly)) {
+        qDebug() << "Could not open file for writing";
+        return;
+    }
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_4_8);
+
+    QVector<QString> centerTexts;
+    centerTexts.push_back("BILL MC QUACK");
+    centerTexts.push_back("de Manuel");
+    centerTexts.push_back("RUC: 10702899457");
+    centerTexts.push_back("LOS ANDES 503");
+    centerTexts.push_back("A.S.A. - AREQUIPA - AREQUIPA");
+    centerTexts.push_back("----------------------------------------");
+    centerTexts.push_back("Ticket Boleta");
+    //centerTexts.push_back("Maq.Regist.No: ");
+    centerTexts.push_back("Aut: 0053845087990  Delivery; 38 49 29");
+    centerTexts.push_back("Ticket Nro.: " + nro_ticket);
+    centerTexts.push_back("Serie: 150230600349P");
+    QString nombre = "NOM CLI : " + ui->lineEdit_nombre->text();
+    if(nombre.length() > 40){
+        centerTexts.push_back(nombre.mid(0, 40));
+        centerTexts.push_back(nombre.mid(40, nombre.length() - 40));
+    }else{
+        centerTexts.push_back(nombre);
+    }
+
+    centerTexts.push_back("Fecha: " + QDate::currentDate().toString("dd/MM/yyyy"));
+    centerTexts.push_back("Hora: " + QDateTime::currentDateTime().toString("hh:mm:ss"));
+    centerTexts.push_back("========================================");
+    centerTexts.push_back("Cant: Descripcion                Importe");
+    centerTexts.push_back("----------------------------------------");
+
+    SYSTEM->centerTexts(centerTexts, 40);
+
+    //out << (qint64)0x1D4C0002;
+
+    SYSTEM->star_line_feed(out);
+
+    for(int i = 0; i < centerTexts.size(); i++){
+        //SYSTEM->insert_left_spaces(centerTexts[i], 3);
+        //SYSTEM->insert_right_spaces(centerTexts[i], 3);
+
+        SYSTEM->star_print_text(out, centerTexts[i]);
+        SYSTEM->star_line_feed(out);
+    }
+    //SYSTEM->epson_lineFeed(out);
+    double total = 0.0, igv = 0.18;
+    for(int i = 0; i < ui->tableWidget->rowCount(); i++){        
+        QString descripcion = ui->tableWidget->item(i, NOMBRE)->text();
+        QString cantidad = ui->tableWidget->item(i, CANTIDAD)->text();
+        double p_total = ui->tableWidget->item(i, PRECIO)->text().toDouble();
+        QString str_p_total = QString().setNum(p_total, ' ', 1);
+
+        SYSTEM->epson_just_descripcion(descripcion, 40),
+        total += p_total;
+
+        SYSTEM->justified(cantidad, 5);
+        SYSTEM->justified(str_p_total, 6);
+
+        QString text = cantidad + " "
+                + descripcion + " " + str_p_total;
+        SYSTEM->star_print_text(out, text);
+
+        SYSTEM->star_line_feed(out);
+    }
+    QString str_st = QString().setNum(total - (total * igv), ' ', 1);
+    SYSTEM->justified(str_st, 6);
+    QString str_i = QString().setNum(total * igv, ' ', 1);
+    SYSTEM->justified(str_i, 6);
+    QString str_t = QString().setNum(total, ' ', 1);
+    SYSTEM->justified(str_t, 6);
+    QString str_v = QString().setNum(ui->doubleSpinBox_vuelto->value(), ' ', 1);
+    SYSTEM->justified(str_v, 6);
+    SYSTEM->justified(str_t, 6);
+    QString str_sub_total = "Sub-Total: " + str_st;
+    QString str_igv = "IGV: " + str_i;
+    QString str_total = "Total: " + str_t;
+    QString str_vuelto = "Vuelto: " + str_v;
+    QVector<QString> totales;
+    totales.push_back("----------------------------------------");
+    //totales.push_back(str_sub_total);
+    //totales.push_back(str_igv);
+    totales.push_back(str_total);
+    totales.push_back("----------------------------------------");
+    totales.push_back(str_vuelto);
+    QString forma_de_pago = QString("Forma de Pago:" + pago.toUpper());
+    totales.push_back(SYSTEM->centerText(forma_de_pago, 40));
     totales.push_back(" ");
     QString clave_wifi = "*** Clave Wifi: " + clave + " ***";
-    totales.push_back(SYSTEM->centerText(clave_wifi));
+    totales.push_back(SYSTEM->centerText(clave_wifi, 40));
 
-    SYSTEM->rightTexts(totales);
+    SYSTEM->rightTexts(totales, 40);
 
     SYSTEM->star_line_feed(out);
 
@@ -1833,49 +2084,39 @@ void Comprobante::print_star_asa()
 
     QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
     QString str_rel = "";
-    qDebug() << cmp_release << endl;
+    //qDebug() << cmp_release << endl;
     if(cmp_release.compare("/release") == 0){
         str_rel = "/release";
-        qDebug() << str_rel << endl;
+        //qDebug() << str_rel << endl;
     }
 
     app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
     app_dir.replace("/","\\");
     app_dir = "\"" + app_dir + "\\" + file.fileName() + "\"";
 
-    //app_dir = QDir::fromNativeSeparators(app_dir);
-
-    //QString lpt_print = QDir::fromNativeSeparators("\\\\localhost\\caja001");
     QString lpt_print = "LPT1";
 
-    //FILE * pFile;
-    //char buffer[] = { (char)0x0a };
-    //pFile = fopen ("c:\\test.txt", "wb");
-    //fwrite (buffer , sizeof(char), sizeof(buffer), pFile);
-    //fclose (pFile);
-    //system(command.toStdString().c_str());
-
-    //QProcess *myProcess = new QProcess();
     QString command = "copy /b " + app_dir
                         + " " + lpt_print + " < nul";
 
-    /*
-    QStringList arguments = QStringList();
-    arguments << argument_1;
-    connect(myProcess, SIGNAL(started())
-        , this, SLOT(on_myProccess_started()));
-    connect(myProcess, SIGNAL(finished(int, QProcess::ExitStatus))
-        , this, SLOT(on_myProccess_finished(int, QProcess::ExitStatus)));
-*/
-    //WinExec(command.toStdString().c_str(), SW_HIDE);
-    qDebug() << command << endl;
-    system(command.toStdString().c_str());
-    //qDebug() << command << " " << argument_1 << endl;
-    //myProcess->waitForFinished(10000);
-    //myProcess->start(command, QStringList(), QIODevice::ReadWrite | QIODevice::Text);
-    //myProcess->waitForFinished();
-    //myProcess->waitForReadyRead();
+    //qDebug() << command << endl;
 
+    {
+        QString app_dir = QCoreApplication::applicationDirPath();
+
+        QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+        QString str_rel = "";
+        //qDebug() << cmp_release << endl;
+        if(cmp_release.compare("/release") == 0){
+            str_rel = "/release";
+            //qDebug() << str_rel << endl;
+        }
+
+        app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+        app_dir = "\""+ app_dir + "\"/chp.exe cmd /c ";
+        command = app_dir + command;
+    }
+    QProcess::execute(command);
 }
 void Comprobante::print_msg()
 {
@@ -2039,6 +2280,8 @@ void Comprobante::on_configGeneral_closing()
          "QToolButton{ background-color: rgb(255, 255, 255) }\n"
          "QMenu{ background-color: rgb(255, 255, 255) }";
     this->setStyleSheet(ss);
+
+    when_detalleModified();
 }
 
 void Comprobante::on_lineEdit_pago_textEdited(const QString &arg1)
@@ -2061,4 +2304,112 @@ void Comprobante::on_lineEdit_pago_textChanged(const QString &arg1)
     double vuelto = pago - total;
 
     ui->doubleSpinBox_vuelto->setValue(vuelto);
+}
+
+void Comprobante::on_pushButton_liberarColaImpresion_clicked()
+{
+    QMessageBox msgBox(this);
+    msgBox.setIcon(QMessageBox::Warning);
+    //msgBox.setParent();
+    //msgBox.setStandardButtons(QMessageBox::Ok);
+    QFont font;
+    font.setFamily("MS Shell Dlg 2");
+    font.setBold(false);
+    font.setPointSize(11);
+    msgBox.setFont(font);
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.setButtonText(QMessageBox::Ok, "Aceptar");
+    msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
+    msgBox.setWindowTitle("Advertencia");
+    msgBox.setText("¿Esta seguro de reiniciar el servicio de impresión.?");
+
+    int ret = msgBox.exec();
+    qDebug()<<"ret: "<<ret<<endl;
+    switch(ret){
+    case QMessageBox::Ok:{
+
+    }break;
+    case QMessageBox::Cancel:{
+        return;
+    }break;
+    }
+
+    QProcess *myProcess = new QProcess(this);
+
+    QString fileName = "LiberarColaImpresion.lnk";
+    QString app_dir = QCoreApplication::applicationDirPath();
+
+    QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+    QString str_rel = "";
+    //qDebug() << cmp_release << endl;
+    if(cmp_release.compare("/release") == 0){
+        str_rel = "/release";
+        //qDebug() << str_rel << endl;
+    }
+
+    app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+    app_dir.replace("/","\\");
+
+    app_dir = "\"" + app_dir + "\"\\" + fileName + "";
+
+    //QString command = ""+ save_app_dir + "/chp.exe cmd.exe /C " + app_dir;
+    //QString command = "cmd.exe /C " + app_dir;
+    QString command = "cmd.exe /b cmd.exe /c " + app_dir;
+
+
+    qDebug()<<command<<endl;
+
+    connect(myProcess, SIGNAL(finished(int, QProcess::ExitStatus))
+        , this, SLOT(on_myProccessLiberarColaImpresion_finished(int, QProcess::ExitStatus)));
+
+    myProcess->start(command);
+}
+
+void Comprobante::on_checkBox_habilitarEdicion_stateChanged(int arg1)
+{
+    QTableWidgetItem* item = ui->tableWidget->currentItem();
+    if(!item){
+        return;
+    }
+
+    if(arg1 == Qt::Unchecked){
+        for(int i=0; i<ui->tableWidget->rowCount(); i++){
+            ui->tableWidget->item(i, PRECIO)->setFlags(Qt::ItemIsEnabled
+                                                       |Qt::ItemIsSelectable);
+        }
+        return;
+    }
+    if(SYSTEM->tipo_persona.compare(Persona::cajero) == 0){
+        AdminPass* ap = new AdminPass(this);
+        //ap->setAttribute(Qt::WA_DeleteOnClose);
+        ap->exec();
+        bool confirmado = ap->get_confirmado();
+
+        qDebug()<<confirmado<<endl;
+        if(!confirmado){
+            for(int i=0; i<ui->tableWidget->rowCount(); i++){
+                ui->tableWidget->item(i, PRECIO)->setFlags(Qt::ItemIsEnabled
+                                                           |Qt::ItemIsSelectable);
+            }
+            disconnect(ui->checkBox_habilitarEdicion, SIGNAL(stateChanged(int))
+                       , this, SLOT(on_checkBox_habilitarEdicion_stateChanged(int)));
+            ui->checkBox_habilitarEdicion->setCheckState(Qt::Unchecked);
+            connect(ui->checkBox_habilitarEdicion, SIGNAL(stateChanged(int))
+                       , this, SLOT(on_checkBox_habilitarEdicion_stateChanged(int)));
+            return;
+        }
+        delete ap;
+
+        for(int i=0; i<ui->tableWidget->rowCount(); i++){
+            ui->tableWidget->item(i, PRECIO)->setFlags(Qt::ItemIsEnabled
+                                                       |Qt::ItemIsSelectable
+                                                       |Qt::ItemIsEditable);
+        }
+    }else{
+        for(int i=0; i<ui->tableWidget->rowCount(); i++){
+            ui->tableWidget->item(i, PRECIO)->setFlags(Qt::ItemIsEnabled
+                                                       |Qt::ItemIsSelectable
+                                                       |Qt::ItemIsEditable);
+        }
+    }
 }

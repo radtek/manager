@@ -1,0 +1,2 @@
+UPDATE comprobante_has_persona c_h_per JOIN comprobante c ON c_h_per.comprobante_cod = c.cod SET c_h_per.comprobante_cod = conteo;
+UPDATE comprobante_has_producto c_h_prod JOIN comprobante c ON c_h_prod.comprobante_cod = c.cod SET c_h_prod.comprobante_cod = conteo;

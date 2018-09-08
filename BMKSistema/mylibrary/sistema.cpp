@@ -1,5 +1,9 @@
 #include "sistema.h"
 
+QString Sistema::name_persona = "";
+QString Sistema::pass_persona = "";
+QString Sistema::tipo_persona = "";
+
 Sistema::Sistema()
 {
     dolar = 0.0;
@@ -257,7 +261,7 @@ QString Sistema::zeros(int n)
     }
     return zeros;
 }
-QString& Sistema::justified(QString &str, int lenght)
+QString& Sistema::justified(QString& str, int lenght)
 {
     int spaces = lenght - str.length();
     for(int i = 0; i < spaces; i++){
@@ -265,32 +269,31 @@ QString& Sistema::justified(QString &str, int lenght)
     }
     return str;
 }
-QString& Sistema::epson_just_descripcion(QString & str)
-{
-    QString str_len = "Descripcion                ";
-    if(str_len.length() > str.length()){
-        insert_right_spaces(str, str_len.length() - str.length());
+QString& Sistema::epson_just_descripcion(QString& str, int n)
+{        
+    if(n > str.length()){
+        insert_right_spaces(str, n-str.length());
     }else{
-        str = str.mid(0, str_len.length());
+        str = str.mid(0, n);
     }
     return str;
 }
 
-QString& Sistema::insert_left_spaces(QString &str, int n)
+QString& Sistema::insert_left_spaces(QString& str, int n)
 {
     for(int i = 0; i < n; i++){
         str.insert(0, ' ');
     }
     return str;
 }
-QString& Sistema::insert_right_spaces(QString &str, int n)
+QString& Sistema::insert_right_spaces(QString& str, int n)
 {
     for(int i = 0; i < n; i++){
         str.insert(str.length(), ' ');
     }
     return str;
 }
-QString& Sistema::rightText(QString& text)
+QString& Sistema::rightText(QString& text, int n)
 {
     int maxLenght = 0;
     /*
@@ -301,7 +304,7 @@ QString& Sistema::rightText(QString& text)
     }
     */
     //maxLenght /= 2;
-    maxLenght = 40;
+    maxLenght = n;
 
     int spaces = maxLenght - text.length();
 
@@ -309,7 +312,7 @@ QString& Sistema::rightText(QString& text)
 
     return text;
 }
-QString& Sistema::centerText(QString& text)
+QString& Sistema::centerText(QString& text, int n)
 {
     int maxLenght = 0;
     /*
@@ -320,7 +323,7 @@ QString& Sistema::centerText(QString& text)
     }
     */
     //maxLenght /= 2;
-    maxLenght = 40;
+    maxLenght = n;
 
         int unit = (maxLenght - text.length()) % 2;
         int spaces = (maxLenght - text.length())/2;
@@ -330,7 +333,7 @@ QString& Sistema::centerText(QString& text)
     return text;
 }
 
-QVector<QString>& Sistema::centerTexts(QVector<QString>& v)
+QVector<QString>& Sistema::centerTexts(QVector<QString>& v, int n)
 {
     int maxLenght = 0;
     /*
@@ -341,7 +344,7 @@ QVector<QString>& Sistema::centerTexts(QVector<QString>& v)
     }
     */
     //maxLenght /= 2;
-    maxLenght = 40;
+    maxLenght = n;
     for(int i = 0; i < v.length(); i++){
         int unit = (maxLenght - v[i].length()) % 2;
         int spaces = (maxLenght - v[i].length())/2;
@@ -351,7 +354,7 @@ QVector<QString>& Sistema::centerTexts(QVector<QString>& v)
 
     return v;
 }
-QVector<QString>& Sistema::rightTexts(QVector<QString>& v)
+QVector<QString>& Sistema::rightTexts(QVector<QString>& v, int n)
 {
     int maxLenght = 0;
     /*
@@ -362,7 +365,7 @@ QVector<QString>& Sistema::rightTexts(QVector<QString>& v)
     }
     */
     //maxLenght /= 2;
-    maxLenght = 40;
+    maxLenght = n;
     for(int i = 0; i < v.length(); i++){
         int spaces = maxLenght - v[i].length();
         insert_left_spaces(v[i], spaces);
@@ -390,7 +393,7 @@ void Sistema::fixString(QLineEdit *le)
     }
     le->setText(le->text().mid(0, right +1));
 }
-QString Sistema::fixString(QString str)
+QString& Sistema::fixString(QString& str)
 {
 	int left;
 	for (left = 0; left < str.length(); left++) {
@@ -1031,13 +1034,51 @@ void Sistema::removeColumn(QGridLayout *layout, int column, bool deleteWidgets) 
     layout->setColumnMinimumWidth(column, 0);
     layout->setColumnStretch(column, 0);
 }
-bool Sistema::confirmar_admin(QString pass)
+bool Sistema::start_transaction()
+{
+    QString str_query = "START TRANSACTION";
+    QSqlQuery query;
+
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        return true;
+    }else{
+        return false;
+    }
+}
+bool Sistema::commit()
+{
+    QString str_query = "COMMIT";
+    QSqlQuery query;
+
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        return true;
+    }else{
+        return false;
+    }
+}
+bool Sistema::rollback()
+{
+    QString str_query = "ROLLBACK";
+    QSqlQuery query;
+
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        return true;
+    }else{
+        return false;
+    }
+}
+bool Sistema::confirmar_admin(QString nombre, QString pass)
 {
     QString str_query = "";
     QSqlQuery query;
     str_query += "SELECT 1 FROM persona";
-    str_query += " LEFT JOIN usuario ON usuario.nombre = persona.usuario_nombre";
-    str_query += " WHERE tipo_item_nombre = 'Administrador'";
+    str_query += " JOIN persona_has_usuario per_h_u ON per_h_u.persona_cod = persona.cod";
+    str_query += " JOIN usuario ON per_h_u.usuario_id = usuario.id";
+    str_query += " WHERE persona.tipo_item_nombre = 'Administrador'";
+    //str_query += " AND usuario.nombre = '" + nombre + "'";
     str_query += " AND usuario.pass = '" + pass + "'";
 
     qDebug()<<str_query<<endl;
@@ -1165,7 +1206,8 @@ void Sistema::star_paper_cut(QDataStream& out, int n)
     QByteArray array;
     QString str;
     str.toLatin1();
-    out << 29 << 86 << 1;
+    //out << 29 << 86 << 1;
+    out << 27 << 100 << 1;
 }
 void Sistema::epson_lineFeed(QDataStream& out)
 {

@@ -11,7 +11,7 @@ delete from direccion;
 delete from plato;
 
 
-INSERT INTO `datos` VALUES (398,921,582,2,8,7,3,'ALASPERUANAS');
+INSERT INTO `datos` VALUES (398,921,582,2,8,7,3,'ALASPERUANAS', '#ffff7f');
 
 INSERT INTO `grupo` VALUES ('comprobante_operacion'),('comprobante_tipo'),('establecimiento'),('estado'),('familia'),('marca'),('moneda'),('operacion'),('pago'),('persona_tipo'),('producto_tipo'),('regimen'),('unidad');
 

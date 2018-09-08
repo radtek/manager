@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>533</width>
-    <height>254</height>
+    <width>514</width>
+    <height>228</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -60,66 +60,19 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_12">
-     <item>
-      <widget class="QLabel" name="label_buscar">
-       <property name="minimumSize">
-        <size>
-         <width>80</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Buscar</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboBox_buscar">
-       <property name="minimumSize">
-        <size>
-         <width>270</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="editable">
-        <bool>true</bool>
-       </property>
-       <property name="insertPolicy">
-        <enum>QComboBox::NoInsert</enum>
-       </property>
-       <property name="sizeAdjustPolicy">
-        <enum>QComboBox::AdjustToContents</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_14">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_10">
      <item>
       <widget class="QLabel" name="label_nombre">
        <property name="minimumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Nombre</string>
@@ -136,6 +89,11 @@
          <width>250</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
@@ -155,17 +113,22 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
-      <widget class="QLabel" name="label_x">
+      <widget class="QLabel" name="label_descripcion">
        <property name="minimumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>0</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string>FILA:</string>
+        <string>Descripcion</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -173,45 +136,21 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="spinBox_x">
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="value">
-        <number>1</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_y">
-       <property name="minimumSize">
-        <size>
-         <width>30</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>COLUMNA:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <widget class="QLineEdit" name="lineEdit_descripcion">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="spinBox_y">
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="value">
-        <number>1</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
+      <spacer name="horizontalSpacer_3">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Minimum</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -224,14 +163,25 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
       <widget class="QLabel" name="label_precio">
        <property name="minimumSize">
         <size>
-         <width>80</width>
+         <width>110</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Precio</string>
@@ -243,49 +193,21 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="doubleSpinBox_precio">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
        <property name="maximum">
-        <double>10000.000000000000000</double>
+        <double>10000000.000000000000000</double>
        </property>
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QLabel" name="label_descripcion">
-       <property name="minimumSize">
-        <size>
-         <width>80</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Descripcion</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="lineEdit_descripcion"/>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_3">
+      <spacer name="horizontalSpacer_5">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -332,6 +254,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_eliminar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Eliminar</string>
        </property>
@@ -364,18 +291,12 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_nuevo">
-       <property name="text">
-        <string>Nuevo</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../iconos.qrc">
-         <normaloff>:/new/Iconos/nuevo.png</normaloff>:/new/Iconos/nuevo.png</iconset>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="pushButton_modificar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Modificar</string>
        </property>
@@ -393,6 +314,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_guardar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Ingresar</string>
        </property>
@@ -410,6 +336,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_salir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Salir</string>
        </property>

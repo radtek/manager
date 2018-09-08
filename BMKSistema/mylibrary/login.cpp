@@ -10,6 +10,19 @@ Login::Login(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    DATABASE_CONFIG(C_DB_FILE_CONFIG_NAME);
+    if(!DATABASE_CONNECT)// Se conecto a la base de datos.
+    {
+        if(!opciones){
+            opciones = new OpcionesDB;
+            opciones->setAttribute(Qt::WA_DeleteOnClose);
+            opciones->show();
+        }else{
+            opciones->raise();
+        }
+        //return;
+    }
+
     afterShow = false;
 
     opciones = NULL;
@@ -34,26 +47,14 @@ Login::~Login()
 QPushButton* Login::pb_aceptar(){ return ui->pushButton_aceptar; }
 
 void Login::on_pushButton_aceptar_clicked()
-{
-    DATABASE_CONFIG(C_DB_FILE_CONFIG_NAME);
-    if(!DATABASE_CONNECT)// Se conecto a la base de datos.
-    {
-        if(!opciones){
-            opciones = new OpcionesDB;
-            opciones->setAttribute(Qt::WA_DeleteOnClose);
-            opciones->show();
-        }else{
-            opciones->raise();
-        }
-        return;
-    }    
-
+{       
     QString user = ui->lineEdit_usuario->text();
     QString pass = ui->lineEdit_contrasenia->text();
 
     QString str_query;
-    str_query += "SELECT persona.nombre FROM persona";
-    str_query += " JOIN usuario ON persona.usuario_nombre = usuario.nombre";
+    str_query += "SELECT persona.nombre, persona.tipo_item_nombre FROM persona";
+    str_query += " JOIN persona_has_usuario per_h_u ON per_h_u.persona_cod = persona.cod";
+    str_query += " JOIN usuario ON per_h_u.usuario_id = usuario.id";
     str_query += " WHERE";
     str_query += " usuario.nombre = '" + user + "'";
     str_query += " AND usuario.pass = '" + pass + "'";
@@ -68,24 +69,31 @@ void Login::on_pushButton_aceptar_clicked()
         query.next();
         if(query.isValid()){
             qDebug()<<"ONLINE"<<endl;
-            //if(query.exec("SET autocommit=0;")){
-                APP_LOGIN->close();
 
-                //Comprobante* w = new Comprobante;
-                //w->setAttribute(Qt::WA_DeleteOnClose);
-                //w->showMaximized();
-                APP_MAINWINDOW->setAttribute(Qt::WA_DeleteOnClose);
+            SYSTEM->name_persona = ui->lineEdit_usuario->text();
+            SYSTEM->pass_persona = ui->lineEdit_contrasenia->text();
+            SYSTEM->tipo_persona = query.value(1).toString();
 
-                APP_MAINWINDOW->set_toolBar(APP_TOOLBAR);
+            if(SYSTEM->tipo_persona.compare(Persona::master) != 0
+                    && SYSTEM->tipo_persona.compare(Persona::administrador) != 0
+                    && SYSTEM->tipo_persona.compare(Persona::cajero) != 0) {
 
-                APP_TOOLBAR->setContextMenuPolicy(Qt::PreventContextMenu);
+                QMessageBox::warning(this, "Advertencia", "El usuario no es válido.", "Ok");
+                return;
+            }
 
-                APP_MAINWINDOW->showMaximized();
 
-                //APP_TOOLBAR->on_toolButton_comprobantes_clicked();
-            //}else{
-                //this->close();
-            //}
+            APP_LOGIN->close();
+
+            APP_MAINWINDOW->setAttribute(Qt::WA_DeleteOnClose);
+
+            APP_MAINWINDOW->set_toolBar(APP_TOOLBAR);
+
+            APP_TOOLBAR->setContextMenuPolicy(Qt::PreventContextMenu);
+
+            APP_MAINWINDOW->showMaximized();
+
+
         }else{
             QMessageBox::warning(this, "Advertencia", "El usuario no es válido.", "Ok");
         }
@@ -255,4 +263,37 @@ bool Login::eventFilter(QObject *obj, QEvent *e)
         return false;
     }
     return eventFilter(obj, e);
+}
+
+void Login::on_pushButton_cambiarCorreo_clicked()
+{
+    CambiarCorreo* w = new CambiarCorreo(this);
+
+    w->setAttribute(Qt::WA_DeleteOnClose);
+    w->setWindowModality(Qt::WindowModal);
+    w->setWindowFlags(Qt::Dialog);
+
+    w->show();
+}
+
+void Login::on_pushButton_cambiarPass_clicked()
+{
+    CambiarPass* w = new CambiarPass(this);
+
+    w->setAttribute(Qt::WA_DeleteOnClose);
+    w->setWindowModality(Qt::WindowModal);
+    w->setWindowFlags(Qt::Dialog);
+
+    w->show();
+}
+
+void Login::on_pushButton_enviarmeCorreo_clicked()
+{
+    EnviarmeCorreo* w = new EnviarmeCorreo(this);
+
+    w->setAttribute(Qt::WA_DeleteOnClose);
+    w->setWindowModality(Qt::WindowModal);
+    w->setWindowFlags(Qt::Dialog);
+
+    w->show();
 }

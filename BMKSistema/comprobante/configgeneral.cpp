@@ -131,12 +131,12 @@ void ConfigGeneral::select_familias()
 {
     QSqlQuery query;
     QString str_query = "";
-    str_query += "SELECT item_nombre, x, y";
+    str_query += "SELECT nombre, x, y";
     str_query += ", font , color, background_color";
     str_query += " FROM familia";
 
     if(query.exec(str_query)){
-        QString familita = ui->comboBox_familia->currentText();
+        //QString familita = ui->comboBox_familia->currentText();
         ui->comboBox_familia->clear();
 
         while(query.next()){
@@ -171,20 +171,21 @@ void ConfigGeneral::select_familias()
             //delete tb->menu()->actions()[3];
         }
 
-        ui->comboBox_familia->setCurrentText(familita);
+        //ui->comboBox_familia->setCurrentText(familita);
     }
 }
 void ConfigGeneral::select_platos(QString familia)
 {
     QSqlQuery query;
     QString str_query = "";
-    str_query += "SELECT plato.item_nombre, plato.x, plato.y";
-    str_query += ", plato.font , plato.color, plato.background_color";
-    str_query += ", plato.precio, plato.descripcion";
+    str_query += "SELECT plato.nombre, plato.x, plato.y";
+    str_query += ", plato.font, plato.color, plato.background_color";
+    str_query += ", plato.descripcion";
     str_query += " FROM plato";
-    str_query += " JOIN familia ON familia.item_nombre = plato.familia_item_nombre";
-    str_query += " WHERE familia.item_nombre = '"+familia+"'";
+    str_query += " JOIN familia ON familia.nombre = plato.familia_nombre";
+    str_query += " WHERE familia.nombre = '"+familia+"'";
 
+    qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
         ui->comboBox_plato->clear();
 
@@ -197,8 +198,8 @@ void ConfigGeneral::select_platos(QString familia)
             font.fromString(str_font);
             QString color = query.value(4).toString();
             QString background_color = query.value(5).toString();
-            QString precio = query.value(6).toString();
-            QString descripcion = query.value(7).toString();
+            //QString precio = query.value(6).toString();
+            QString descripcion = query.value(6).toString();
 
             int val_x = ui->spinBox_plato_filas->value();
             int val_y = ui->spinBox_plato_columnas->value();
@@ -247,9 +248,6 @@ void ConfigGeneral::select_platos(QString familia)
 void ConfigGeneral::on_familia_closing()
 {
     Familia* w = (Familia*) sender();
-    if(w->isEliminar()) {
-
-    }
 
     qDebug()<<"familia_closing"<<endl;
     disconnect(ui->spinBox_familia_filas, SIGNAL(valueChanged(int))
@@ -263,9 +261,6 @@ void ConfigGeneral::on_familia_closing()
 void ConfigGeneral::on_plato_closing()
 {
     Plato* w = (Plato*) sender();
-    if(w->isEliminar()){
-
-    }
 
     disconnect(ui->spinBox_plato_filas, SIGNAL(valueChanged(int))
                , this, SLOT(on_spinBox_plato_filas_valueChanged()));
@@ -289,7 +284,7 @@ void ConfigGeneral::on_familia_fontAct_triggered(QAction* act)
             QSqlQuery query;
             str_query += "UPDATE familia";
             str_query += " SET font = '" + font.toString() + "'";
-            str_query += " WHERE item_nombre = '" + tButton->text() + "'";
+            str_query += " WHERE nombre = '" + tButton->text() + "'";
 
             qDebug()<<str_query<<endl;
             if(query.exec(str_query)){
@@ -317,7 +312,7 @@ void ConfigGeneral::on_familia_colorAct_triggered(QAction* act)
         QSqlQuery query;
         str_query += "UPDATE familia";
         str_query += " SET color = '" + color.name() + "'";
-        str_query += " WHERE item_nombre = '" + tButton->text() + "'";
+        str_query += " WHERE nombre = '" + tButton->text() + "'";
 
         qDebug()<<str_query<<endl;
         if(query.exec(str_query)){
@@ -342,7 +337,7 @@ void ConfigGeneral::on_familia_color_de_fondo_Act_triggered(QAction* act)
         QSqlQuery query;
         str_query += "UPDATE familia";
         str_query += " SET background_color = '" + color.name() + "'";
-        str_query += " WHERE item_nombre = '" + tButton->text() + "'";
+        str_query += " WHERE nombre = '" + tButton->text() + "'";
 
         qDebug()<<str_query<<endl;
         if(query.exec(str_query)){
@@ -433,37 +428,7 @@ void ConfigGeneral::on_familia_modificarAct_triggered(QAction* act)
         familia->show();
     }
 }
-void ConfigGeneral::on_familia_quitarAct_triggered(QAction* act)
-{
-    if(act->text().compare("&Quitar") == 0){
-        QToolButton* tb = (QToolButton*)sender();
-        if(tb->text().compare("____") == 0)
-            return;
 
-        AdminPass* ap = new AdminPass(this);
-        //ap->setAttribute(Qt::WA_DeleteOnClose);
-        ap->exec();
-        bool confirmado = ap->get_confirmado();
-
-        if(!confirmado){
-            return;
-        }
-        delete ap;
-
-        Familia* familia = new Familia(this);
-        familia->setWindowFlag(Qt::Dialog);
-        familia->setAttribute(Qt::WA_DeleteOnClose);
-        familia->setWindowModality(Qt::WindowModal);
-
-        familia->modo_eliminacion(tb->text());
-
-        ui->comboBox_familia->setCurrentText(tb->text());
-
-        connect(familia, SIGNAL(closing()), this, SLOT(on_familia_closing()));
-
-        familia->show();
-    }
-}
 void ConfigGeneral::on_plato_fontAct_triggered(QAction* act)
 {
     if(act->text().compare("&Fuente") == 0){
@@ -478,7 +443,7 @@ void ConfigGeneral::on_plato_fontAct_triggered(QAction* act)
             QSqlQuery query;
             str_query += "UPDATE plato";
             str_query += " SET font = '" + font.toString() + "'";
-            str_query += " WHERE item_nombre = '" + tButton->text() + "'";
+            str_query += " WHERE nombre = '" + tButton->text() + "'";
 
             qDebug()<<str_query<<endl;
             if(query.exec(str_query)){
@@ -506,7 +471,7 @@ void ConfigGeneral::on_plato_colorAct_triggered(QAction* act)
         QSqlQuery query;
         str_query += "UPDATE plato";
         str_query += " SET color = '" + color.name() + "'";
-        str_query += " WHERE item_nombre = '" + tButton->text() + "'";
+        str_query += " WHERE nombre = '" + tButton->text() + "'";
 
         qDebug()<<str_query<<endl;
         if(query.exec(str_query)){
@@ -531,7 +496,7 @@ void ConfigGeneral::on_plato_color_de_fondo_Act_triggered(QAction* act)
         QSqlQuery query;
         str_query += "UPDATE plato";
         str_query += " SET background_color = '" + color.name() + "'";
-        str_query += " WHERE item_nombre = '" + tButton->text() + "'";
+        str_query += " WHERE nombre = '" + tButton->text() + "'";
 
         qDebug()<<str_query<<endl;
         if(query.exec(str_query)){
@@ -620,52 +585,17 @@ void ConfigGeneral::on_plato_modificarAct_triggered(QAction* act)
             }
             if(flag)break;
         }
-        plato->modo_modificacion(ui->comboBox_familia->currentText(), tb->text(), x, y);
+        plato->modo_modificar(ui->comboBox_familia->currentText(), tb->text(), x, y);
 
         connect(plato, SIGNAL(closing()), this, SLOT(on_plato_closing()));
 
         plato->show();
     }
 }
-void ConfigGeneral::on_plato_quitarAct_triggered(QAction* act)
-{
-    if(act->text().compare("&Quitar") == 0){
-        QToolButton* tb = (QToolButton*)sender();
-        if(tb->text().compare("____") == 0)
-            return;
 
-        AdminPass* ap = new AdminPass(this);
-        //ap->setAttribute(Qt::WA_DeleteOnClose);
-        ap->exec();
-        bool confirmado = ap->get_confirmado();
-
-        if(!confirmado){
-            return;
-        }
-        delete ap;
-
-        Plato* plato = new Plato(this);
-        plato->setWindowFlag(Qt::Dialog);
-        plato->setAttribute(Qt::WA_DeleteOnClose);
-        plato->setWindowModality(Qt::WindowModal);
-
-        plato->modo_eliminacion(ui->comboBox_familia->currentText(), tb->text());
-
-        connect(plato, SIGNAL(closing()), this, SLOT(on_plato_closing()));
-
-        plato->show();
-    }
-}
 void ConfigGeneral::on_cliente_closing()
 {
-    Cliente* cliente = (Cliente*)sender();
-    QString cod = cliente->get_cod();
 
-    if(cod.compare("") == 0)
-        return;
-
-    QString nombre = cliente->get_nombre();
-    QString direccion = cliente->get_direccion();
 }
 
 void ConfigGeneral::on_comboBox_familia_activated(const QString &arg1)
@@ -681,6 +611,7 @@ void ConfigGeneral::on_comboBox_familia_activated(const QString &arg1)
 
 void ConfigGeneral::on_comboBox_plato_activated(const QString &arg1)
 {
+    /*
     QString str_query = "";
     QSqlQuery query;
     str_query += "SELECT precio, descripcion FROM plato";
@@ -691,7 +622,7 @@ void ConfigGeneral::on_comboBox_plato_activated(const QString &arg1)
 
         }
     }
-
+    */
 }
 void ConfigGeneral::on_spinBox_familia_filas_valueChanged(int arg1)
 {
@@ -741,15 +672,8 @@ void ConfigGeneral::on_spinBox_familia_filas_valueChanged(int arg1)
             modificarAct->setStatusTip(tr("Modificar familia"));
             tb->addAction(modificarAct);
 
-            QAction* quitarAct = new QAction(tr("&Quitar"), this);
-            //fontAct->setCheckable(true);
-            //colorAct->setShortcut(QKeySequence(tr("ctrl+c","Color")));
-            quitarAct->setStatusTip(tr("Quitar familia"));
-            tb->addAction(quitarAct);
-
             connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_familia_nuevoAct_triggered(QAction*)));
             connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_familia_modificarAct_triggered(QAction*)));
-            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_familia_quitarAct_triggered(QAction*)));
 
             connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_familia_fontAct_triggered(QAction*)));
             connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_familia_colorAct_triggered(QAction*)));
@@ -816,16 +740,8 @@ void ConfigGeneral::on_spinBox_plato_filas_valueChanged(int arg1)
             modificarAct->setStatusTip(tr("Modificar plato"));
             tb->addAction(modificarAct);
 
-            QAction* quitarAct = new QAction(tr("&Quitar"), this);
-            //fontAct->setCheckable(true);
-            //colorAct->setShortcut(QKeySequence(tr("ctrl+c","Color")));
-            quitarAct->setStatusTip(tr("Quitar plato"));
-            tb->addAction(quitarAct);
-
             connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_plato_nuevoAct_triggered(QAction*)));
             connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_plato_modificarAct_triggered(QAction*)));
-            connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_plato_quitarAct_triggered(QAction*)));
-
 
             connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_plato_fontAct_triggered(QAction*)));
             connect(tb, SIGNAL(triggered(QAction*)), this, SLOT(on_plato_colorAct_triggered(QAction*)));
@@ -836,7 +752,7 @@ void ConfigGeneral::on_spinBox_plato_filas_valueChanged(int arg1)
             ui->gridLayout_platos->addWidget(tb, i, j);
         }
     }
-    select_platos(ui->comboBox_familia->currentText());    
+    select_platos(ui->comboBox_familia->currentText());
 }
 
 void ConfigGeneral::on_spinBox_plato_columnas_valueChanged(int arg1)
@@ -878,7 +794,7 @@ void ConfigGeneral::showEvent(QShowEvent *event)
             //QString fondoTapiz = query.value(8).toString();
 
             //const QRect mainScreenSize = this->rect();
-            ui->splitter_mid->setSizes(QList<int>() << splitter_1_val << splitter_2_val);
+            //ui->splitter_mid->setSizes(QList<int>() << splitter_1_val << splitter_2_val);
 
             disconnect(ui->spinBox_familia_filas, SIGNAL(valueChanged(int))
                        , this, SLOT(on_spinBox_familia_filas_valueChanged()));
@@ -1035,7 +951,20 @@ void ConfigGeneral::on_toolButton_familia_clicked()
 
     ui->comboBox_familia->setCurrentText(toolB->text());
 
-    select_platos(toolB->text());
+    clean_platos();
+
+    ui->spinBox_plato_filas->setValue(ui->spinBox_plato_filas->value()+1);
+    connect(ui->spinBox_plato_filas, SIGNAL(valueChanged(int))
+               , this, SLOT(on_spinBox_plato_filas_valueChanged()));
+    ui->spinBox_plato_filas->setValue(ui->spinBox_plato_filas->value()-1);
+
+    connect(ui->spinBox_familia_columnas, SIGNAL(valueChanged(int))
+               , this, SLOT(on_spinBox_familia_columnas_valueChanged()));
+
+    connect(ui->spinBox_plato_columnas, SIGNAL(valueChanged(int))
+               , this, SLOT(on_spinBox_plato_columnas_valueChanged()));
+
+    //select_platos(toolB->text());
 }
 
 void ConfigGeneral::on_toolButton_plato_clicked()
@@ -1061,7 +990,7 @@ void ConfigGeneral::on_pushButton_guardar_clave_clicked()
 
 void ConfigGeneral::on_comboBox_familia_currentTextChanged(const QString &arg1)
 {
-    on_comboBox_familia_activated(arg1);
+    //on_comboBox_familia_activated(arg1);
 }
 
 void ConfigGeneral::on_pushButton_fondoTapiz_clicked()
@@ -1103,30 +1032,152 @@ void ConfigGeneral::on_pushButton_fondoTapiz_clicked()
 
 void ConfigGeneral::on_pushButton_formatoFamilia_clicked()
 {
+    bool ok = false;
+    QFont font = QFontDialog::getFont(
+                  &ok, QFont("MS Shell Dlg 2", 8, -1, false), this);
 
+    QString str_query = "";
+    QSqlQuery query;
+    str_query += "UPDATE familia";
+    str_query += " SET font = '" + font.toString() + "'";
+
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        qDebug()<<"query ok"<<endl;
+        QMessageBox::information(this, "Información", "Se hicieron los cambios correctamente.", "Ok");
+        disconnect(ui->spinBox_familia_filas, SIGNAL(valueChanged(int))
+                   , this, SLOT(on_spinBox_familia_filas_valueChanged()));
+        ui->spinBox_familia_filas->setValue(ui->spinBox_familia_filas->value()+1);
+        connect(ui->spinBox_familia_filas, SIGNAL(valueChanged(int))
+                   , this, SLOT(on_spinBox_familia_filas_valueChanged()));
+        ui->spinBox_familia_filas->setValue(ui->spinBox_familia_filas->value()-1);
+    }
 }
 
 void ConfigGeneral::on_pushButton_colorFamilia_clicked()
 {
+    QColor color = QColorDialog::getColor(Qt::black, this, "Pick Color");
 
+    QString bg_color = color.name();
+
+    QString str_query = "";
+    QSqlQuery query;
+    str_query += "UPDATE familia";
+    str_query += " SET color = '" + color.name() + "'";
+
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        qDebug()<<"query ok"<<endl;
+        QMessageBox::information(this, "Información", "Se hicieron los cambios correctamente.", "Ok");
+
+        disconnect(ui->spinBox_familia_filas, SIGNAL(valueChanged(int))
+                   , this, SLOT(on_spinBox_familia_filas_valueChanged()));
+        ui->spinBox_familia_filas->setValue(ui->spinBox_familia_filas->value()+1);
+        connect(ui->spinBox_familia_filas, SIGNAL(valueChanged(int))
+                   , this, SLOT(on_spinBox_familia_filas_valueChanged()));
+        ui->spinBox_familia_filas->setValue(ui->spinBox_familia_filas->value()-1);
+    }
 }
 
 void ConfigGeneral::on_pushButton_fondoFamilia_clicked()
 {
+    QColor color = QColorDialog::getColor(Qt::black, this, "Pick Color");
 
+    QString bg_color = color.name();
+
+    QString str_query = "";
+    QSqlQuery query;
+    str_query += "UPDATE familia";
+    str_query += " SET background_color = '" + color.name() + "'";
+
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        qDebug()<<"query ok"<<endl;
+        QMessageBox::information(this, "Información", "Se hicieron los cambios correctamente.", "Ok");
+
+        disconnect(ui->spinBox_familia_filas, SIGNAL(valueChanged(int))
+                   , this, SLOT(on_spinBox_familia_filas_valueChanged()));
+        ui->spinBox_familia_filas->setValue(ui->spinBox_familia_filas->value()+1);
+        connect(ui->spinBox_familia_filas, SIGNAL(valueChanged(int))
+                   , this, SLOT(on_spinBox_familia_filas_valueChanged()));
+        ui->spinBox_familia_filas->setValue(ui->spinBox_familia_filas->value()-1);
+    }
 }
 
 void ConfigGeneral::on_pushButton_formatoPlato_clicked()
 {
+    bool ok = false;
+    QFont font = QFontDialog::getFont(
+                  &ok, QFont("MS Shell Dlg 2", 8, -1, false), this);
 
+    QString str_query = "";
+    QSqlQuery query;
+    str_query += "UPDATE plato";
+    str_query += " SET font = '" + font.toString() + "'";
+    //str_query += " WHERE familia_item_nombre = '" + ui->comboBox_familia->currentText() + "'";
+
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        qDebug()<<"query ok"<<endl;
+        QMessageBox::information(this, "Información", "Se hicieron los cambios correctamente.", "Ok");
+
+        disconnect(ui->spinBox_plato_filas, SIGNAL(valueChanged(int))
+                   , this, SLOT(on_spinBox_plato_filas_valueChanged()));
+        ui->spinBox_plato_filas->setValue(ui->spinBox_plato_filas->value()+1);
+        connect(ui->spinBox_plato_filas, SIGNAL(valueChanged(int))
+                   , this, SLOT(on_spinBox_plato_filas_valueChanged()));
+        ui->spinBox_plato_filas->setValue(ui->spinBox_plato_filas->value()-1);
+    }
 }
 
 void ConfigGeneral::on_pushButton_colorPlato_clicked()
 {
+    QColor color = QColorDialog::getColor(Qt::black, this, "Pick Color");
 
+    QString bg_color = color.name();
+
+    QString str_query = "";
+    QSqlQuery query;
+    str_query += "UPDATE plato";
+    str_query += " SET color = '" + color.name() + "'";
+    //str_query += " WHERE familia_nombre = '" + ui->comboBox_familia->currentText() + "'";
+
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        qDebug()<<"query ok"<<endl;
+        QMessageBox::information(this, "Información", "Se hicieron los cambios correctamente.", "Ok");
+
+        disconnect(ui->spinBox_plato_filas, SIGNAL(valueChanged(int))
+                   , this, SLOT(on_spinBox_plato_filas_valueChanged()));
+        ui->spinBox_plato_filas->setValue(ui->spinBox_plato_filas->value()+1);
+        connect(ui->spinBox_plato_filas, SIGNAL(valueChanged(int))
+                   , this, SLOT(on_spinBox_plato_filas_valueChanged()));
+        ui->spinBox_plato_filas->setValue(ui->spinBox_plato_filas->value()-1);
+    }
 }
 
 void ConfigGeneral::on_pushButton_fondoPlato_clicked()
 {
+    QColor color = QColorDialog::getColor(Qt::black, this, "Pick Color");
 
+    QString bg_color = color.name();
+
+    QString str_query = "";
+    QSqlQuery query;
+    str_query += "UPDATE plato";
+    str_query += " SET background_color = '" + color.name() + "'";
+    //str_query += " WHERE familia_nombre = '" + ui->comboBox_familia->currentText() + "'";
+
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        qDebug()<<"query ok"<<endl;
+        QMessageBox::information(this, "Información", "Se hicieron los cambios correctamente.", "Ok");
+
+        disconnect(ui->spinBox_plato_filas, SIGNAL(valueChanged(int))
+                   , this, SLOT(on_spinBox_plato_filas_valueChanged()));
+        ui->spinBox_plato_filas->setValue(ui->spinBox_plato_filas->value()+1);
+        connect(ui->spinBox_plato_filas, SIGNAL(valueChanged(int))
+                   , this, SLOT(on_spinBox_plato_filas_valueChanged()));
+        ui->spinBox_plato_filas->setValue(ui->spinBox_plato_filas->value()-1);
+    }
 }

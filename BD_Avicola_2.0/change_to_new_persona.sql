@@ -1,0 +1,1 @@
+UPDATE comprobante_has_persona c_h_per JOIN persona per ON c_h_per.persona_cod = per.cod SET c_h_per.persona_cod = conteo;

@@ -114,7 +114,6 @@
         <file>Iconos/electronic_billing_machine_256.png</file>
         <file>Iconos/salir_32.png</file>
         <file>Iconos/delete_32.png</file>
-        <file>Iconos/agregar_32.png</file>
         <file>Iconos/modificar_32.png</file>
         <file>Iconos/colaborador_32.png</file>
         <file>Iconos/agregar-user.png</file>
@@ -149,5 +148,25 @@
         <file>Iconos/send-message-button.png</file>
         <file>Iconos/new_doc.png</file>
         <file>Iconos/advice_accept_ok_theaction_10829.png</file>
+        <file>Iconos/peru-vs-colombia.jpg</file>
+        <file>Iconos/export-to-excel.png</file>
+        <file>Iconos/printer.png</file>
+        <file>Iconos/SendEmail.png</file>
+        <file>Iconos/Password_Reveal_button.png</file>
+        <file>Iconos/clientes.png</file>
+        <file>Iconos/proveedor.png</file>
+        <file>Iconos/users-relation.png</file>
+        <file>Iconos/eventual.png</file>
+        <file>Iconos/sunat.png</file>
+        <file>Iconos/dni.png</file>
+        <file>Iconos/proveedor_gorro.jpg</file>
+        <file>Iconos/transportista.png</file>
+        <file>Iconos/cajero.png</file>
+        <file>Iconos/admin.png</file>
+        <file>Iconos/colaborador_add.png</file>
+        <file>Iconos/colaborador_edit.png</file>
+        <file>Iconos/producto_comida.png</file>
+        <file>Iconos/ingredientes.png</file>
+        <file>Iconos/categoria.png</file>
     </qresource>
 </RCC>

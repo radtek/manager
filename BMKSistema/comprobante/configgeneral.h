@@ -2,10 +2,8 @@
 #define CONFIGGENERAL_H
 
 #include "mylibrary/mylibrary_global.h"
-#include "mylibrary/widgetevents.h"
 #include "mylibrary/sunatconsultaruc.h"
 #include "mylibrary/reniecconsultadni.h"
-#include "cliente.h"
 #include "familia.h"
 #include "plato.h"
 #include "mylibrary/adminpass.h"
@@ -63,8 +61,6 @@ private slots:
 
     void on_familia_modificarAct_triggered(QAction* act);
 
-    void on_familia_quitarAct_triggered(QAction* act);
-
     void on_plato_fontAct_triggered(QAction* act);
 
     void on_plato_colorAct_triggered(QAction* act);
@@ -74,8 +70,6 @@ private slots:
     void on_plato_nuevoAct_triggered(QAction* act);
 
     void on_plato_modificarAct_triggered(QAction* act);
-
-    void on_plato_quitarAct_triggered(QAction* act);
 
     void on_comboBox_familia_activated(const QString &arg1);
 

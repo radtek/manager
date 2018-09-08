@@ -21,11 +21,10 @@ public:
     bool isEliminar() { return is_eliminar; }
 
     QString getFamilia() { return current_familia; }
+
     void modo_ingresar(int x, int y);
 
     void modo_modificacion(QString familia, int x, int y);
-
-    void modo_eliminacion(QString familia);
 
     void ingresar();
 
@@ -43,19 +42,11 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void on_comboBox_buscar_activated(const QString &arg1);
-
-    void on_spinBox_x_valueChanged(int arg1);
-
-    void on_spinBox_y_valueChanged(int arg1);
-
     void on_pushButton_guardar_clicked();
 
     void on_pushButton_salir_clicked();
 
     void on_pushButton_modificar_clicked();
-
-    void on_pushButton_nuevo_clicked();
 
     void on_pushButton_eliminar_clicked();    
 
@@ -67,6 +58,9 @@ private:
     bool is_ingresar;
     bool is_modificar;
     bool is_eliminar;
+
+    int x;
+    int y;
 };
 
 #endif // FAMILIA_H

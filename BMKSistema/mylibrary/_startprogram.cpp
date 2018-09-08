@@ -58,32 +58,25 @@ void _StartProgram::run()
     //DATABASE_CONFIG(C_DB_FILE_CONFIG_NAME);
 
     QString text = getMacAddress();
-    /*
-    foreach(QNetworkInterface interfac, QNetworkInterface::allInterfaces())
-    {
-        text = interfac.hardwareAddress();
-        qDebug()<<text<<endl;
-    }
 
-    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
-        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
-             qDebug() << address.toString();
-    }
-    */
-    qDebug()<<"entro"<<endl;
+    qDebug()<<"entro"<<endl;    
+    // GETMAC DE LAPTOP COREI7: 60-45-CB-1D-7E-EF
     // GETMAC DE LAPTOP ALEX: 20-16-D8-E7-D1-BC
-    // GETMAC DE BILL MAC QUACK de ALAS PERUANAS: 00-16-35-66-C3-09
-    // GETMAC DE BILL MAC QUACK de ASA: 00-1E-C9-30-03-DB
-    if(text.indexOf("00-1E-C9-30-03-DB") != -1){
-            //&& QDate::currentDate() >= QDate(2017,6,1) && QDate::currentDate() <= QDate(2017,8,6)){
+    // GETMAC DE BILL MAC QUACK de ALAS PERUANAS caja1: 00-16-35-66-C3-09
+    // GETMAC DE BILL MAC QUACK de ALAS PERUANAS caja2: 90-FB-A6-04-14-21
+    // GETMAC DE BILL MAC QUACK de ASA: 00-21-5A-65-88-B2
+    if(text.indexOf("90-FB-A6-04-14-21") != -1
+            && QDate::currentDate() >= QDate(2017,12,27) && QDate::currentDate() <= QDate(2020,1,5)){
 
     }else{
         QWidget* w = new QWidget();
         w->setAttribute(Qt::WA_DeleteOnClose);
         w->show();
         return;
-    }
+    }    
 
     APP_LOGIN->setAttribute(Qt::WA_DeleteOnClose);
     APP_LOGIN->show();
+
+
 }

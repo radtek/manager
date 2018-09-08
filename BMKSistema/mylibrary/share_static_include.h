@@ -38,7 +38,6 @@
 #include <QString>
 #include <QVariant>
 #include <QSqlRecord>
-#include <QTableWidget>
 #include <QDebug>
 #include <QHeaderView>
 #include <QSqlQueryModel>
@@ -58,9 +57,9 @@
 #include <QList>
 #include <QStandardItemModel>
 #include <QTreeWidget>
+#include <QTreeWidgetItem>
 #include <QListWidget>
 #include <QStringList>
-#include <QTreeWidget>
 #include <QTextEdit>
 #include <QTextDocument>
 #include <QTimer>
@@ -97,6 +96,7 @@
 #include <QHostInfo>
 #include <QNetworkInterface>
 #include <QKeyEvent>
+#include <QAbstractItemView>
 
 #define STR_REG_SIN_DOC "Registro_sin_Documento"
 #define STR_BOLETA "Boleta"
@@ -109,6 +109,12 @@
 #define STR_FLETE "Flete"
 #define STR_ORDEN "Orden"
 #define STR_SALDO "Saldo"
+
+#define GRUPO_ESTADO "Estado"
+
+#define ACTIVO "Activo"
+#define SUSPENDIDO "Suspendido"
+
 //TYPEDEFS
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -135,7 +141,7 @@ namespace ns_group_of_items{
 
 namespace items{
     enum items {
-        ACTIVO = 90, AMAZONAS = 97, ANCASH = 98, ANULADO = 92, APURIMAC = 99, AREQUIPA = 100
+        AMAZONAS = 97, ANCASH = 98, ANULADO = 92, APURIMAC = 99, AREQUIPA = 100
         , AYACUCHO = 101, BANCO = 9, BOLETA = 79, B_COMPRA = 64, B_CONSIGNACION = 68
         , B_DEVOLUCION = 62, B_EXPORTACION = 69, B_IMPORTACION = 63, B_OTROS = 70, B_TRANSFORMACION = 67
         , B_TRASLADO_EMISOR_PAGO = 65, B_VENTA = 66, CAJAMARCA = 102, CALLAO = 103, CANTIDAD = 37

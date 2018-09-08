@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>651</width>
+    <width>707</width>
     <height>395</height>
    </rect>
   </property>
@@ -207,6 +207,12 @@ QDateTimeEdit{ background-color: rgb(255, 255, 255) }</string>
         <iconset resource="../iconos.qrc">
          <normaloff>:/new/Iconos/advice_accept_ok_theaction_10829.png</normaloff>:/new/Iconos/advice_accept_ok_theaction_10829.png</iconset>
        </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
       </widget>
      </item>
      <item>
@@ -222,6 +228,12 @@ QDateTimeEdit{ background-color: rgb(255, 255, 255) }</string>
        <property name="icon">
         <iconset resource="../iconos.qrc">
          <normaloff>:/new/Iconos/anular.png</normaloff>:/new/Iconos/anular.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -255,6 +267,29 @@ QDateTimeEdit{ background-color: rgb(255, 255, 255) }</string>
         <iconset resource="../iconos.qrc">
          <normaloff>:/new/Iconos/eye_web.png</normaloff>:/new/Iconos/eye_web.png</iconset>
        </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_exportar">
+       <property name="text">
+        <string>Exportar</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../iconos.qrc">
+         <normaloff>:/new/Iconos/export-to-excel.png</normaloff>:/new/Iconos/export-to-excel.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
       </widget>
      </item>
      <item>
@@ -287,7 +322,34 @@ QDateTimeEdit{ background-color: rgb(255, 255, 255) }</string>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_buscar"/>
+      <widget class="QLineEdit" name="lineEdit_buscar">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_6">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Producto</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_buscarProducto">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_4">
@@ -310,25 +372,19 @@ QDateTimeEdit{ background-color: rgb(255, 255, 255) }</string>
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_totalTop">
+      <widget class="QLineEdit" name="lineEdit_totalUp">
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <pointsize>12</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="buttonSymbols">
-        <enum>QAbstractSpinBox::NoButtons</enum>
-       </property>
-       <property name="decimals">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <double>100000000.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -467,25 +523,19 @@ QDateTimeEdit{ background-color: rgb(255, 255, 255) }</string>
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_total">
+      <widget class="QLineEdit" name="lineEdit_totalDown">
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <pointsize>12</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="buttonSymbols">
-        <enum>QAbstractSpinBox::NoButtons</enum>
-       </property>
-       <property name="decimals">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <double>100000000.000000000000000</double>
        </property>
       </widget>
      </item>

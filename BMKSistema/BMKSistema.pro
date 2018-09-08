@@ -3,8 +3,8 @@
 # Project created by QtCreator 2017-07-12T21:19:42
 #
 #-------------------------------------------------
-CONFIG += c++14
-QT       += core gui opengl sql webengine webenginewidgets charts
+CONFIG += c++11
+QT       += core gui opengl sql webengine webenginewidgets charts network networkauth
 
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -30,7 +30,6 @@ SOURCES += \
     mylibrary/comboboxdelegate.cpp \
     mylibrary/database_connection.cpp \
     mylibrary/doublespinboxdelegate.cpp \
-    mylibrary/funcionalidad.cpp \
     mylibrary/lineedit.cpp \
     mylibrary/lineeditdelegate.cpp \
     mylibrary/lineeditnumberdelegate.cpp \
@@ -39,11 +38,9 @@ SOURCES += \
     mylibrary/session.cpp \
     mylibrary/sistema.cpp \
     mylibrary/snackbarinfo.cpp \
-    mylibrary/sqlstatements.cpp \
     mylibrary/sunatconsultaruc.cpp \
     mylibrary/sunattipocambio.cpp \
     mylibrary/widgetnumber.cpp \    
-    mylibrary/widgetevents.cpp \
     mylibrary/_startprogram.cpp \
     mylibrary/configuracion.cpp \
     mylibrary/login.cpp \
@@ -58,18 +55,24 @@ SOURCES += \
     producto/producto.cpp \
     comprobante/familia.cpp \
     comprobante/plato.cpp \
-    comprobante/cliente.cpp \
     comprobante/comprobantebuscar.cpp \
     mylibrary/adminpass.cpp \
     comprobante/previewticket.cpp \
     comprobante/sendmsg.cpp \
-    comprobante/configgeneral.cpp
+    comprobante/configgeneral.cpp \
+    mylibrary/cambiarpass.cpp \
+    mylibrary/cambiarcorreo.cpp \
+    mylibrary/enviarmecorreo.cpp \
+    persona/personamenu.cpp \
+    persona/personabuscar.cpp \
+    producto/productomenu.cpp \
+    producto/productobuscar.cpp \
+    comprobante/cliente.cpp
 
 HEADERS += \
     mylibrary/comboboxdelegate.h \
     mylibrary/database_connection.h \
     mylibrary/doublespinboxdelegate.h \
-    mylibrary/funcionalidad.h \
     mylibrary/lineedit.h \
     mylibrary/lineeditdelegate.h \
     mylibrary/lineeditnumberdelegate.h \
@@ -83,12 +86,9 @@ HEADERS += \
     mylibrary/singleton.h \
     mylibrary/sistema.h \
     mylibrary/snackbarinfo.h \
-    mylibrary/sqlstatements.h \
     mylibrary/sunatconsultaruc.h \
     mylibrary/sunattipocambio.h \
-    mylibrary/tablemoves.h \
     mylibrary/widgetnumber.h \
-    mylibrary/widgetevents.h \
     mylibrary/_startprogram.h \
     mylibrary/configuracion.h \
     mylibrary/login.h \
@@ -107,12 +107,19 @@ HEADERS += \
     producto/producto.h \
     comprobante/familia.h \
     comprobante/plato.h \
-    comprobante/cliente.h \
     comprobante/comprobantebuscar.h \
     mylibrary/adminpass.h \
     comprobante/previewticket.h \
     comprobante/sendmsg.h \
-    comprobante/configgeneral.h
+    comprobante/configgeneral.h \
+    mylibrary/cambiarpass.h \
+    mylibrary/cambiarcorreo.h \
+    mylibrary/enviarmecorreo.h \
+    persona/personamenu.h \
+    persona/personabuscar.h \
+    producto/productomenu.h \
+    producto/productobuscar.h \
+    comprobante/cliente.h
 
 FORMS += \
     mylibrary/snackbarinfo.ui \
@@ -128,12 +135,19 @@ FORMS += \
     producto/producto.ui \
     comprobante/familia.ui \
     comprobante/plato.ui \
-    comprobante/cliente.ui \
     comprobante/comprobantebuscar.ui \
     mylibrary/adminpass.ui \
     comprobante/previewticket.ui \
     comprobante/sendmsg.ui \
-    comprobante/configgeneral.ui
+    comprobante/configgeneral.ui \
+    mylibrary/cambiarpass.ui \
+    mylibrary/cambiarcorreo.ui \
+    mylibrary/enviarmecorreo.ui \
+    persona/personamenu.ui \
+    persona/personabuscar.ui \
+    producto/productomenu.ui \
+    producto/productobuscar.ui \
+    comprobante/cliente.ui
 
 RESOURCES += \
     iconos.qrc
@@ -175,10 +189,13 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../VS2015_Tesseract-master/x64/debug/ -llibtesseract
     else:unix: LIBS += -L$$PWD/../../VS2015_Tesseract-master/x64/ -llibtesseract
 
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_9_1_MSVC2015_64bit-Release/release/ -lQtXlsxWriter
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_9_1_MSVC2015_64bit-Debug/debug/ -lQtXlsxWriter
-    else:unix: LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_9_1_MSVC2015_64bit-Debug/ -lQtXlsxWriter
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_10_1_MSVC2015_64bit-Release/release/ -lQtXlsxWriter
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_10_1_MSVC2015_64bit-Debug/debug/ -lQtXlsxWriter
+    else:unix: LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_10_1_MSVC2015_64bit-Debug/ -lQtXlsxWriter
 
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-SMTPEmail-Desktop_Qt_5_10_1_MSVC2015_64bit-Release/release/ -lSMTPEmail
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-SMTPEmail-Desktop_Qt_5_10_1_MSVC2015_64bit-Debug/debug/ -lSMTPEmail
+    else:unix: LIBS += -L$$PWD/../build-SMTPEmail-Desktop_Qt_5_10_1_MSVC2015_64bit-Debug/ -lSMTPEmail
 } else {
     win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../VS2015_Tesseract-master/release/ -lzlib
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../VS2015_Tesseract-master/debug/ -lzlib
@@ -216,9 +233,13 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../VS2015_Tesseract-master/debug/ -llibtesseract
     else:unix: LIBS += -L$$PWD/../../VS2015_Tesseract-master/ -llibtesseract
 
-    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_9_1_MSVC2015_32bit-Release/release/ -lQtXlsxWriter
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_9_1_MSVC2015_32bit-Debug/debug/ -lQtXlsxWriter
-    else:unix: LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_9_1_MSVC2015_32bit-Debug/ -lQtXlsxWriter
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_10_1_MSVC2015_32bit-Release/release/ -lQtXlsxWriter
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_10_1_MSVC2015_32bit-Debug/debug/ -lQtXlsxWriter
+    else:unix: LIBS += -L$$PWD/../build-QtXlsxWriter-Desktop_Qt_5_10_1_MSVC2015_32bit-Debug/ -lQtXlsxWriter
+
+    win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-SMTPEmail-Desktop_Qt_5_10_1_MSVC2015_32bit-Release/release/ -lSMTPEmail
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-SMTPEmail-Desktop_Qt_5_10_1_MSVC2015_32bit-Debug/debug/ -lSMTPEmail
+    else:unix: LIBS += -L$$PWD/../build-SMTPEmail-Desktop_Qt_5_10_1_MSVC2015_32bit-Debug/ -lSMTPEmail
 }
     INCLUDEPATH += $$PWD/../../VS2015_Tesseract-master/zlib/include
     DEPENDPATH += $$PWD/../../VS2015_Tesseract-master/zlib/include
@@ -283,3 +304,6 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
 
     INCLUDEPATH += $$PWD/../QtXlsxWriter
     DEPENDPATH += $$PWD/../QtXlsxWriter
+
+    INCLUDEPATH += $$PWD/../SmtpClient-for-Qt-1.1\src
+    DEPENDPATH += $$PWD/../SmtpClient-for-Qt-1.1\src

@@ -24,8 +24,6 @@ Familia::Familia(QWidget *parent) :
     qDebug()<<str_regExp_ruc<<endl;*/
     is_ingresar = false;
     is_modificar = false;
-    is_eliminar = false;
-    //select_all();
 
     //ui->lineEdit_nombre->setValidator(new QRegExpValidator(regExp_ruc));
 
@@ -35,7 +33,7 @@ Familia::Familia(QWidget *parent) :
     //ui->pushButton_eliminar->setDisabled(true);
     //ui->comboBox_buscar->hide();
     //ui->label_buscar->hide();
-    ui->pushButton_nuevo->hide();
+    //ui->pushButton_nuevo->hide();
 }
 
 Familia::~Familia()
@@ -45,102 +43,33 @@ Familia::~Familia()
 }
 void Familia::modo_ingresar(int x, int y)
 {
-    ui->label_buscar->hide();
-
-    ui->spinBox_x->setValue(x);
-    ui->spinBox_y->setValue(y);
-
-    ui->spinBox_x->hide();
-    ui->spinBox_y->hide();
-    ui->label_x->hide();
-    ui->label_y->hide();
-    ui->comboBox_buscar->hide();
-    //ui->pushButton_guardar->hide();
+    this->x = x;
+    this->y = y;
     ui->pushButton_modificar->hide();
     ui->pushButton_eliminar->hide();
 }
 void Familia::modo_modificacion(QString familia, int x, int y)
 {
-    ui->label_buscar->hide();
-
+    this->x = x;
+    this->y = y;
     current_familia = familia;
 
     ui->label_titulo->setText(familia);
 
     ui->lineEdit_nombre->setText(familia);
 
-    ui->spinBox_x->setValue(x);
-    ui->spinBox_y->setValue(y);
-    //ui->lineEdit_nombre->setText(familia);
-
-    //on_comboBox_buscar_activated(familia);
-
-    ui->comboBox_buscar->hide();
     ui->pushButton_guardar->hide();
-    ui->spinBox_x->hide();
-    ui->spinBox_y->hide();
-    ui->label_x->hide();
-    ui->label_y->hide();
-    //ui->pushButton_modificar->hide();
-    ui->pushButton_eliminar->hide();
 }
-void Familia::modo_eliminacion(QString familia)
-{
-    ui->label_buscar->hide();
 
-    current_familia = familia;
-
-    ui->label_titulo->setText(familia);
-
-    ui->lineEdit_nombre->setText(familia);
-
-    //on_comboBox_buscar_activated(familia);
-
-    ui->spinBox_x->hide();
-    ui->spinBox_y->hide();
-    ui->label_x->hide();
-    ui->label_y->hide();
-
-    ui->comboBox_buscar->hide();
-    ui->pushButton_guardar->hide();
-    ui->pushButton_modificar->hide();
-    //ui->pushButton_eliminar->hide();
-}
-void Familia::select_all()
-{
-    QSqlQuery query;
-    QString str_query = "";
-    str_query += "SELECT item_nombre, x, y";
-    str_query += " FROM familia";
-
-    if(query.exec(str_query)){
-        ui->comboBox_buscar->clear();
-        while(query.next()){
-            QString nombre = query.value(0).toString();
-            //int x = query.value(1).toInt();
-            //int y = query.value(2).toInt();
-
-            ui->comboBox_buscar->addItem(nombre);
-            //ui->spinBox_x->setValue(x);
-            //ui->spinBox_y->setValue(y);
-        }
-        ui->comboBox_buscar->setCurrentText(ui->lineEdit_nombre->text());
-    }
-}
 void Familia::ingresar()
 {
     QString nombre = ui->lineEdit_nombre->text();
-    int x = ui->spinBox_x->value();
-    int y = ui->spinBox_y->value();
+    int x = this->x;
+    int y = this->y;
     QString str_query = "";
     QSqlQuery query;
-    str_query += "INSERT INTO item(nombre, grupo_nombre)";
-    str_query += "VALUES(";
-    str_query += "'"+nombre+"'";
-    str_query += ", 'familia'";
-    str_query += ")";
-    str_query += "&&END_QUERY&&";
-    str_query += "INSERT INTO familia(item_nombre, x, y)";
+
+    str_query += "INSERT INTO familia(nombre, x, y)";
     str_query += "VALUES(";
     str_query += "'"+nombre+"'";
     str_query += ", "+QString().setNum(x)+"";
@@ -161,20 +90,16 @@ void Familia::modificar()
 {
     QString nombre_old = current_familia;
     QString nombre = ui->lineEdit_nombre->text();
-    int x = ui->spinBox_x->value();
-    int y = ui->spinBox_y->value();
+    int x = this->x;
+    int y = this->y;
     QString str_query = "";
     QSqlQuery query;
-    str_query += "UPDATE item";
-    str_query += " SET";
-    str_query += " nombre = '"+nombre+"'";
-    str_query += " WHERE nombre = '"+nombre_old+"'";
-    str_query += "&&END_QUERY&&";
     str_query += "UPDATE familia";
     str_query += " SET";
     str_query += " x = "+QString().setNum(x)+"";
     str_query += ", y = "+QString().setNum(y)+"";
-    str_query += " WHERE item_nombre = '"+nombre+"'";
+    str_query += ", nombre = '"+nombre+"'";
+    str_query += " WHERE nombre = '"+nombre_old+"'";
     str_query += "&&END_QUERY&&";
 
     SYSTEM->multiple_query(str_query);
@@ -192,7 +117,7 @@ void Familia::eliminar()
 
     QString str_query = "";
     QSqlQuery query;
-    str_query += "DELETE FROM item";
+    str_query += "DELETE FROM familia";
     str_query += " WHERE nombre = '"+nombre+"'";
 
     if(query.exec(str_query)){
@@ -206,35 +131,6 @@ void Familia::closeEvent(QCloseEvent *event)
 {
     emit closing();
     event->accept();
-}
-void Familia::on_comboBox_buscar_activated(const QString &arg1)
-{
-    ui->lineEdit_nombre->setText(arg1);
-    QString str_query = "";
-    QSqlQuery query;
-    str_query += "SELECT x, y FROM familia";
-    str_query += " WHERE item_nombre = '" + arg1 + "'";
-
-    qDebug()<<str_query<<endl;
-    if(query.exec(str_query)){
-        qDebug()<<"query ok"<<endl;
-        if(query.next()){
-            int x = query.value(0).toInt();
-            int y = query.value(1).toInt();
-
-            ui->spinBox_x->setValue(x);
-            ui->spinBox_y->setValue(y);
-        }
-    }
-}
-void Familia::on_spinBox_x_valueChanged(int arg1)
-{
-
-}
-
-void Familia::on_spinBox_y_valueChanged(int arg1)
-{
-
 }
 void Familia::on_pushButton_guardar_clicked()
 {
@@ -269,15 +165,6 @@ void Familia::on_pushButton_modificar_clicked()
 
     }break;
     }
-}
-
-void Familia::on_pushButton_nuevo_clicked()
-{
-    //ui->pushButton_guardar->setEnabled(true);
-    //ui->pushButton_modificar->setDisabled(true);
-    //ui->pushButton_eliminar->setDisabled(true);
-    //ui->comboBox_buscar->hide();
-    //ui->label_buscar->hide();
 }
 
 void Familia::on_pushButton_eliminar_clicked()

@@ -2,14 +2,14 @@
 #define COMPROBANTE_H
 
 #include "mylibrary/mylibrary_global.h"
-#include "mylibrary/widgetevents.h"
 #include "mylibrary/sunatconsultaruc.h"
 #include "mylibrary/reniecconsultadni.h"
 #include "configgeneral.h"
-#include "cliente.h"
 #include "familia.h"
 #include "plato.h"
 #include "mylibrary/adminpass.h"
+#include "persona/persona.h"
+#include "comprobante/cliente.h"
 
 namespace Ui {
 class Comprobante;
@@ -22,6 +22,10 @@ class MYLIBRARYSHARED_EXPORT Comprobante : public QWidget
 public:
     explicit Comprobante(QWidget *parent = 0);
     ~Comprobante();
+
+    enum{NOMBRE = 0, UNIDAD, CANTIDAD, PRECIO, DESCRIPCION_PLATO};
+
+    void when_detalleModified();
 
     void delayedPopup();
 
@@ -44,31 +48,7 @@ public:
 private slots:    
     void on_familia_closing();
 
-    void on_plato_closing();
-
-    void on_familia_fontAct_triggered(QAction* act);
-
-    void on_familia_colorAct_triggered(QAction* act);
-
-    void on_familia_color_de_fondo_Act_triggered(QAction* act);
-
-    void on_familia_nuevoAct_triggered(QAction* act);
-
-    void on_familia_modificarAct_triggered(QAction* act);
-
-    void on_familia_quitarAct_triggered(QAction* act);
-
-    void on_plato_fontAct_triggered(QAction* act);
-
-    void on_plato_colorAct_triggered(QAction* act);
-
-    void on_plato_color_de_fondo_Act_triggered(QAction* act);
-
-    void on_plato_nuevoAct_triggered(QAction* act);
-
-    void on_plato_modificarAct_triggered(QAction* act);
-
-    void on_plato_quitarAct_triggered(QAction* act);
+    void on_plato_closing();    
 
     void on_comboBox_familia_activated(const QString &arg1);
 
@@ -134,10 +114,18 @@ private slots:
 
     void on_lineEdit_pago_textChanged(const QString &arg1);
 
+    void on_pushButton_liberarColaImpresion_clicked();
+
+    void on_checkBox_habilitarEdicion_stateChanged(int arg1);
+
 private:
     void print_caja();
 
+    void print_caja_frap();
+
     void print_comanda();
+
+    void print_comanda_alas();
 
     void print_star_asa();
 

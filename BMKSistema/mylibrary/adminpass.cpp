@@ -17,7 +17,7 @@ AdminPass::~AdminPass()
 
 void AdminPass::on_pushButton_aceptar_clicked()
 {
-    confirmado = SYSTEM->confirmar_admin(ui->lineEdit_contrasenia->text());
+    confirmado = SYSTEM->confirmar_admin(Sistema::name_persona, ui->lineEdit_contrasenia->text());
 
     if(confirmado)
         this->close();

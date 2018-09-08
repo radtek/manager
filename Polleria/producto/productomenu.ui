@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ProductoMenu</class>
+ <widget class="QWidget" name="ProductoMenu">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>872</width>
+    <height>290</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="2">
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="label_titulo">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Selección de Tipo de Colaborador</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTreeWidget" name="treeWidget_menu">
+     <property name="minimumSize">
+      <size>
+       <width>850</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <attribute name="headerDefaultSectionSize">
+      <number>200</number>
+     </attribute>
+     <attribute name="headerHighlightSections">
+      <bool>true</bool>
+     </attribute>
+     <attribute name="headerMinimumSectionSize">
+      <number>200</number>
+     </attribute>
+     <column>
+      <property name="text">
+       <string>Items</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../iconos.qrc">
+        <normaloff>:/new/Iconos/categoria.png</normaloff>:/new/Iconos/categoria.png</iconset>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>1</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>2</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Opciones</string>
+      </property>
+     </column>
+     <item>
+      <property name="text">
+       <string>Productos</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../iconos.qrc">
+        <normaloff>:/new/Iconos/producto_comida.png</normaloff>:/new/Iconos/producto_comida.png</iconset>
+      </property>
+      <property name="text">
+       <string>INGRESAR</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignCenter</set>
+      </property>
+      <property name="icon">
+       <iconset resource="../iconos.qrc">
+        <normaloff>:/new/Iconos/colaborador_add.png</normaloff>:/new/Iconos/colaborador_add.png</iconset>
+      </property>
+      <property name="text">
+       <string>MODIFICAR</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignCenter</set>
+      </property>
+      <property name="icon">
+       <iconset resource="../iconos.qrc">
+        <normaloff>:/new/Iconos/colaborador_edit.png</normaloff>:/new/Iconos/colaborador_edit.png</iconset>
+      </property>
+      <property name="text">
+       <string>Productos</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Ingredientes</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../iconos.qrc">
+        <normaloff>:/new/Iconos/ingredientes.png</normaloff>:/new/Iconos/ingredientes.png</iconset>
+      </property>
+      <property name="text">
+       <string>INGRESAR</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignCenter</set>
+      </property>
+      <property name="icon">
+       <iconset resource="../iconos.qrc">
+        <normaloff>:/new/Iconos/colaborador_add.png</normaloff>:/new/Iconos/colaborador_add.png</iconset>
+      </property>
+      <property name="text">
+       <string>MODIFICAR</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignCenter</set>
+      </property>
+      <property name="icon">
+       <iconset resource="../iconos.qrc">
+        <normaloff>:/new/Iconos/colaborador_edit.png</normaloff>:/new/Iconos/colaborador_edit.png</iconset>
+      </property>
+      <property name="text">
+       <string>Ingredientes</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Categoría y otros</string>
+      </property>
+      <property name="icon">
+       <iconset resource="../iconos.qrc">
+        <normaloff>:/new/Iconos/categoria.png</normaloff>:/new/Iconos/categoria.png</iconset>
+      </property>
+      <property name="text">
+       <string>INGRESAR</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignCenter</set>
+      </property>
+      <property name="icon">
+       <iconset resource="../iconos.qrc">
+        <normaloff>:/new/Iconos/colaborador_add.png</normaloff>:/new/Iconos/colaborador_add.png</iconset>
+      </property>
+      <property name="text">
+       <string>MODIFICAR</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignCenter</set>
+      </property>
+      <property name="icon">
+       <iconset resource="../iconos.qrc">
+        <normaloff>:/new/Iconos/colaborador_edit.png</normaloff>:/new/Iconos/colaborador_edit.png</iconset>
+      </property>
+      <property name="text">
+       <string>Categoría y medidas</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="pushButton_salir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Salir</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../iconos.qrc"/>
+ </resources>
+ <connections/>
+</ui>

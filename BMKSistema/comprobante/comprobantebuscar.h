@@ -3,6 +3,7 @@
 
 #include "mylibrary/mylibrary_global.h"
 #include "comprobante/previewticket.h"
+#include "mylibrary/adminpass.h"
 
 namespace Ui {
 class ComprobanteBuscar;
@@ -67,6 +68,10 @@ private slots:
     void on_pushButton_ver_clicked();
 
     void on_pushButton_habilitar_clicked();
+
+    void on_pushButton_exportar_clicked();
+
+    void on_lineEdit_buscarProducto_textChanged(const QString &arg1);
 
 private:
     void editarItem(QTableWidgetItem* item);

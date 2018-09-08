@@ -102,6 +102,9 @@ void ComprobanteBuscar::set_buscar()
     QString nombre = ui->lineEdit_buscar->text();
     nombre = nombre.trimmed();
 
+    QString producto = ui->lineEdit_buscarProducto->text();
+    producto = producto.trimmed();
+
     QString fecha_ini = ui->dateTimeEdit_ini->dateTime().toString("yyyy-MM-dd hh:mm:ss");
     QString fecha_fin = ui->dateTimeEdit_fin->dateTime().toString("yyyy-MM-dd hh:mm:ss");
     QString check_efectivo, check_visa, check_masterCard;
@@ -114,14 +117,14 @@ void ComprobanteBuscar::set_buscar()
     if(ui->checkBox_masterCard->isChecked()){
         check_masterCard = "Master Card";
     }
-    QString str_query = "SELECT c.id, c.estado_item_nombre, c.numero, c_h_pla.cantidad, pla.item_nombre, c_h_pla.cantidad * pla.precio";
-    str_query += ", c.nombre, c.pago_item_nombre, c.fecha_emision";
+    QString str_query = "SELECT c.id, c.estado_item_nombre, c.numero, c_h_pla.cantidad, c_h_pla.plato_nombre, c_h_pla.precio";
+    str_query += ", c.nombre, c.pago_item_nombre, c.fecha_emision, c.direccion";
     str_query += " FROM comprobante c";
     str_query += " LEFT JOIN comprobante_has_persona c_h_per ON c.id = c_h_per.comprobante_id";
     str_query += " LEFT JOIN persona per ON c_h_per.persona_cod = per.cod";
     str_query += " JOIN comprobante_has_plato c_h_pla ON c.id = c_h_pla.comprobante_id";
-    str_query += " JOIN plato pla ON c_h_pla.plato_item_nombre = pla.item_nombre";
     str_query += " WHERE c.nombre LIKE '%" + nombre + "%'";
+    str_query += " AND c_h_pla.plato_nombre LIKE '%" + producto + "%'";
     str_query += " AND c.fecha_emision BETWEEN '" + fecha_ini + "' AND '" + fecha_fin + "'";
     //str_query += " AND c.estado_item_nombre <> 'Suspendido'";
     QString pago_item = "";
@@ -160,7 +163,7 @@ void ComprobanteBuscar::set_buscar()
         ui->tableWidget->setColumnCount(columnCount);
 
         ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "ID" << "Estado" << "Numero" << "Cantidad" << "Descripción"
-                                                   << "Total" << "Nombre" << "Pago" << "Fecha");
+                                                   << "Total" << "Nombre" << "Pago" << "Fecha"<<"Direccion");
 
         ui->tableWidget->setColumnWidth(0, 0);
         ui->tableWidget->setColumnWidth(1, 100);
@@ -171,6 +174,7 @@ void ComprobanteBuscar::set_buscar()
         ui->tableWidget->setColumnWidth(6, 500);
         ui->tableWidget->setColumnWidth(7, 150);
         ui->tableWidget->setColumnWidth(8, 150);
+        ui->tableWidget->setColumnWidth(9, 0);
         while (query.next()) {
             QString id = query.value(0).toString();
             QString estado = query.value(1).toString();
@@ -184,6 +188,7 @@ void ComprobanteBuscar::set_buscar()
             QString nombre = query.value(6).toString();            
             QString pago = query.value(7).toString();
             QString fecha = query.value(8).toDateTime().toString("dd-MM-yyyy hh:mm:ss");
+            QString direccion = query.value(9).toString();
 
             cantidad = QString().setNum(cantidad.toDouble(), ' ', 3);
             total = QString().setNum(total.toDouble(), ' ', 2);
@@ -196,6 +201,7 @@ void ComprobanteBuscar::set_buscar()
             ui->tableWidget->setItem(pos, 6, new QTableWidgetItem(nombre));
             ui->tableWidget->setItem(pos, 7, new QTableWidgetItem(pago));
             ui->tableWidget->setItem(pos, 8, new QTableWidgetItem(fecha));
+            ui->tableWidget->setItem(pos, 9, new QTableWidgetItem(direccion));
 
             if(ui->tableWidget->item(pos, 1)->text().compare("Suspendido") == 0){
                 for(int j = 0; j < ui->tableWidget->columnCount(); j++) {
@@ -220,6 +226,9 @@ void ComprobanteBuscar::set_total()
     QString nombre = ui->lineEdit_buscar->text();
     nombre = nombre.trimmed();
 
+    QString producto = ui->lineEdit_buscarProducto->text();
+    producto = producto.trimmed();
+
     QString fecha_ini = ui->dateTimeEdit_ini->dateTime().toString("yyyy-MM-dd hh:mm:ss");
     QString fecha_fin = ui->dateTimeEdit_fin->dateTime().toString("yyyy-MM-dd hh:mm:ss");
     QString check_efectivo, check_visa, check_masterCard;
@@ -233,13 +242,13 @@ void ComprobanteBuscar::set_total()
         check_masterCard = "Master Card";
     }
     QSqlQuery query;
-    QString str_query = "SELECT SUM(c_h_pla.cantidad * pla.precio)";
+    QString str_query = "SELECT SUM(c_h_pla.precio)";
     str_query += " FROM comprobante c";
     str_query += " LEFT JOIN comprobante_has_persona c_h_per ON c.id = c_h_per.comprobante_id";
     str_query += " LEFT JOIN persona per ON c_h_per.persona_cod = per.cod";
-    str_query += " JOIN comprobante_has_plato c_h_pla ON c.id = c_h_pla.comprobante_id";
-    str_query += " JOIN plato pla ON c_h_pla.plato_item_nombre = pla.item_nombre";
+    str_query += " JOIN comprobante_has_plato c_h_pla ON c.id = c_h_pla.comprobante_id";    
     str_query += " WHERE c.nombre LIKE '%" + nombre + "%'";
+    str_query += " AND c_h_pla.plato_nombre LIKE '%" + producto + "%'";
     str_query += " AND c.fecha_emision BETWEEN '" + fecha_ini + "' AND '" + fecha_fin + "'";
     str_query += " AND c.estado_item_nombre = 'Activo'";
     QString pago_item = "";
@@ -268,8 +277,8 @@ void ComprobanteBuscar::set_total()
     if (query.exec(str_query)) {
         query.next();
         double total = query.value(0).toDouble();
-        ui->doubleSpinBox_total->setValue(total);
-        ui->doubleSpinBox_totalTop->setValue(total);
+        ui->lineEdit_totalUp->setText(QString().setNum(total, ' ', 1));
+        ui->lineEdit_totalDown->setText(QString().setNum(total, ' ', 1));
     }
 }
 
@@ -304,6 +313,8 @@ void ComprobanteBuscar::showEvent(QShowEvent *se)
         on_lineEdit_buscar_textChanged(ui->lineEdit_buscar->text());
         //on_lineEdit_descripcion_buscar_returnPressed();
         firstShow = true;
+    }else{
+        //on_lineEdit_buscar_textChanged(ui->lineEdit_buscar->text());
     }
 }
 void ComprobanteBuscar::closeEvent(QCloseEvent *ce)
@@ -531,6 +542,7 @@ void ComprobanteBuscar::on_pushButton_anular_clicked()
         QMessageBox::warning(this, "Advertencia", "Seleccione item", "Aceptar");
         return;
     }
+    /*
     int ret = QMessageBox::warning(this, "Advertencia"
                                    , "Va a anular un documento. ¿Esta seguro(a)?", "Aceptar", "Cancelar");
     switch(ret){
@@ -540,6 +552,14 @@ void ComprobanteBuscar::on_pushButton_anular_clicked()
     case 1:{
         return;
     }break;
+    }*/
+    AdminPass* ap = new AdminPass(this);
+    //ap->setAttribute(Qt::WA_DeleteOnClose);
+    ap->exec();
+    bool confirmado = ap->get_confirmado();
+
+    if(!confirmado){
+        return;
     }
 
     QString str_query = "";
@@ -606,12 +626,13 @@ void ComprobanteBuscar::on_pushButton_ver_clicked()
     QString nombre = ui->tableWidget->item(item->row(), 6)->text();    
     QString pago = ui->tableWidget->item(item->row(), 7)->text();
     QString fecha = ui->tableWidget->item(item->row(), 8)->text();
+    QString direccion = ui->tableWidget->item(item->row(), 9)->text();
 
-    w->set_cabecera(numero, fecha, nombre, pago);
+    w->set_cabecera(numero, fecha, nombre, pago, direccion);
 
     w->set_detalle(id);
-
-    w->ver_documento_asa();
+    //w->ver_documento_asa();
+    w->ver_documento();
 
     w->show();
 }
@@ -623,6 +644,7 @@ void ComprobanteBuscar::on_pushButton_habilitar_clicked()
         QMessageBox::warning(this, "Advertencia", "Seleccione item", "Aceptar");
         return;
     }
+    /*
     int ret = QMessageBox::warning(this, "Advertencia"
                                    , "Este documento estará habilitado.", "Aceptar", "Cancelar");
     switch(ret){
@@ -632,6 +654,14 @@ void ComprobanteBuscar::on_pushButton_habilitar_clicked()
     case 1:{
         return;
     }break;
+    }*/
+    AdminPass* ap = new AdminPass(this);
+    //ap->setAttribute(Qt::WA_DeleteOnClose);
+    ap->exec();
+    bool confirmado = ap->get_confirmado();
+
+    if(!confirmado){
+        return;
     }
 
     QString str_query = "";
@@ -677,4 +707,51 @@ void ComprobanteBuscar::on_pushButton_habilitar_clicked()
         set_total();
     }
 
+}
+
+void ComprobanteBuscar::on_pushButton_exportar_clicked()
+{
+    /*
+    QString app_dir = QCoreApplication::applicationDirPath();
+
+    QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+    QString str_rel = "";
+    qDebug() << cmp_release << endl;
+    if(cmp_release.compare("/release") == 0){
+        str_rel = "/release";
+        qDebug() << str_rel << endl;
+    }
+
+    QString command;
+    app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+    app_dir = "\""+ app_dir + "\"/chp.exe cmd /c ";
+    command = app_dir + command;
+
+    QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
+    db.setDatabaseName("DRIVER={Microsoft Excel Driver (*.xls, *.xlsx, *.xlsm, *.xlsb)};DBQ=" + QString("D:\\file.xlsx"));
+    if(db.open())
+    {
+        qDebug()<<"ok excel"<<endl;
+        QSqlQuery query; // Select range, place A1:B5 after $
+        query.exec("SELECT * FROM [Hoja1$A1:C5]");
+        while (query.next()){
+            QString column1= query.value(0).toString();
+            QString column2= query.value(1).toString();
+            QString column3= query.value(2).toString();
+            qDebug() << column1 << endl;
+            qDebug() << column2 << endl;
+            qDebug() << column3 << endl;
+        }
+    }*/
+}
+
+void ComprobanteBuscar::on_lineEdit_buscarProducto_textChanged(const QString &arg1)
+{
+    pos = 0;
+
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setColumnCount(0);
+    ui->tableWidget->clear();
+
+    set_buscar();
 }

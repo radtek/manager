@@ -19,6 +19,10 @@ public:
     QString ssheet_select;
     QString ssheet_no_select;
 
+    static QString name_persona;
+    static QString pass_persona;
+    static QString tipo_persona;
+
 public:    
 
     Sistema();
@@ -48,27 +52,27 @@ public:
 
     double round(double num, int decimals);
 
-    QString zeros(int n);
+    QString zeros(int n);        
 
-    QString& justified(QString &str, int lenght);
+    QString& justified(QString& str, int lenght);
 
-    QString& epson_just_descripcion(QString & str);
+    QString& epson_just_descripcion(QString& str, int n);
 
     QString& insert_left_spaces(QString& str, int n);
 
     QString& insert_right_spaces(QString& str, int n);
 
-    QString& rightText(QString& text);
+    QString& rightText(QString& text, int n);
 
-    QString& centerText(QString& text);
+    QString& centerText(QString& text, int n);
 
-    QVector<QString>& centerTexts(QVector<QString>& v);
+    QVector<QString>& centerTexts(QVector<QString>& v, int n);
 
-    QVector<QString>& rightTexts(QVector<QString>& v);
+    QVector<QString>& rightTexts(QVector<QString>& v, int n);
 
     void fixString(QLineEdit* le);
 
-    QString fixString(QString str);
+    QString& fixString(QString& str);
 
     void windowCentered(QWidget* w);
 
@@ -133,7 +137,13 @@ public:
 
     void removeColumn(QGridLayout *layout, int column, bool deleteWidgets);
 
-    bool confirmar_admin(QString pass);
+    bool start_transaction();
+
+    bool commit();
+
+    bool rollback();
+
+    bool confirmar_admin(QString nombre, QString pass);
 
     void star_print_text(QDataStream& out, QString str);
 

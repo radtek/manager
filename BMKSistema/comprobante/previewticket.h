@@ -15,7 +15,7 @@ public:
     explicit PreviewTicket(QWidget *parent = 0);
     ~PreviewTicket();
 
-    void set_cabecera(QString numero, QString fecha, QString nombre, QString pago);
+    void set_cabecera(QString numero, QString fecha, QString nombre, QString pago, QString direccion);
 
     void set_detalle(QString id);
 
@@ -36,6 +36,8 @@ protected:
 private:
     void print_caja();
 
+    void print_frap();
+
     void print_caja_asa();
 
 private:
@@ -45,6 +47,7 @@ private:
     QString fecha;
     QString nombre;
     QString pago;
+    QString direccion;
     QVector<QVector<QString> > detalle;
 };
 

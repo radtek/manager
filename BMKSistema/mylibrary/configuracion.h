@@ -30,31 +30,9 @@ public:
 private:
 
 private slots:
-    void on_pushButton_guardar_cambio_clicked();
-
-    void on_pushButton_guardar_igv_clicked();
-
     void on_pushButton_salir_clicked();
 
-    void on_pushButton_ver_cambio_clicked();
-
-    void on_pushButton_ver_igv_clicked();
-
-    void on_dateEdit_cambio_dateChanged(const QDate &date);
-
-    void on_dateEdit_igv_dateChanged(const QDate &date);
-
-    void on_pushButton_rollback_clicked();
-
-    void on_pushButton_commit_clicked();
-
-    void on_pushButton_backup_clicked();
-
-    void on_myProccess_started();
-
-    void on_myProccess_finished(int exitCode, QProcess::ExitStatus exitStatus);
-
-    void on_pushButton_restore_clicked();
+    void on_pushButton_aplicarLetras_clicked();
 
 protected:
 	void showEvent(QShowEvent* se);
