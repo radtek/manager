@@ -23,7 +23,7 @@ private slots:
     void on_treeWidget_menu_itemClicked(QTreeWidgetItem *item, int column);
 
 private:
-    Ui::PersonaMenu *ui;
+    Ui::PersonaMenu *ui;        
 };
 
 #endif // PERSONAMENU_H

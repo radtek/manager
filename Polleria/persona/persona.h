@@ -2,6 +2,7 @@
 #define PERSONA_H
 
 #include "mylibrary/mylibrary_global.h"
+#include "mylibrary/sunatconsultaruc.h"
 
 namespace Ui {
 class Persona;
@@ -54,6 +55,7 @@ private:
     int operacion;
     QString tipoPersona;
 
+    SunatConsultaRUC sunat_consultaRUC;
 };
 
 #endif // PERSONA_H

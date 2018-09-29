@@ -88,6 +88,8 @@ public:
 
     QString replace_quotes(const QString& str);
 
+    QString replace_quotes_simple(const QString &str);
+
     void set_stylesheet(const QVector<QWidget*>& v, int pos);
 
     void clear_center_w(QWidget* w);
@@ -204,6 +206,14 @@ public:
     void epson_paperCut(QDataStream& out);
 
     void epson_drawer(QDataStream& out);
+
+    QString generate_cbc_value(double val);
+
+    QString generate_unidades(QString num);
+
+    QString generate_decenas(QString num);
+
+    QString generate_centenas(QString num);
 };
 
 template class MYLIBRARYSHARED_EXPORT singleton<Sistema>;

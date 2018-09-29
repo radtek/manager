@@ -9,6 +9,8 @@ PersonaMenu::PersonaMenu(QWidget *parent) :
 
     QTreeWidgetItem* colaboradores = new QTreeWidgetItem(ui->treeWidget_menu);
     ui->treeWidget_menu->setItemExpanded(colaboradores, false);
+
+
 }
 
 PersonaMenu::~PersonaMenu()

@@ -97,6 +97,7 @@
 #include <QNetworkInterface>
 #include <QKeyEvent>
 #include <QAbstractItemView>
+#include <QtMath>
 
 #define STR_REG_SIN_DOC "Registro_sin_Documento"
 #define STR_BOLETA "Boleta"
@@ -119,6 +120,7 @@
 #define BOLETA "Boleta"
 #define FACTURA "Factura"
 #define TICKET "Ticket"
+#define NCREDITO "NCredito"
 
 #define ACTIVO "Activo"
 #define SUSPENDIDO "Suspendido"

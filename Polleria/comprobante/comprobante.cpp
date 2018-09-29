@@ -1,6 +1,9 @@
 #include "comprobante.h"
 #include "ui_comprobante.h"
 
+#include <QtXml>
+#include "SoapSunatCall.h"
+#include <openssl/applink.c>
 
 QString Comprobante::venta = "Venta";
 QString Comprobante::compra = "Compra";
@@ -10,7 +13,7 @@ Comprobante::Comprobante(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Comprobante)
 {
-    ui->setupUi(this);    
+    ui->setupUi(this);
 
     ui->dateTimeEdit_fecha_emision->setDateTime(QDateTime::currentDateTime());
 
@@ -18,6 +21,32 @@ Comprobante::Comprobante(QWidget *parent) :
         ui->dateTimeEdit_fecha_emision->setReadOnly(false);
     }else{
         ui->dateTimeEdit_fecha_emision->setReadOnly(true);
+    }
+
+    QSqlQuery query;
+    QString str_query = "";
+    QString tipo_operacion;
+    if(ui->comboBox_operacion->currentText().compare("Venta") == 0){
+        tipo_operacion = VENTA;
+    }
+    if(ui->comboBox_operacion->currentText().compare("Compra") == 0){
+        tipo_operacion = COMPRA;
+    }
+    if(ui->comboBox_operacion->currentText().compare("Egresos") == 0){
+        tipo_operacion = EGRESOS;
+    }
+    str_query += QString()+"SELECT serie, numero+1 FROM comprobante";
+    str_query += QString()+" WHERE operacion_item_nombre = '"+tipo_operacion+"' AND tipo_item_nombre = '"+TICKET+"'";
+    str_query += QString()+" ORDER BY numero DESC LIMIT 1";
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        if(query.next()){
+            ui->lineEdit_serie->setText(query.value(0).toString());
+            ui->lineEdit_numero->setText(query.value(1).toString());
+        }else{
+            ui->lineEdit_serie->setText("T004");
+            ui->lineEdit_numero->setText("1");
+        }
     }
     ui->pushButton_send_msg->hide();
     countPrintComanda = 0;
@@ -94,6 +123,10 @@ Comprobante::Comprobante(QWidget *parent) :
 
     QRegExp regExp_ruc("[0-9]{11,11}");
     ui->lineEdit_codigo->setValidator(new QRegExpValidator(regExp_ruc));
+    QRegExp regExp_serie("[BF0-9]{4,4}");
+    ui->lineEdit_serie->setValidator(new QRegExpValidator(regExp_serie));
+    QRegExp regExp_numero("[BF0-9]{8,8}");
+    ui->lineEdit_numero->setValidator(new QRegExpValidator(regExp_numero));
 
     ui->lineEdit_codigo->setFocus();    
 
@@ -338,7 +371,48 @@ void Comprobante::select_platos(QString familia)
     }
 }
 void Comprobante::insert_venta()
-{
+{    
+    {
+        QSqlQuery query;
+        QString str_query;
+        QString tipo_operacion, tipo_documento;
+        if(ui->comboBox_operacion->currentText().compare("Venta") == 0){
+            tipo_operacion = VENTA;
+        }
+        if(ui->comboBox_operacion->currentText().compare("Compra") == 0){
+            tipo_operacion = COMPRA;
+        }
+        if(ui->comboBox_operacion->currentText().compare("Egresos") == 0){
+            tipo_operacion = EGRESOS;
+        }
+        if(ui->comboBox_documento->currentText().compare("Pre-Venta") == 0){
+            tipo_documento = TICKET;
+        }
+        if(ui->comboBox_documento->currentText().compare("Boleta") == 0){
+            tipo_documento = BOLETA;
+        }
+        if(ui->comboBox_documento->currentText().compare("Factura") == 0){
+            tipo_documento = FACTURA;
+        }
+        str_query += QString()+"SELECT serie, numero+1 FROM comprobante";
+        str_query += QString()+" WHERE operacion_item_nombre = '"+tipo_operacion+"' AND tipo_item_nombre = '"+tipo_documento+"'";
+        str_query += QString()+" ORDER BY numero DESC LIMIT 1";
+        qDebug()<<str_query<<endl;
+        if(query.exec(str_query)){
+            if(query.next()){
+                int numero = query.value(1).toInt();
+                int num = ui->lineEdit_numero->text().toInt();
+                if(num < numero){
+                    QMessageBox::warning(this, "Advertencia", "Este número ya fue usado.", "Aceptar");
+                    //disconnect(ui->lineEdit_numero, SIGNAL(textChanged(QString)), this, SLOT(on_lineEdit_numero_textChanged(QString)));
+                    //ui->lineEdit_numero->setText(QString().setNum(numero));
+                    //connect(ui->lineEdit_numero, SIGNAL(textChanged(QString)), this, SLOT(on_lineEdit_numero_textChanged(QString)));
+                }
+            }else{
+
+            }
+        }
+    }
     if(SYSTEM->tipo_persona.compare(Persona::master) == 0){
         AdminPass* ap = new AdminPass(this);
         //ap->setAttribute(Qt::WA_DeleteOnClose);
@@ -372,26 +446,186 @@ void Comprobante::insert_venta()
     if(ui->comboBox_documento->currentText().compare("Boleta") == 0)
         opc_documento = BOLETA;
     if(ui->comboBox_documento->currentText().compare("Factura") == 0)
-        opc_operacion = FACTURA;
+        opc_documento = FACTURA;
     if(ui->comboBox_documento->currentText().compare("Pre-Venta") == 0)
-        opc_operacion = TICKET;
+        opc_documento = TICKET;
 
     QString documento;
 
     if(opc_operacion.compare(VENTA) == 0){
         if(opc_documento.compare(BOLETA) == 0){
             documento = BOLETA;
-            if(tipo_persona.compare(Persona::cliente_ruc) == 0){
 
-                QMessageBox::warning(this, "Advertencia", "No puede ingresar un cliente con ruc", "Aceptar");
+            if(ui->doubleSpinBox_total->value() >= 700.0){
+                if(ui->lineEdit_codigo->text().length() != 8){
+                    QMessageBox::warning(this, "Advertencia", "Ingrese DNI con 8 dígitos", "Aceptar");
+                    return;
+                }
+            }
+            if(ui->lineEdit_codigo->text().length() != 8 && ui->lineEdit_codigo->text().length() != 0){
+                QMessageBox::warning(this, "Advertencia", "No es un DNI válido con 8 dígitos.\nAl menos deje el campo en blanco.", "Aceptar");
                 return;
+            }
+            if(ui->lineEdit_codigo->text().length() == 8){
+                QString str_query;
+                str_query += "SELECT * FROM persona WHERE cod = '"+ui->lineEdit_codigo->text()+"'";
+                QSqlQuery query;
+                if(query.exec(str_query)){
+                    if(!query.next()){
+                        str_query  = "INSERT INTO persona(cod, nombre, direccion, estado_item_nombre, tipo_item_nombre)";
+                        str_query += "VALUES('"+ui->lineEdit_codigo->text()+"'";
+                        str_query += ", '"+ui->lineEdit_nombre->text()+"'";
+                        str_query += ", '"+ui->lineEdit_direccion->text()+"'";
+                        str_query += ", 'Activo'";
+                        str_query += ", '"+Persona::cliente_dni+"')";
+                        if(!query.exec(str_query)){
+                            QMessageBox::warning(this, "Advertencia", "No se puede crear el cliente.", "Aceptar");
+                        }
+                    }
+                }
+            }
+            QMessageBox msgBox(this);
+            msgBox.setIcon(QMessageBox::Warning);
+            //msgBox.setParent();
+            //msgBox.setStandardButtons(QMessageBox::Ok);
+            QFont font;
+            font.setFamily("MS Shell Dlg 2");
+            font.setBold(false);
+            font.setPointSize(11);
+            msgBox.setFont(font);
+            //msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Yes
+            //                          | QMessageBox::Cancel);
+            //msgBox.setButtonText(QMessageBox::Ok, "Servirse");
+            //msgBox.setButtonText(QMessageBox::Yes, "LLevar");
+            //msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
+            //QPushButton* bt_boleta = new QPushButton("Boleta");
+            //QPushButton* bt_factura = new QPushButton("Factura");
+            QPushButton* bt_guardar = new QPushButton("Boleta(Enter)");
+            QPushButton* bt_cancelar = new QPushButton("Cancelar(Esc)");
+            //bt_cancelar->hide();
+
+            //bt_boleta->setFont(font);
+            //bt_factura->setFont(font);
+            bt_guardar->setFont(font);
+            bt_cancelar->setFont(font);
+            //msgBox.addButton(bt_boleta, QMessageBox::AcceptRole);
+            //msgBox.addButton(bt_factura, QMessageBox::YesRole);
+            msgBox.addButton(bt_guardar, QMessageBox::NoRole);
+            msgBox.addButton(bt_cancelar, QMessageBox::RejectRole);
+            msgBox.setDefaultButton(bt_guardar);
+            msgBox.setEscapeButton(bt_cancelar);
+
+            msgBox.setWindowTitle("Advertencia");
+            msgBox.setText("¿Cual opción eligirá usted?");
+
+
+
+            int ret = msgBox.exec();
+            qDebug()<<"ret: "<<ret<<endl;
+            switch(ret){
+            /*
+            case 0:{
+                qDebug()<<"boleta"<<endl;
+                documento = BOLETA;
+            }break;
+            case 1:{
+                qDebug()<<"factura"<<endl;
+                documento = FACTURA;
+            }break;*/
+            case 0:{
+                //qDebug()<<"guardar"<<endl;
+                //documento = TICKET;
+            }break;
+            case 1:{
+                qDebug()<<"cancel"<<endl;
+                return;
+            }break;
             }
         }
         if(opc_documento.compare(FACTURA) == 0){
             documento = FACTURA;
+
+            /*
             if(tipo_persona.compare(Persona::cliente_ruc) != 0){
                 QMessageBox::warning(this, "Advertencia", "Solo cliente con ruc.", "Aceptar");
                 return;
+            }*/
+            if(ui->lineEdit_codigo->text().length() != 11){
+                QMessageBox::warning(this, "Advertencia", "No es un RUC válido con 11 dígitos.\nEste campo no puede ir vacío.", "Aceptar");
+                return;
+            }
+            QString str_query;
+            str_query += "SELECT * FROM persona WHERE cod = '"+ui->lineEdit_codigo->text()+"'";
+            QSqlQuery query;
+            if(query.exec(str_query)){
+                if(!query.next()){
+                    str_query  = "INSERT INTO persona(cod, nombre, direccion, estado_item_nombre, tipo_item_nombre)";
+                    str_query += "VALUES('"+ui->lineEdit_codigo->text()+"'";
+                    str_query += ", '"+ui->lineEdit_nombre->text()+"'";
+                    str_query += ", '"+ui->lineEdit_direccion->text()+"'";
+                    str_query += ", 'Activo'";
+                    str_query += ", '"+Persona::cliente_ruc+"')";
+                    if(!query.exec(str_query)){
+                        QMessageBox::warning(this, "Advertencia", "No se puede crear el cliente.", "Aceptar");
+                    }
+                }
+            }
+            QMessageBox msgBox(this);
+            msgBox.setIcon(QMessageBox::Warning);
+            //msgBox.setParent();
+            //msgBox.setStandardButtons(QMessageBox::Ok);
+            QFont font;
+            font.setFamily("MS Shell Dlg 2");
+            font.setBold(false);
+            font.setPointSize(11);
+            msgBox.setFont(font);
+            //msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Yes
+            //                          | QMessageBox::Cancel);
+            //msgBox.setButtonText(QMessageBox::Ok, "Servirse");
+            //msgBox.setButtonText(QMessageBox::Yes, "LLevar");
+            //msgBox.setButtonText(QMessageBox::Cancel, "Cancelar");
+            //QPushButton* bt_boleta = new QPushButton("Boleta");
+            //QPushButton* bt_factura = new QPushButton("Factura");
+            QPushButton* bt_guardar = new QPushButton("Factura(Enter)");
+            QPushButton* bt_cancelar = new QPushButton("Cancelar(Esc)");
+            //bt_cancelar->hide();
+
+            //bt_boleta->setFont(font);
+            //bt_factura->setFont(font);
+            bt_guardar->setFont(font);
+            bt_cancelar->setFont(font);
+            //msgBox.addButton(bt_boleta, QMessageBox::AcceptRole);
+            //msgBox.addButton(bt_factura, QMessageBox::YesRole);
+            msgBox.addButton(bt_guardar, QMessageBox::NoRole);
+            msgBox.addButton(bt_cancelar, QMessageBox::RejectRole);
+            msgBox.setDefaultButton(bt_guardar);
+            msgBox.setEscapeButton(bt_cancelar);
+
+            msgBox.setWindowTitle("Advertencia");
+            msgBox.setText("¿Cual opción eligirá usted?");
+
+
+
+            int ret = msgBox.exec();
+            qDebug()<<"ret: "<<ret<<endl;
+            switch(ret){
+            /*
+            case 0:{
+                qDebug()<<"boleta"<<endl;
+                documento = BOLETA;
+            }break;
+            case 1:{
+                qDebug()<<"factura"<<endl;
+                documento = FACTURA;
+            }break;*/
+            case 0:{
+                //qDebug()<<"guardar"<<endl;
+                //documento = TICKET;
+            }break;
+            case 1:{
+                qDebug()<<"cancel"<<endl;
+                return;
+            }break;
             }
         }
         if(opc_documento.compare(TICKET) == 0){
@@ -451,7 +685,7 @@ void Comprobante::insert_venta()
         documento = FACTURA;
     }break;*/
     case 0:{
-        qDebug()<<"guardar"<<endl;
+        //qDebug()<<"guardar"<<endl;
         //documento = TICKET;
     }break;
     case 1:{
@@ -465,6 +699,7 @@ void Comprobante::insert_venta()
 
     str_query += "SELECT IFNULL(MAX(numero), 0) + 1 FROM comprobante";
     str_query += " WHERE operacion_item_nombre = '"+ui->comboBox_operacion->currentText()+"'";
+    str_query += QString()+" AND tipo_item_nombre = '"+TICKET+"'";
     if(query.exec(str_query)){
         if(query.next()){
             nro_ticket = QString().setNum(query.value(0).toInt());
@@ -484,17 +719,22 @@ void Comprobante::insert_venta()
     nombre = nombre.replace("'", "");
 
     str_query = "INSERT INTO comprobante(serie, numero, fecha_emision";
-    str_query += ", anulado, pago_item_nombre, estado_item_nombre";
+    str_query += ", anulado, pago_item_nombre, estado_item_nombre, estado_sunat";
     str_query += ", operacion_item_nombre, tipo_item_nombre, nombre, direccion, delivery";
-    str_query += ", delivery_estado_item_nombre, pago)";
+    str_query += ", delivery_estado_item_nombre, pago, vuelto)";
     str_query += "VALUES(";
-    str_query += QString() + "'" + "0000" + "'";
-    str_query += QString() + ", '" + nro_ticket + "'";
+    str_query += QString() + "'" + ui->lineEdit_serie->text() + "'";
+    str_query += QString() + ", '" + ui->lineEdit_numero->text() + "'";
     str_query += ", '" + ui->dateTimeEdit_fecha_emision->dateTime().toString("yyyy-MM-dd hh-mm-ss") + "'";
     //str_query += ", '2018-07-23'";
     str_query += QString() + ", '" + "1" + "'";
     str_query += QString() + ", '" + pago + "'";
     str_query += QString() + ", '" + "Activo" + "'";
+    if(opc_operacion.compare(VENTA) == 0 && (opc_documento.compare(BOLETA) == 0 || opc_documento.compare(FACTURA) == 0)){
+        str_query += QString() + ", '" + "Pendiente" + "'";
+    }else{
+        str_query += QString() + ", '" + "Activo" + "'";
+    }
     str_query += QString() + ", '" + ui->comboBox_operacion->currentText() + "'";
     str_query += QString() + ", '" + documento + "'";
     str_query += ", '" + nombre + "'";
@@ -506,12 +746,13 @@ void Comprobante::insert_venta()
         str_query += ", 'Inactivo'";
     }
     str_query += ", '" + QString().setNum(ui->doubleSpinBox_pago->value(), ' ', 1) + "'";
+    str_query += ", '" + QString().setNum(ui->doubleSpinBox_vuelto->value(), ' ', 2) + "'";
     str_query += ")";
 
     str_query += "&&END_QUERY&&";
 
 
-    if(ui->lineEdit_codigo->text().compare("") != 0){
+    if(ui->lineEdit_codigo->text().compare("") != 0){        
         str_query += "INSERT INTO comprobante_has_persona(persona_cod, comprobante_id)";
         str_query += "VALUES(";
         str_query += "'" + ui->lineEdit_codigo->text() + "'";
@@ -538,12 +779,12 @@ void Comprobante::insert_venta()
     }
 
     for(int i = 0; i < ui->tableWidget->rowCount(); i++){
-        str_query += "INSERT INTO comprobante_has_producto(comprobante_id, producto_id, unidad_item_nombre";
+        str_query += "INSERT INTO comprobante_has_producto(comprobante_id, producto_id";
         str_query += ", cantidad, precio)";
         str_query += "VALUES(";
         str_query += "(SELECT MAX(t.id) FROM comprobante AS t)";
         str_query += ", '" + ui->tableWidget->item(i, ID)->text() + "'";
-        str_query += ", '" + ui->tableWidget->item(i, UNIDAD)->text() + "'";
+        //str_query += ", '" + ui->tableWidget->item(i, UNIDAD)->text() + "'";
         str_query += ", '" + ui->tableWidget->item(i, CANTIDAD)->text() + "'";
         str_query += ", '" + ui->tableWidget->item(i, PRECIO)->text() + "'";
         str_query += ")";
@@ -556,45 +797,589 @@ void Comprobante::insert_venta()
     qDebug()<<str_query<<endl;
     if(query.exec(str_query)){
         qDebug()<<"query ok"<<endl;        
-        SYSTEM->commit();
+
         if(ui->comboBox_operacion->currentText().compare(VENTA) == 0){
-            print_machelo();
-            //print_machelo();
-            //print_caja_frap();
-        }
-        //print_caja();
-        //print_comanda_alas();
+            if(ui->comboBox_documento->currentText().compare("Pre-Venta") == 0){
+                SYSTEM->commit();
+                int numero = ui->lineEdit_numero->text().toInt();
+                ui->lineEdit_numero->setText(QString().setNum(numero+1));
+                print_machelo();
+            }
+            if(ui->comboBox_documento->currentText().compare(BOLETA) == 0){
+                SYSTEM->commit();
+                if(!create_boleta()){
+                    clear_form();
+                    return;
+                }
 
-        //print_caja_frap();
-        //print_comanda();
+                SoapSunatCall obj;
+                obj.set_str_certificatekeyfile((char *)"mycertificate.pem");
+                obj.set_str_keyfile((char *)"mykey.pem");
+                obj.set_str_password((char *)"4t48gWXqdd358Msx");
+                obj.set_str_cafile((char *)"myca.pem");
+                obj.set_str_certfile((char *)"mycert.pem");
+                obj.set_str_sec_username((char *)"20498590587ELBIBAM6");
+                obj.set_str_sec_password((char *)"nArputo-");
 
-        ui->lineEdit_codigo->clear();
-        ui->lineEdit_direccion->clear();
-        ui->lineEdit_nombre->clear();
-        ui->tableWidget->clearContents();
-        ui->tableWidget->setRowCount(0);
+                QString str_ruc = "20498590587";
+                //QString str_razon = "20498590587";
+                QString str_serie = ui->lineEdit_serie->text();
+                QString str_numero = ui->lineEdit_numero->text();
 
-        ui->doubleSpinBox_pago->setValue(0.0);
-        ui->doubleSpinBox_total->setValue(0.0);
-        ui->doubleSpinBox_vuelto->setValue(0.0);
-        ui->radioButton_mesa->setChecked(true);
+                string fileName_zip = QString(str_ruc+"-"+"03"+"-"+str_serie+"-"+str_numero+".ZIP").toStdString();
+                string fileName_xml = QString(str_ruc+"-"+"03"+"-"+str_serie+"-"+str_numero+".XML").toStdString();
+
+
+                obj.set_str_zip_xml_filename((char *)fileName_zip.c_str());
+                obj.set_str_zip_xml_out_filename((char *)"res.zip");
+                obj.set_str_xml_file((char *)fileName_xml.c_str());
+                obj.set_str_id_signature((char *)"SignatureKG");
+
+                QDomDocument dom;
+                QFile file(QString(fileName_xml.c_str()));
+                if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+                    clear_form();
+                    return;
+                }
+                if (!dom.setContent(&file)) {
+                    file.close();
+                    clear_form();
+                    return;
+                }
+
+                if(obj.xmlDSig() < 0){
+                    //QMessageBox::information(this, "Informacion", "No se puede firmar el documento","Aceptar");
+                    clear_form();
+                    return;
+                }else{
+                    qDebug() << "Se firmo el doc" << endl;
+                }
+                {
+                    QString app_dir = QCoreApplication::applicationDirPath();
+
+                    QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+                    QString str_rel = "";
+                    //qDebug() << cmp_release << endl;
+                    if(cmp_release.compare("/release") == 0){
+                        str_rel = "/release";
+                        //qDebug() << str_rel << endl;
+                    }
+
+                    app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+                    app_dir.replace("/","\\");
+                    QString str_zip_dir = "\"" + app_dir + "\\"+QString(fileName_zip.c_str())+"\"";
+
+                    QString command = "\"c:\\Program Files\\7-Zip\\7z.exe\" a -tzip"
+                                      " "+str_zip_dir+" "+QString(fileName_xml.c_str());
+
+                    qDebug()<<command<<endl;
+                    QProcess process;
+                    process.start(command);
+                    //QProcess::execute(command);
+                    process.waitForFinished();
+
+                    QFile file(QString(fileName_zip.c_str()));
+                    while (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+
+                        //return;
+                    }
+                }
+
+
+                if(obj.sendXML()<0){
+
+                    QString error;
+                    if(!obj.get_str_error()){
+                        error = "";
+                    }else{
+                        error = obj.get_str_error();
+                    }
+                    QMessageBox::critical(this, "Informacion", error+"\nNO HAY INTERNET.", "Aceptar");
+                    ui->comboBox_documento->setCurrentText("Pre-Venta");
+
+                    QDomDocument dom;
+                    QFile file(QString(fileName_xml.c_str()));
+                    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+                        clear_form();
+                        return;
+                    }
+                    if (!dom.setContent(&file)) {
+                        file.close();
+                        clear_form();
+                        return;
+                    }
+
+                    // print out the element names of all elements that are direct children
+                    // of the outermost element.
+                    QDomElement root = dom.firstChildElement("Invoice");
+                    QDomNodeList items = root.elementsByTagName("ext:UBLExtensions");
+                    QDomNode itemnode = items.at(1);
+
+                    items = root.elementsByTagName("DigestValue");
+                    itemnode = items.at(0);
+
+                    QString str_digestValue;
+                    if(itemnode.isElement()){
+                        QDomElement iteme = itemnode.toElement();
+                        str_digestValue = iteme.text();
+                        this->digestValue = str_digestValue;
+                    }
+
+                    qDebug()<<"DigestValue: "<<str_digestValue<<endl;
+                    //QString str_send_xml = dom.toString(-1);
+                    //qDebug()<<"str_send_xml: "<<str_send_xml.mid(0,200)<<endl;
+
+                    print_machelo();
+                    print_epson();
+                    return;
+                }else{
+
+                    cout << "ha sido enviado a la sunat" <<endl;
+
+                    {
+                        QString app_dir = QCoreApplication::applicationDirPath();
+
+                        QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+                        QString str_rel = "";
+                        //qDebug() << cmp_release << endl;
+                        if(cmp_release.compare("/release") == 0){
+                            str_rel = "/release";
+                            //qDebug() << str_rel << endl;
+                        }
+
+                        app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+                        app_dir.replace("/","\\");
+                        QString str_zip_dir = "\"" + app_dir + "\\res.zip\"";
+
+                        QString command = "\"C:\\Program Files\\7-Zip\\7z.exe\" x"
+                                          " "+str_zip_dir+ " -aoa";
+
+                        qDebug()<<command<<endl;
+
+                        QProcess process;
+                        process.start(command);
+                        //QProcess::execute(command);
+                        process.waitForFinished();
+                    }
+
+                    {
+
+                        QString app_dir = QCoreApplication::applicationDirPath();
+
+                        QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+                        QString str_rel = "";
+                        //qDebug() << cmp_release << endl;
+                        if(cmp_release.compare("/release") == 0){
+                            str_rel = "/release";
+                            //qDebug() << str_rel << endl;
+                        }
+
+                        app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+                        app_dir.replace("/","\\");
+                        QString str_zip_dir = "\"" + app_dir + "\\res\"";
+
+                        QString command = "\"C:\\Program Files\\7-Zip\\7z.exe\" x"
+                                          " "+str_zip_dir+" -aoa";
+
+                        qDebug()<<command<<endl;
+                        QProcess process;
+                        process.start(command);
+                        //QProcess::execute(command);
+                        process.waitForFinished();
+                    }
+                    QDomDocument dom;
+                    QFile file("R-"+QString(fileName_xml.c_str()));
+                    while (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+                    }
+
+                    while (!dom.setContent(&file)) {
+                    }
+
+                    // print out the element names of all elements that are direct children
+                    // of the outermost element.
+                    QDomElement root = dom.firstChildElement("ar:ApplicationResponse");
+                    QDomNodeList items = root.elementsByTagName("cbc:ResponseCode");
+                    QDomNode itemnode = items.at(0);
+
+                    QString str_responseCode;
+                    if(itemnode.isElement()){
+                        QDomElement iteme = itemnode.toElement();
+                        str_responseCode = iteme.text();
+                    }
+                    items = root.elementsByTagName("cbc:Description");
+                    itemnode = items.at(0);
+
+                    QString str_description;
+                    if(itemnode.isElement()){
+                        QDomElement iteme = itemnode.toElement();
+                        str_description = iteme.text();
+                    }
+                    items = root.elementsByTagName("DigestValue");
+                    itemnode = items.at(0);
+
+                    QString str_digestValue;
+                    if(itemnode.isElement()){
+                        QDomElement iteme = itemnode.toElement();
+                        str_digestValue = iteme.text();
+                        this->digestValue = str_digestValue;
+                    }
+
+
+                    QString str_response = dom.toString(-1);
+
+                    str_response = SYSTEM->replace_quotes_simple(str_response);
+                    QSqlQuery query;
+                    QString str_query = "UPDATE comprobante SET xmlResponse='"+str_response+"'";
+                    str_query += " WHERE serie = '"+ui->lineEdit_serie->text()+"'";
+                    str_query += " AND numero = '"+ui->lineEdit_numero->text()+"'";
+                    str_query += " AND DATE(fecha_emision) = '"
+                            +ui->dateTimeEdit_fecha_emision->date().toString("yyyy-MM-dd")+"'";
+
+
+                    qDebug()<<str_query<<endl;
+                    if(query.exec(str_query)){
+                        qDebug()<<"si copio"<<endl;
+                    }
+                    file.close();
+
+                    int responseCode = str_responseCode.toInt();
+                    if(responseCode >= 100 && responseCode <= 1999){
+                        QMessageBox::warning(this, "Advertencia", "Response Code: "+str_responseCode
+                                             + "\nDescripción: "+str_description, "Aceptar");
+                        return;
+                    }
+                    if(responseCode >= 2000 && responseCode <= 3999){                        
+                        QSqlQuery query;
+                        QString str_query = "UPDATE comprobante SET estado_sunat='Anulado'";
+                        str_query += " ORDER BY id DESC LIMIT 1";
+                        if(query.exec(str_query)){
+                            QMessageBox::warning(this, "Advertencia", "Response Code: "+str_responseCode
+                                                 + "\nDescripción: "+str_description, "Aceptar");
+                        }
+                        return;
+                    }
+                    if(responseCode >= 4000){
+                        QSqlQuery query;
+                        QString str_query = "UPDATE comprobante SET estado_sunat='Observacion'";
+                        str_query += " ORDER BY id DESC LIMIT 1";
+                        if(query.exec(str_query)){
+                            QMessageBox::warning(this, "Advertencia", "Response Code: "+str_responseCode
+                                                 + "\nDescripción: "+str_description, "Aceptar");
+                        }
+                        print_machelo();
+                        print_epson();
+                    }
+                    if(responseCode == 0){
+                        SYSTEM->commit();
+                        int numero = ui->lineEdit_numero->text().toInt();
+                        ui->lineEdit_numero->setText(QString().setNum(numero+1));
+                        QSqlQuery query;
+                        QString str_query = "UPDATE comprobante SET estado_sunat='Activo'";
+                        str_query += " ORDER BY id DESC LIMIT 1";
+                        if(query.exec(str_query)){
+                            QMessageBox::warning(this, "Advertencia", "Response Code: "+str_responseCode
+                                                 + "\nDescripción: "+str_description, "Aceptar");
+                        }
+                        print_machelo();
+                        print_epson();
+                    }
+
+                }
+            }
+            // ////////////////////////////////////////////////////////////////////////////////////
+            if(ui->comboBox_documento->currentText().compare(FACTURA) == 0){
+                //SYSTEM->commit();
+
+                if(!create_factura()){
+                    SYSTEM->rollback();
+                    return;
+                }
+                /*
+                print_machelo();
+                print_epson();
+                if(true){
+                    return;
+                }*/
+
+                SoapSunatCall obj;
+                obj.set_str_certificatekeyfile((char *)"mycertificate.pem");
+                obj.set_str_keyfile((char *)"mykey.pem");
+                obj.set_str_password((char *)"4t48gWXqdd358Msx");
+                obj.set_str_cafile((char *)"myca.pem");
+                obj.set_str_certfile((char *)"mycert.pem");
+                obj.set_str_sec_username((char *)"20498590587ELBIBAM6");
+                obj.set_str_sec_password((char *)"nArputo-");
+
+                QString str_ruc = "20498590587";
+                //QString str_razon = "20498590587";
+                QString str_serie = ui->lineEdit_serie->text();
+                QString str_numero = ui->lineEdit_numero->text();
+
+                string fileName_zip = QString(str_ruc+"-"+"01"+"-"+str_serie+"-"+str_numero+".ZIP").toStdString();
+                string fileName_xml = QString(str_ruc+"-"+"01"+"-"+str_serie+"-"+str_numero+".XML").toStdString();
+
+
+                obj.set_str_zip_xml_filename((char *)fileName_zip.c_str());
+                obj.set_str_zip_xml_out_filename((char *)"res.zip");
+                obj.set_str_xml_file((char *)fileName_xml.c_str());
+                obj.set_str_id_signature((char *)"SignatureSP");
+
+                QDomDocument dom;
+                QFile file(QString(fileName_xml.c_str()));
+                if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+                    clear_form();
+                    return;
+                }
+                if (!dom.setContent(&file)) {
+                    file.close();
+                    clear_form();
+                    return;
+                }
+
+                if(obj.xmlDSig() < 0){
+                    //QMessageBox::information(this, "Informacion", "No se puede firmar el documento","Aceptar");
+                    clear_form();
+                    return;
+                }else{
+                    qDebug() << "Se firmo el doc" << endl;
+                }
+                {
+                    QString app_dir = QCoreApplication::applicationDirPath();
+
+                    QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+                    QString str_rel = "";
+                    //qDebug() << cmp_release << endl;
+                    if(cmp_release.compare("/release") == 0){
+                        str_rel = "/release";
+                        //qDebug() << str_rel << endl;
+                    }
+
+                    app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+                    app_dir.replace("/","\\");
+                    QString str_zip_dir = "\"" + app_dir + "\\"+QString(fileName_zip.c_str())+"\"";
+
+                    QString command = "\"c:\\Program Files\\7-Zip\\7z.exe\" a -tzip"
+                                      " "+str_zip_dir+" "+QString(fileName_xml.c_str());
+
+                    qDebug()<<command<<endl;
+                    QProcess process;
+                    process.start(command);
+                    //QProcess::execute(command);
+                    process.waitForFinished();
+
+                    QFile file(QString(fileName_zip.c_str()));
+                    while (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+
+                        //return;
+                    }
+                }
+
+
+                if(obj.sendXML()<0){
+
+                    QString error;
+                    if(!obj.get_str_error()){
+                        error = "";
+                    }else{
+                        error = obj.get_str_error();
+                    }
+                    QMessageBox::critical(this, "Informacion", error+"\nNO HAY INTERNET.", "Aceptar");
+                    ui->comboBox_documento->setCurrentText("Pre-Venta");
+
+                    QDomDocument dom;
+                    QFile file(QString(fileName_xml.c_str()));
+                    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+                        clear_form();
+                        return;
+                    }
+                    if (!dom.setContent(&file)) {
+                        file.close();
+                        clear_form();
+                        return;
+                    }
+
+                    // print out the element names of all elements that are direct children
+                    // of the outermost element.
+                    QDomElement root = dom.firstChildElement("Invoice");
+                    QDomNodeList items = root.elementsByTagName("ext:UBLExtensions");
+                    QDomNode itemnode = items.at(1);
+
+                    items = root.elementsByTagName("DigestValue");
+                    itemnode = items.at(0);
+
+                    QString str_digestValue;
+                    if(itemnode.isElement()){
+                        QDomElement iteme = itemnode.toElement();
+                        str_digestValue = iteme.text();
+                        this->digestValue = str_digestValue;
+                    }
+
+                    qDebug()<<"DigestValue: "<<str_digestValue<<endl;
+                    //QString str_send_xml = dom.toString(-1);
+                    //qDebug()<<"str_send_xml: "<<str_send_xml.mid(0,200)<<endl;
+
+                    print_machelo();
+                    print_epson();
+                    return;
+                }else{
+
+                    cout << "ha sido enviado a la sunat" <<endl;
+
+                    {
+                        QString app_dir = QCoreApplication::applicationDirPath();
+
+                        QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+                        QString str_rel = "";
+                        //qDebug() << cmp_release << endl;
+                        if(cmp_release.compare("/release") == 0){
+                            str_rel = "/release";
+                            //qDebug() << str_rel << endl;
+                        }
+
+                        app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+                        app_dir.replace("/","\\");
+                        QString str_zip_dir = "\"" + app_dir + "\\res.zip\"";
+
+                        QString command = "\"C:\\Program Files\\7-Zip\\7z.exe\" x"
+                                          " "+str_zip_dir+ " -aoa";
+
+                        qDebug()<<command<<endl;
+
+                        QProcess process;
+                        process.start(command);
+                        //QProcess::execute(command);
+                        process.waitForFinished();
+                    }
+
+                    {
+
+                        QString app_dir = QCoreApplication::applicationDirPath();
+
+                        QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+                        QString str_rel = "";
+                        //qDebug() << cmp_release << endl;
+                        if(cmp_release.compare("/release") == 0){
+                            str_rel = "/release";
+                            //qDebug() << str_rel << endl;
+                        }
+
+                        app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+                        app_dir.replace("/","\\");
+                        QString str_zip_dir = "\"" + app_dir + "\\res\"";
+
+                        QString command = "\"C:\\Program Files\\7-Zip\\7z.exe\" x"
+                                          " "+str_zip_dir+" -aoa";
+
+                        qDebug()<<command<<endl;
+                        QProcess process;
+                        process.start(command);
+                        //QProcess::execute(command);
+                        process.waitForFinished();
+                    }
+                    QDomDocument dom;
+                    QFile file("R-"+QString(fileName_xml.c_str()));
+                    while (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+                    }
+
+                    while (!dom.setContent(&file)) {
+                    }
+
+                    // print out the element names of all elements that are direct children
+                    // of the outermost element.
+                    QDomElement root = dom.firstChildElement("ar:ApplicationResponse");
+                    QDomNodeList items = root.elementsByTagName("cbc:ResponseCode");
+                    QDomNode itemnode = items.at(0);
+
+                    QString str_responseCode;
+                    if(itemnode.isElement()){
+                        QDomElement iteme = itemnode.toElement();
+                        str_responseCode = iteme.text();
+                    }
+                    items = root.elementsByTagName("cbc:Description");
+                    itemnode = items.at(0);
+
+                    QString str_description;
+                    if(itemnode.isElement()){
+                        QDomElement iteme = itemnode.toElement();
+                        str_description = iteme.text();
+                    }
+                    items = root.elementsByTagName("DigestValue");
+                    itemnode = items.at(0);
+
+                    QString str_digestValue;
+                    if(itemnode.isElement()){
+                        QDomElement iteme = itemnode.toElement();
+                        str_digestValue = iteme.text();
+                        this->digestValue = str_digestValue;
+                    }
+
+
+                    QString str_response = dom.toString(-1);
+
+                    str_response = SYSTEM->replace_quotes_simple(str_response);
+                    QSqlQuery query;
+                    QString str_query = "UPDATE comprobante SET xmlResponse='"+str_response+"'";
+                    str_query += " WHERE serie = '"+ui->lineEdit_serie->text()+"'";
+                    str_query += " AND numero = '"+ui->lineEdit_numero->text()+"'";
+                    str_query += " AND DATE(fecha_emision) = '"
+                            +ui->dateTimeEdit_fecha_emision->date().toString("yyyy-MM-dd")+"'";
+
+
+                    qDebug()<<str_query<<endl;
+                    if(query.exec(str_query)){
+                        qDebug()<<"si copio"<<endl;
+                    }
+                    file.close();
+
+                    int responseCode = str_responseCode.toInt();
+                    if(responseCode >= 100 && responseCode <= 1999){
+                        QMessageBox::warning(this, "Advertencia", "Response Code: "+str_responseCode
+                                             + "\nDescripción: "+str_description, "Aceptar");
+                        return;
+                    }
+                    if(responseCode >= 2000 && responseCode <= 3999){
+                        QSqlQuery query;
+                        QString str_query = "UPDATE comprobante SET estado_sunat='Anulado'";
+                        str_query += " ORDER BY id DESC LIMIT 1";
+                        if(query.exec(str_query)){
+                            QMessageBox::warning(this, "Advertencia", "Response Code: "+str_responseCode
+                                                 + "\nDescripción: "+str_description, "Aceptar");
+                        }
+                        return;
+                    }
+                    if(responseCode >= 4000){
+                        QSqlQuery query;
+                        QString str_query = "UPDATE comprobante SET estado_sunat='Observacion'";
+                        str_query += " ORDER BY id DESC LIMIT 1";
+                        if(query.exec(str_query)){
+                            QMessageBox::warning(this, "Advertencia", "Response Code: "+str_responseCode
+                                                 + "\nDescripción: "+str_description, "Aceptar");
+                        }
+                        print_machelo();
+                        print_epson();
+                    }
+                    if(responseCode == 0){
+                        SYSTEM->commit();
+                        int numero = ui->lineEdit_numero->text().toInt();
+                        ui->lineEdit_numero->setText(QString().setNum(numero+1));
+                        QSqlQuery query;
+                        QString str_query = "UPDATE comprobante SET estado_sunat='Activo'";
+                        str_query += " ORDER BY id DESC LIMIT 1";
+                        if(query.exec(str_query)){
+                            QMessageBox::warning(this, "Advertencia", "Response Code: "+str_responseCode
+                                                 + "\nDescripción: "+str_description, "Aceptar");
+                        }
+                        print_machelo();
+                        print_epson();
+                    }
+
+                }
+            }            
+        }        
     }else{
         SYSTEM->rollback();
         return;
     }
-    /*
-    str_query = "SET autocommit = 1";
-    if(query.exec(str_query)){
-        //print_caja();
-        //print_comanda();
-
-        print_star_asa();
-    }else{
-        return;
-        QMessageBox::critical(this, "Error", "Error inesperado", "Ok");
-    }
-    */
-
 }
 
 void Comprobante::on_familia_closing()
@@ -2262,6 +3047,13 @@ void Comprobante::print_machelo()
 
 
     QVector<QString> centerTexts;
+
+    centerTexts.push_back("RUC: 20498590587");
+    centerTexts.push_back("R. Social: POLLERIA EL POLLO LEAL E.I.R.L.");
+    centerTexts.push_back("Direccion: PZA.PLAZA UMACHIRI NRO. 402 (PARQUE ");
+    centerTexts.push_back(" UMACHIRI) AREQUIPA - AREQUIPA - MARIANO MELGAR");
+    centerTexts.push_back("                                                ");
+    centerTexts.push_back("                                                ");
 /*
     if(str_tipo_item == str_npedido)
         centerTexts.push_back("Ticket Nota de Pedido");
@@ -2269,7 +3061,7 @@ void Comprobante::print_machelo()
     if(str_tipo_item == str_salida)
         centerTexts.push_back("Ticket Salida");
 */
-    centerTexts.push_back("Numero: " + nro_ticket);
+    centerTexts.push_back("Serie-Nro: " + ui->lineEdit_serie->text()+"-"+ui->lineEdit_numero->text());
     centerTexts.push_back("                                                ");
     QString nombre = "NOM CLI : " + ui->lineEdit_nombre->text();
     if(nombre.length() > 48){
@@ -2284,7 +3076,6 @@ void Comprobante::print_machelo()
     }
 
 
-    centerTexts.push_back("                                                ");
     centerTexts.push_back("Fecha: " + ui->dateTimeEdit_fecha_emision->date().toString("dd/MM/yyyy"));
     centerTexts.push_back("Hora: " + QTime::currentTime().toString("hh:mm:ss"));
     centerTexts.push_back("================================================");
@@ -2495,7 +3286,461 @@ void Comprobante::print_machelo()
     //app_dir = QDir::fromNativeSeparators(app_dir);
 
     //QString lpt_print = QDir::fromNativeSeparators("\\\\localhost\\caja001");
-    QString lpt_print = "\"\\\\localhost\\Caja 01\"";
+    //QString lpt_print = "\"\\\\localhost\\Caja 01\"";
+    QString lpt_print = "\\\\localhost\\caja001";
+
+    //FILE * pFile;
+    //char buffer[] = { (char)0x0a };
+    //pFile = fopen ("c:\\test.txt", "wb");
+    //fwrite (buffer , sizeof(char), sizeof(buffer), pFile);
+    //fclose (pFile);
+    //system(command.toStdString().c_str());
+
+    //QProcess *myProcess = new QProcess();
+    QString command = "copy /b " + app_dir
+                        + " " + lpt_print + " < nul";
+
+    /*
+    QStringList arguments = QStringList();
+    arguments << argument_1;
+    connect(myProcess, SIGNAL(started())
+        , this, SLOT(on_myProccess_started()));
+    connect(myProcess, SIGNAL(finished(int, QProcess::ExitStatus))
+        , this, SLOT(on_myProccess_finished(int, QProcess::ExitStatus)));
+*/
+    //WinExec(command.toStdString().c_str(), SW_HIDE);
+    //ShellExecuteA(0, "open", "cmd.exe", command.toStdString().c_str(), 0, SW_HIDE);
+
+    qDebug() << command << endl;
+
+    {
+        QString app_dir = QCoreApplication::applicationDirPath();
+
+        QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+        QString str_rel = "";
+        //qDebug() << cmp_release << endl;
+        if(cmp_release.compare("/release") == 0){
+            str_rel = "/release";
+            //qDebug() << str_rel << endl;
+        }
+
+        app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+        app_dir = "\""+ app_dir + "\"/chp.exe cmd /c ";
+        command = app_dir + command;
+    }
+
+    QProcess::execute(command);
+}
+void Comprobante::print_epson()
+{
+    qDebug()<<"print epson"<<endl;
+    /*
+    if(ui->lineEdit_serie->text().length() != 4) {
+        QMessageBox::warning(this, "Advertencia", "Ingrese serie de 4 dígitos.", "Aceptar");
+        return;
+    }
+    if(ui->lineEdit_numero->text().length() != 8) {
+        QMessageBox::warning(this, "Advertencia", "Ingrese número de 8 dígitos.", "Aceptar");
+        return;
+    }*/
+    if(ui->lineEdit_nombre->text().compare("") == 0) {
+        QMessageBox::warning(this, "Advertencia", "Ingrese nombre.", "Aceptar");
+        return;
+    }
+
+    if(ui->tableWidget->rowCount() == 0){
+        QMessageBox::warning(this, "Advertencia", "No hay detalle en la venta.", "Aceptar");
+        return;
+    }
+
+    QFile file("print_epson.dat");
+    if (!file.open(QFile::WriteOnly)) {
+        qDebug() << "Could not open file for writing";
+        return;
+    }
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_4_8);
+
+    SYSTEM->insertImage(out, "npedido_leal_gris_epson.png");
+    /*
+    for(int j = 0; j < 4; j++){
+        out<<(qint64)0x0A;
+    }*/
+    //qDebug()<<getchar()<<endl;
+    SYSTEM->epson_lineFeed(out);
+
+
+
+    qDebug()<<"print epson 2"<<endl;
+    QVector<QString> centerTexts;
+
+    centerTexts.push_back("RUC: 20498590587");
+    centerTexts.push_back("R. Social: POLLERIA EL POLLO LEAL E.I.R.L.");
+    centerTexts.push_back("Direccion: PZA.PLAZA UMACHIRI");
+    centerTexts.push_back(" NRO. 402 (PARQUE UMACHIRI)");
+    centerTexts.push_back(" AREQUIPA - AREQUIPA - MARIANO MELGAR");
+    centerTexts.push_back("                                          ");
+    centerTexts.push_back("                                          ");
+/*
+    if(str_tipo_item == str_npedido)
+        centerTexts.push_back("Ticket Nota de Pedido");
+
+    if(str_tipo_item == str_salida)
+        centerTexts.push_back("Ticket Salida");
+*/
+    QString operacion = ui->comboBox_operacion->currentText();
+    QString documento = ui->comboBox_documento->currentText();
+    if(documento.compare("Boleta") == 0){
+        centerTexts.push_back("BOLETA ELECTRONICA");
+        centerTexts.push_back("                                          ");
+        QString numero = QString().setNum(ui->lineEdit_numero->text().toInt()-1);
+        centerTexts.push_back("Serie-Nro: " + ui->lineEdit_serie->text() + "-" + numero);
+        if(ui->lineEdit_codigo->text().length() == 8){
+            centerTexts.push_back("DNI: "+ui->lineEdit_codigo->text());
+        }
+        QString nombre = "Nombre: " + ui->lineEdit_nombre->text();
+        nombre.replace("\t", " ");
+        nombre.replace("\n", " ");
+        nombre.replace("\r", " ");
+
+        if(nombre.length() > 42){
+            int recorrido = 0;
+            while(recorrido < nombre.length()) {
+                if(nombre[recorrido+42-1] == ' '){
+                    centerTexts.push_back(nombre.mid(recorrido, 42));
+                    recorrido += 42;
+                }else{
+                    if(nombre[recorrido+42] == ' '){
+                        centerTexts.push_back(nombre.mid(recorrido, 42));
+                        recorrido += 42;
+                    }else{
+                        int i = recorrido+42-2, count=0;
+                        while(nombre[i] != ' '){
+                            i--;
+                            count++;
+                        }
+                        if(count == 41){
+                            centerTexts.push_back(nombre.mid(recorrido, 42));
+                            recorrido += 42;
+                        }else{
+                            centerTexts.push_back(nombre.mid(recorrido, 42-count-1));
+                            recorrido += 42-count-1;
+                        }
+                    }
+                }
+
+            }
+
+        }else{
+            centerTexts.push_back(nombre);
+        }
+    }
+    if(documento.compare("Factura") == 0){
+        centerTexts.push_back("FACTURA ELECTRONICA");
+        centerTexts.push_back("                                          ");
+        QString numero = QString().setNum(ui->lineEdit_numero->text().toInt()-1);
+        centerTexts.push_back("Serie-Nro: " + ui->lineEdit_serie->text() + "-" + numero);
+
+        centerTexts.push_back("RUC: " + ui->lineEdit_codigo->text());
+
+        QString nombre = "Razon S.: " + ui->lineEdit_nombre->text();
+        nombre.replace("\t", " ");
+        nombre.replace("\n", " ");
+        nombre.replace("\r", " ");
+
+        if(nombre.length() > 42){
+            int recorrido = 0;
+            while(recorrido < nombre.length()) {
+                if(nombre[recorrido+42-1] == ' '){
+                    centerTexts.push_back(nombre.mid(recorrido, 42));
+                    recorrido += 42;
+                }else{
+                    if(nombre[recorrido+42] == ' '){
+                        centerTexts.push_back(nombre.mid(recorrido, 42));
+                        recorrido += 42;
+                    }else{
+                        int i = recorrido+42-2, count=0;
+                        while(nombre[i] != ' '){
+                            i--;
+                            count++;
+                        }
+                        if(count == 41){
+                            centerTexts.push_back(nombre.mid(recorrido, 42));
+                            recorrido += 42;
+                        }else{
+                            centerTexts.push_back(nombre.mid(recorrido, 42-count-1));
+                            recorrido += 42-count-1;
+                        }
+                    }
+                }
+
+            }
+
+        }else{
+            centerTexts.push_back(nombre);
+        }
+    }
+
+    qDebug()<<"print epson 3"<<endl;
+    QString direccion = "Direccion: " + ui->lineEdit_direccion->text();
+    direccion.replace("\t", " ");
+    direccion.replace("\n", " ");
+    direccion.replace("\r", " ");
+
+    if(direccion.length() > 42){
+        int recorrido = 0;
+        while(recorrido < direccion.length()) {
+            if(direccion[recorrido+42-1] == ' '){
+                centerTexts.push_back(direccion.mid(recorrido, 42));
+                recorrido += 42;
+            }else{
+                if(direccion[recorrido+42] == ' '){
+                    centerTexts.push_back(direccion.mid(recorrido, 42));
+                    recorrido += 42;
+                }else{
+                    int i = recorrido+42-2, count=0;
+                    while(direccion[i] != ' '){
+                        i--;
+                        count++;
+                    }
+                    if(count == 41){
+                        centerTexts.push_back(direccion.mid(recorrido, 42));
+                        recorrido += 42;
+                    }else{
+                        centerTexts.push_back(direccion.mid(recorrido, 42-count-1));
+                        recorrido += 42-count-1;
+                    }
+                }
+            }
+
+        }
+
+    }else{
+        centerTexts.push_back(direccion);
+    }
+
+    qDebug()<<"print epson 4"<<endl;
+    centerTexts.push_back("                                          ");
+    centerTexts.push_back("Fecha: " + ui->dateTimeEdit_fecha_emision->date().toString("dd/MM/yyyy"));
+    centerTexts.push_back("Hora: " + QTime::currentTime().toString("hh:mm:ss"));
+    centerTexts.push_back("==========================================");
+    centerTexts.push_back("Cant      Unidad  Descripcion             ");
+    centerTexts.push_back("                             P.Total      ");
+    // Peso 13 P.Unit. 12 P.Total 13
+    centerTexts.push_back("------------------------------------------");
+
+    SYSTEM->centerTexts(centerTexts, 42);
+
+    //out << (qint64)0x1D4C0002;
+
+    for(int i = 0; i < centerTexts.size(); i++){
+        //SYSTEM->insert_left_spaces(centerTexts[i], 3);
+        //SYSTEM->insert_right_spaces(centerTexts[i], 3);
+
+        SYSTEM->epson_printText(out, centerTexts[i]);
+        //SYSTEM->epson_lineFeed(out);
+    }
+    //SYSTEM->epson_lineFeed(out);
+    double total = ui->doubleSpinBox_total->value(), igv = 0.18;
+    for(int i = 0; i < ui->tableWidget->rowCount(); i++){
+        QString categoria = ui->tableWidget->item(i, CATEGORIA)->text();
+        //if(categoria.compare("bebidas", Qt::CaseInsensitive) != 0) continue;
+        QString cantidad = ui->tableWidget->item(i, CANTIDAD)->text();
+        QString unidad = ui->tableWidget->item(i, UNIDAD)->text();
+        QString descripcion = ui->tableWidget->item(i, NOMBRE)->text();
+        //QString peso = ui->tableWidget->item(i, 3)->text();
+        //QString p_unit = ui->tableWidget->item(i, 4)->text();
+        QString p_total = ui->tableWidget->item(i, PRECIO)->text();
+        //double p_total = ui->tableWidget->item(i, 5)->text().toDouble();
+        //QString str_p_total = QString().setNum(p_total, ' ', 1);
+
+        SYSTEM->align_left(cantidad, 10);
+        SYSTEM->align_left(unidad, 8);
+        SYSTEM->align_left(descripcion, 49);
+        //SYSTEM->align_left(peso, 13);
+        //SYSTEM->align_left(p_unit, 12);
+        SYSTEM->justified(p_total, 13);
+
+        QString text = cantidad + unidad
+                + descripcion + "    "
+                + p_total;
+        SYSTEM->epson_printText(out, text);
+
+        centerTexts.push_back("                                    ");
+    }
+    QString str_st = QString().setNum(total / (1.0 + igv), ' ', 2);
+    SYSTEM->justified(str_st, 6);
+    QString str_i = QString().setNum(total / (1.0 + igv) * igv, ' ', 2);
+    SYSTEM->justified(str_i, 6);
+    QString str_t = QString().setNum(total, ' ', 2);
+    SYSTEM->justified(str_t, 6);
+    QString str_d = QString().setNum(ui->doubleSpinBox_delivery->value(), ' ', 1);
+    SYSTEM->justified(str_d, 6);
+    QString str_v = QString().setNum(ui->doubleSpinBox_vuelto->value(), ' ', 1);
+    SYSTEM->justified(str_v, 6);
+    SYSTEM->justified(str_t, 13);
+    QString str_sub_total = "Sub-Total: " + str_st;
+    QString str_igv = "IGV: " + str_i;
+    QString str_total = "Total: " + str_t;
+    QString str_delivery = "Delivery: " + str_d;
+    QString str_vuelto = "Vuelto: " + str_v;
+    QVector<QString> totales;
+    totales.push_back("------------------------");
+    totales.push_back(str_sub_total);
+    totales.push_back(str_igv);
+    totales.push_back(str_total);
+    totales.push_back("------------------------");
+    totales.push_back(str_delivery);
+    totales.push_back(str_vuelto);
+    QString forma_de_pago = QString("Forma de Pago:" + pago.toUpper());
+    totales.push_back(SYSTEM->centerText(forma_de_pago, 42));
+    totales.push_back(" ");
+    QString clave_wifi = "*** Clave Wifi: " + clave + " ***";
+    totales.push_back(SYSTEM->centerText(clave_wifi, 42));
+
+    SYSTEM->rightTexts(totales, 42);
+
+    SYSTEM->epson_lineFeed(out);
+
+    for(int i = 0; i < totales.size(); i++){
+        SYSTEM->epson_printText(out, totales[i]);
+        //SYSTEM->epson_lineFeed(out);
+    }
+    //SYSTEM->epson_lineFeed(out);
+
+    //SYSTEM->insertImage(out, "footer.png");
+
+    qDebug()<<"print epson 5"<<endl;
+    SYSTEM->epson_lineFeed(out);
+    //SYSTEM->epson_printText(out, SYSTEM->centerText(QString("PAGOS LLAMAR A: CRISS: 967252119")));
+    //SYSTEM->epson_lineFeed(out);
+    SYSTEM->epson_lineFeed(out);
+    //SYSTEM->epson_printText(out, SYSTEM->centerText(QString("")));
+    SYSTEM->epson_printText(out, SYSTEM->centerText(digestValue, 42));
+    //SYSTEM->epson_printText(out, SYSTEM->centerText(QString("\"'Cambiar a Boleta o Factura'\""), 48));
+
+    SYSTEM->epson_lineFeed(out);
+    SYSTEM->epson_lineFeed(out);
+    SYSTEM->epson_lineFeed(out);
+    SYSTEM->epson_lineFeed(out);
+    SYSTEM->epson_lineFeed(out);
+    SYSTEM->epson_lineFeed(out);
+    SYSTEM->epson_lineFeed(out);
+
+
+    SYSTEM->epson_paperCut(out);
+    /*
+    if(ui->checkBox_switch_caja->checkState() == Qt::Checked){
+        SYSTEM->epson_drawer(out);
+    }*/
+
+    qDebug()<<"print epson 6"<<endl;
+    {
+        bool hay_bebidas = false;
+        for(int i = 0; i < ui->tableWidget->rowCount(); i++){
+            QString categoria = ui->tableWidget->item(i, CATEGORIA)->text();
+
+            if(categoria.compare("bebidas", Qt::CaseInsensitive) == 0){
+                hay_bebidas = true;
+                break;
+            }
+        }
+        if(hay_bebidas){
+            /*
+            QVector<QString> centerTexts;
+
+            centerTexts.push_back("BEBIDAS");
+            centerTexts.push_back("==========================================");
+            centerTexts.push_back("Cant      Unidad  Descripcion             ");
+            centerTexts.push_back("                             P.Total      ");
+            // Peso 13 P.Unit. 12 P.Total 13
+            centerTexts.push_back("------------------------------------------");
+
+            SYSTEM->centerTexts(centerTexts, 48);
+
+            for(int i = 0; i < centerTexts.size(); i++){
+                SYSTEM->epson_printText(out, centerTexts[i]);
+            }
+
+            double total = 0.0, igv = 0.18;
+            for(int i = 0; i < ui->tableWidget->rowCount(); i++){
+                QString categoria = ui->tableWidget->item(i, CATEGORIA)->text();
+
+                if(categoria.compare("bebidas", Qt::CaseInsensitive) != 0) continue;
+
+                QString cantidad = ui->tableWidget->item(i, CANTIDAD)->text();
+                QString unidad = ui->tableWidget->item(i, UNIDAD)->text();
+                QString descripcion = ui->tableWidget->item(i, NOMBRE)->text();
+                QString p_total = ui->tableWidget->item(i, PRECIO)->text();
+
+                total += p_total.toDouble();
+
+                SYSTEM->align_left(cantidad, 10);
+                SYSTEM->align_left(unidad, 8);
+                SYSTEM->align_left(descripcion, 49);
+                SYSTEM->justified(p_total, 13);
+
+                QString text = cantidad + unidad
+                        + descripcion + "    "
+                        + p_total;
+                SYSTEM->epson_printText(out, text);
+
+                centerTexts.push_back("                                          ");
+            }
+
+            QVector<QString> totales;
+
+            QString str_t = QString().setNum(total, ' ', 2);
+            SYSTEM->justified(str_t, 6);
+
+            QString str_total = "Total: " + str_t;
+
+            totales.push_back("------------------------");
+            totales.push_back(str_total);
+            totales.push_back("------------------------");
+
+
+            SYSTEM->rightTexts(totales, 48);
+
+            SYSTEM->epson_lineFeed(out);
+
+            for(int i = 0; i < totales.size(); i++){
+                SYSTEM->epson_printText(out, totales[i]);
+                //SYSTEM->epson_lineFeed(out);
+            }
+
+            SYSTEM->epson_lineFeed(out);
+            SYSTEM->epson_lineFeed(out);
+            SYSTEM->epson_lineFeed(out);
+            SYSTEM->epson_lineFeed(out);
+            SYSTEM->epson_lineFeed(out);
+
+            SYSTEM->epson_paperCut(out);
+            */
+        }
+    }
+
+qDebug()<<"print epson 7"<<endl;
+    file.close();
+
+    QString app_dir = QCoreApplication::applicationDirPath();
+
+    QString cmp_release = app_dir.mid(app_dir.length()-8, 9);
+    QString str_rel = "";
+    //qDebug() << cmp_release << endl;
+    if(cmp_release.compare("/release") == 0){
+        str_rel = "/release";
+        //qDebug() << str_rel << endl;
+    }
+
+    app_dir = app_dir.mid(0, app_dir.length() - str_rel.length());
+    app_dir.replace("/","\\");
+    app_dir = "\"" + app_dir + "\\" + file.fileName() + "\"";
+
+    //app_dir = QDir::fromNativeSeparators(app_dir);
+
+    //QString lpt_print = QDir::fromNativeSeparators("\\\\localhost\\caja001");
+    QString lpt_print = "\"\\\\localhost\\EPSON TM-T88V Receipt\"";
     //QString lpt_print = "\\\\localhost\\caja001";
 
     //FILE * pFile;
@@ -2831,15 +4076,61 @@ void Comprobante::on_comboBox_operacion_currentTextChanged(const QString &arg1)
 {
     if(arg1.compare("Compra") == 0){
         ui->comboBox_documento->clear();
-
+        QSqlQuery query;
+        QString str_query = "";
+        str_query += QString()+"SELECT serie, numero+1 FROM comprobante";
+        str_query += QString()+" WHERE operacion_item_nombre = '"+COMPRA"' AND tipo_item_nombre = '"+TICKET+"'";
+        str_query += QString()+" ORDER BY numero DESC LIMIT 1";
+        qDebug()<<str_query<<endl;
+        if(query.exec(str_query)){
+            if(query.next()){
+                ui->lineEdit_serie->setText(query.value(0).toString());
+                ui->lineEdit_numero->setText(query.value(1).toString());
+            }else{
+                ui->lineEdit_serie->setText("T004");
+                ui->lineEdit_numero->setText("1");
+            }
+        }
     }
     if(arg1.compare("Venta") == 0){
         ui->comboBox_documento->addItem("Boleta");
         ui->comboBox_documento->addItem("Factura");
         ui->comboBox_documento->addItem("Pre-Venta");
+        ui->comboBox_documento->setCurrentText("Pre-Venta");
+        QSqlQuery query;
+        QString str_query = "";
+        str_query += QString()+"SELECT serie, numero+1 FROM comprobante";
+        str_query += QString()+" WHERE operacion_item_nombre = '"+VENTA"' AND tipo_item_nombre = '"+TICKET+"'";
+        str_query += QString()+" ORDER BY numero DESC LIMIT 1";
+        qDebug()<<str_query<<endl;
+        if(query.exec(str_query)){
+            if(query.next()){
+                ui->lineEdit_serie->setText(query.value(0).toString());
+                ui->lineEdit_numero->setText(query.value(1).toString());
+            }else{
+                ui->lineEdit_serie->setText("T004");
+                ui->lineEdit_numero->setText("1");
+            }
+        }
     }
     if(arg1.compare("Egresos") == 0){
         ui->comboBox_documento->clear();
+
+        QSqlQuery query;
+        QString str_query = "";
+        str_query += QString()+"SELECT serie, numero+1 FROM comprobante";
+        str_query += QString()+" WHERE operacion_item_nombre = '"+EGRESOS"' AND tipo_item_nombre = '"+TICKET+"'";
+        str_query += QString()+" ORDER BY numero DESC LIMIT 1";
+        qDebug()<<str_query<<endl;
+        if(query.exec(str_query)){
+            if(query.next()){
+                ui->lineEdit_serie->setText(query.value(0).toString());
+                ui->lineEdit_numero->setText(query.value(1).toString());
+            }else{
+                ui->lineEdit_serie->setText("T004");
+                ui->lineEdit_numero->setText("1");
+            }
+        }
     }
     ui->lineEdit_codigo->clear();
     ui->lineEdit_direccion->clear();
@@ -2978,4 +4269,479 @@ void Comprobante::on_pushButton_clicked()
 
         return imported;
     }*/
+}
+
+bool Comprobante::create_boleta()
+{
+    QString str_ruc = "20498590587";
+    QString str_razon = "POLLERIA EL POLLO LEAL E.I.R.L.";
+    //QString str_razon = "20498590587";
+    QString str_serie = ui->lineEdit_serie->text();
+    QString str_numero = ui->lineEdit_numero->text();
+
+    QString fileName_xml = str_ruc+"-"+"03"+"-"+str_serie+"-"+str_numero+".xml";
+
+    QFile file(fileName_xml);
+    if(file.exists()){
+        return true;
+    }
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        QMessageBox::warning(this, "Advertencia", "No se puede crear file.", "Aceptar");
+        return false;
+    }
+
+    QString textXML;
+    //textXML += "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"no\"?>\n";
+    textXML += "<Invoice xmlns=\"urn:oasis:names:specification:ubl:schema:xsd:Invoice-2\"\n";
+    textXML += "xmlns:cac=\"urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2\"\n";
+    textXML += "xmlns:cbc=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\"\n";
+    textXML += "xmlns:ccts=\"urn:un:unece:uncefact:documentation:2\"\n";
+    textXML += "xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"\n";
+    textXML += "xmlns:ext=\"urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2\"\n";
+    textXML += "xmlns:qdt=\"urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2\"\n";
+    textXML += "xmlns:sac=\"urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1\"\n";
+    textXML += "xmlns:udt=\"urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2\"\n";
+    textXML += "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
+    textXML += "<ext:UBLExtensions>\n<ext:UBLExtension>\n<ext:ExtensionContent>\n<sac:AdditionalInformation>\n";
+    textXML += "<sac:AdditionalMonetaryTotal>\n<cbc:ID>1003</cbc:ID>\n";
+    textXML += "<cbc:PayableAmount currencyID=\"PEN\">"+QString().setNum(ui->doubleSpinBox_total->value()/1.18, ' ', 2)+"</cbc:PayableAmount>\n";
+    textXML += "</sac:AdditionalMonetaryTotal>\n";
+    textXML += "<sac:AdditionalProperty>\n";
+    textXML += "<cbc:ID>1001</cbc:ID>\n";
+    textXML += "<cbc:Value>"+SYSTEM->generate_cbc_value(ui->doubleSpinBox_total->value())+"</cbc:Value>\n";
+    textXML += "</sac:AdditionalProperty>\n";
+    textXML += "</sac:AdditionalInformation>\n";
+    textXML += "</ext:ExtensionContent>\n";
+    textXML += "</ext:UBLExtension>\n";
+    textXML += "<ext:UBLExtension>\n";
+    textXML += "<ext:ExtensionContent>\n";
+    textXML += "</ext:ExtensionContent>\n";
+    textXML += "</ext:UBLExtension>\n";
+    textXML += "</ext:UBLExtensions>\n";
+    textXML += "<cbc:UBLVersionID>2.0</cbc:UBLVersionID>\n";
+    textXML += "<cbc:CustomizationID>1.0</cbc:CustomizationID>\n";
+    textXML += "<cbc:ID>"+ui->lineEdit_serie->text()+"-"+ui->lineEdit_numero->text()+"</cbc:ID>\n";
+    textXML += "<cbc:IssueDate>"+QDate::currentDate().toString("yyyy-MM-dd")+"</cbc:IssueDate>\n";
+    textXML += "<cbc:IssueTime>"+QTime::currentTime().toString("hh:mm:ss")+"</cbc:IssueTime>\n";
+    textXML += "<cbc:InvoiceTypeCode>03</cbc:InvoiceTypeCode>\n";
+    textXML += "<cbc:DocumentCurrencyCode>PEN</cbc:DocumentCurrencyCode>\n";
+    textXML += "<cac:Signature>\n";
+    textXML += "<cbc:ID>IDSignKG</cbc:ID>\n";
+    textXML += "<cac:SignatoryParty>\n";
+    textXML += "<cac:PartyIdentification>\n";
+    textXML += "<cbc:ID>"+str_ruc+"</cbc:ID>\n";
+    textXML += "</cac:PartyIdentification>\n";
+    textXML += "<cac:PartyName>\n";
+    textXML += "<cbc:Name>"+str_razon+"</cbc:Name>\n";
+    textXML += "</cac:PartyName>\n";
+    textXML += "</cac:SignatoryParty>\n";
+    textXML += "<cac:DigitalSignatureAttachment>\n";
+    textXML += "<cac:ExternalReference>\n";
+    textXML += "<cbc:URI>#SignatureKG</cbc:URI>\n";
+    textXML += "</cac:ExternalReference>\n";
+    textXML += "</cac:DigitalSignatureAttachment>\n";
+    textXML += "</cac:Signature>\n";
+    textXML += "<cac:AccountingSupplierParty>\n";
+    textXML += "<cbc:CustomerAssignedAccountID>"+str_ruc+"</cbc:CustomerAssignedAccountID>\n";
+    textXML += "<cbc:AdditionalAccountID>6</cbc:AdditionalAccountID>\n";
+    textXML += "<cac:Party>\n";
+    textXML += "<cac:PostalAddress>\n";
+    textXML += "<cbc:AddressTypeCode>0001</cbc:AddressTypeCode>\n";
+    textXML += "</cac:PostalAddress>\n";
+    textXML += "<cac:PartyLegalEntity>\n";
+    textXML += "<cbc:RegistrationName>"+str_razon+"</cbc:RegistrationName>\n";
+    textXML += "</cac:PartyLegalEntity>\n";
+    textXML += "</cac:Party>\n";
+    textXML += "</cac:AccountingSupplierParty>\n";
+    textXML += "<cac:AccountingCustomerParty>\n";
+    QString str_codigo, str_nombre, str_direccion;
+    str_codigo = ui->lineEdit_codigo->text();
+    str_nombre = ui->lineEdit_nombre->text();
+    str_nombre.replace("&", "&amp;");
+    str_direccion = ui->lineEdit_direccion->text();
+
+    if(ui->lineEdit_codigo->text().length() == 8 | ui->doubleSpinBox_total->value() >= 700.0){
+        textXML += "<cbc:CustomerAssignedAccountID>"+str_codigo+"</cbc:CustomerAssignedAccountID>\n";
+        textXML += "<cbc:AdditionalAccountID>1</cbc:AdditionalAccountID>\n";
+        textXML += "<cac:Party>\n";
+        /*
+        textXML += "<cac:PhysicalLocation>\n";
+        textXML += "<cbc:Description>"+str_direccion+"</cbc:Description>\n";
+        textXML += "</cac:PhysicalLocation>\n";
+        */
+        textXML += "<cac:PartyLegalEntity>\n";
+        textXML += "<cbc:RegistrationName>"+str_nombre+"</cbc:RegistrationName>\n";
+        textXML += "</cac:PartyLegalEntity>\n";
+        textXML += "</cac:Party>\n";
+    }else{
+        if(ui->lineEdit_codigo->text().length() == 0){
+            textXML += "<cbc:CustomerAssignedAccountID>-</cbc:CustomerAssignedAccountID>\n";
+            textXML += "<cbc:AdditionalAccountID>0</cbc:AdditionalAccountID>\n";
+            textXML += "<cac:Party>\n";
+            /*
+            textXML += "<cac:PhysicalLocation>\n";
+            textXML += "<cbc:Description>"+str_direccion+"</cbc:Description>\n";
+            textXML += "</cac:PhysicalLocation>\n";
+            */
+            textXML += "<cac:PartyLegalEntity>\n";
+            textXML += "<cbc:RegistrationName>"+str_nombre+"</cbc:RegistrationName>\n";
+            textXML += "</cac:PartyLegalEntity>\n";
+            textXML += "</cac:Party>\n";
+        }else
+            return false;
+    }
+
+
+    textXML += "</cac:AccountingCustomerParty>\n";
+    textXML += "<cac:TaxTotal>\n";
+
+    textXML += "<cbc:TaxAmount currencyID=\"PEN\">"+QString().setNum(ui->doubleSpinBox_total->value()/1.18*0.18, ' ', 2)+"</cbc:TaxAmount>\n";
+    textXML += "<cac:TaxSubtotal>\n";
+    textXML += "<cbc:TaxAmount currencyID=\"PEN\">"+QString().setNum(ui->doubleSpinBox_total->value()/1.18*0.18, ' ', 2)+"</cbc:TaxAmount>\n";
+    textXML += "<cac:TaxCategory>\n";
+    textXML += "<cac:TaxScheme>\n";
+    textXML += "<cbc:ID>1000</cbc:ID>\n";
+    textXML += "<cbc:Name>IGV</cbc:Name>\n";
+    textXML += "<cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>\n";
+    textXML += "</cac:TaxScheme>\n";
+    textXML += "</cac:TaxCategory>\n";
+    textXML += "</cac:TaxSubtotal>\n";
+    textXML += "</cac:TaxTotal>\n";
+    textXML += "<cac:LegalMonetaryTotal>\n";
+    textXML += "<cbc:PayableAmount currencyID=\"PEN\">"+QString().setNum(ui->doubleSpinBox_total->value(), ' ', 2)+"</cbc:PayableAmount>\n";
+    textXML += "</cac:LegalMonetaryTotal>\n";
+
+    for(int i=0; i < ui->tableWidget->rowCount(); i++){
+        textXML += "<cac:InvoiceLine>\n";
+        textXML += "<cbc:ID>"+QString().setNum(i+1)+"</cbc:ID>\n";
+        textXML += "<cbc:InvoicedQuantity unitCode=\"NIU\">"+ui->tableWidget->item(i, CANTIDAD)->text()+"</cbc:InvoicedQuantity>\n";
+        double p_precio = ui->tableWidget->item(i, PRECIO)->text().toDouble();
+        textXML += "<cbc:LineExtensionAmount currencyID=\"PEN\">"+QString().setNum(p_precio/1.18, ' ', 2)+"</cbc:LineExtensionAmount>\n";
+        textXML += "<cac:PricingReference>\n";
+        textXML += "<cac:AlternativeConditionPrice>\n";
+        double p_unit = ui->tableWidget->item(i, PRECIO)->text().toDouble()/ui->tableWidget->item(i, CANTIDAD)->text().toDouble();
+        textXML += "<cbc:PriceAmount currencyID=\"PEN\">"+QString().setNum(p_unit, ' ', 2)+"</cbc:PriceAmount>\n";
+        textXML += "<cbc:PriceTypeCode>01</cbc:PriceTypeCode>\n";
+        textXML += "</cac:AlternativeConditionPrice>\n";
+        textXML += "</cac:PricingReference>\n";
+        textXML += "<cac:TaxTotal>\n";
+        textXML += "<cbc:TaxAmount currencyID=\"PEN\">"+QString().setNum(p_precio/1.18*0.18, ' ', 2)+"</cbc:TaxAmount>\n";
+        textXML += "<cac:TaxSubtotal>\n";
+        textXML += "<cbc:TaxAmount currencyID=\"PEN\">"+QString().setNum(p_precio/1.18*0.18, ' ', 2)+"</cbc:TaxAmount>\n";
+        textXML += "<cac:TaxCategory>\n";
+        textXML += "<cbc:TaxExemptionReasonCode>10</cbc:TaxExemptionReasonCode>\n";
+        textXML += "<cac:TaxScheme>\n";
+        textXML += "<cbc:ID>1000</cbc:ID>\n";
+        textXML += "<cbc:Name>IGV</cbc:Name>\n";
+        textXML += "<cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>\n";
+        textXML += "</cac:TaxScheme>\n";
+        textXML += "</cac:TaxCategory>\n";
+        textXML += "</cac:TaxSubtotal>\n";
+        textXML += "</cac:TaxTotal>\n";
+        textXML += "<cac:Item>\n";
+        textXML += "<cbc:Description>"+ui->tableWidget->item(i, NOMBRE)->text()+"</cbc:Description>\n";
+        textXML += "<cac:SellersItemIdentification>\n";
+        textXML += "<cbc:ID>"+ui->tableWidget->item(i, ID)->text()+"</cbc:ID>\n";
+        textXML += "</cac:SellersItemIdentification>\n";
+        textXML += "</cac:Item>\n";
+        textXML += "<cac:Price>\n";
+        textXML += "<cbc:PriceAmount currencyID=\"PEN\">"+QString().setNum(p_unit/1.18, ' ', 2)+"</cbc:PriceAmount>\n";
+        textXML += "</cac:Price>\n";
+        textXML += "</cac:InvoiceLine>\n";
+    }
+    textXML += "</Invoice>\r\n";
+
+    QXmlStreamWriter xmlWriter(&file);
+    //xmlWriter.setAutoFormatting(true);
+    xmlWriter.setCodec("ISO 8859-1");
+    xmlWriter.writeStartDocument("1.0", false);
+
+
+    xmlWriter.writeCharacters("");
+    xmlWriter.device()->write(textXML.toStdString().c_str());
+    xmlWriter.device()->close();
+    //QTextStream out(&file);
+    //out << textXML;
+    //file.flush();
+    file.close();
+    return true;
+}
+
+bool Comprobante::create_factura()
+{
+    QString str_ruc = "20498590587";
+    QString str_razon = "POLLERIA EL POLLO LEAL E.I.R.L.";
+    //QString str_razon = "20498590587";
+    QString str_serie = ui->lineEdit_serie->text();
+    QString str_numero = ui->lineEdit_numero->text();
+
+    QString fileName_xml = str_ruc+"-"+"01"+"-"+str_serie+"-"+str_numero+".XML";
+
+    QFile file(fileName_xml);
+
+    if(file.exists()){
+        return true;
+    }
+
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+      QMessageBox::warning(this, "Advertencia", "No se puede crear file.", "Aceptar");
+      return false;
+    }
+    QString textXML;
+    //textXML += "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"no\"?>\n";
+    textXML += "<Invoice xmlns=\"urn:oasis:names:specification:ubl:schema:xsd:Invoice-2\"\n";
+    textXML += "xmlns:cac=\"urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2\"\n";
+    textXML += "xmlns:cbc=\"urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2\"\n";
+    textXML += "xmlns:ccts=\"urn:un:unece:uncefact:documentation:2\"\n";
+    textXML += "xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"\n";
+    textXML += "xmlns:ext=\"urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2\"\n";
+    textXML += "xmlns:qdt=\"urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2\"\n";
+    textXML += "xmlns:sac=\"urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1\"\n";
+    textXML += "xmlns:udt=\"urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2\"\n";
+    textXML += "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
+    textXML += "<ext:UBLExtensions>\n<ext:UBLExtension>\n<ext:ExtensionContent>\n<sac:AdditionalInformation>\n";
+    textXML += "<sac:AdditionalMonetaryTotal>\n<cbc:ID>1001</cbc:ID>\n";
+    textXML += "<cbc:PayableAmount currencyID=\"PEN\">"+QString().setNum(ui->doubleSpinBox_total->value()/1.18, ' ', 2)+"</cbc:PayableAmount>\n";
+    textXML += "</sac:AdditionalMonetaryTotal>\n";
+    textXML += "<sac:AdditionalProperty>\n";
+    textXML += "<cbc:ID>1000</cbc:ID>\n";
+    textXML += "<cbc:Value>"+SYSTEM->generate_cbc_value(ui->doubleSpinBox_total->value())+"</cbc:Value>\n";
+    textXML += "</sac:AdditionalProperty>\n";
+    textXML += "</sac:AdditionalInformation>\n";
+    textXML += "</ext:ExtensionContent>\n";
+    textXML += "</ext:UBLExtension>\n";
+    textXML += "<ext:UBLExtension>\n";
+    textXML += "<ext:ExtensionContent>\n";
+    textXML += "</ext:ExtensionContent>\n";
+    textXML += "</ext:UBLExtension>\n";
+    textXML += "</ext:UBLExtensions>\n";
+    textXML += "<cbc:UBLVersionID>2.0</cbc:UBLVersionID>\n";
+    textXML += "<cbc:CustomizationID>1.0</cbc:CustomizationID>\n";
+    textXML += "<cbc:ID>"+ui->lineEdit_serie->text()+"-"+ui->lineEdit_numero->text()+"</cbc:ID>\n";
+    textXML += "<cbc:IssueDate>"+QDate::currentDate().toString("yyyy-MM-dd")+"</cbc:IssueDate>\n";
+    textXML += "<cbc:IssueTime>"+QTime::currentTime().toString("hh:mm:ss")+"</cbc:IssueTime>\n";
+    textXML += "<cbc:InvoiceTypeCode>01</cbc:InvoiceTypeCode>\n";
+    textXML += "<cbc:DocumentCurrencyCode>PEN</cbc:DocumentCurrencyCode>\n";
+    textXML += "<cac:Signature>\n";
+    textXML += "<cbc:ID>IDSignSP</cbc:ID>\n";
+    textXML += "<cac:SignatoryParty>\n";
+    textXML += "<cac:PartyIdentification>\n";
+    textXML += "<cbc:ID>"+str_ruc+"</cbc:ID>\n";
+    textXML += "</cac:PartyIdentification>\n";
+    textXML += "<cac:PartyName>\n";
+    textXML += "<cbc:Name>"+str_razon+"</cbc:Name>\n";
+    textXML += "</cac:PartyName>\n";
+    textXML += "</cac:SignatoryParty>\n";
+    textXML += "<cac:DigitalSignatureAttachment>\n";
+    textXML += "<cac:ExternalReference>\n";
+    textXML += "<cbc:URI>#SignatureSP</cbc:URI>\n";
+    textXML += "</cac:ExternalReference>\n";
+    textXML += "</cac:DigitalSignatureAttachment>\n";
+    textXML += "</cac:Signature>\n";
+    textXML += "<cac:AccountingSupplierParty>\n";
+    textXML += "<cbc:CustomerAssignedAccountID>"+str_ruc+"</cbc:CustomerAssignedAccountID>\n";
+    textXML += "<cbc:AdditionalAccountID>6</cbc:AdditionalAccountID>\n";
+    textXML += "<cac:Party>\n";
+    textXML += "<cac:PostalAddress>\n";
+    textXML += "<cbc:AddressTypeCode>0001</cbc:AddressTypeCode>\n";
+    textXML += "</cac:PostalAddress>\n";
+    textXML += "<cac:PartyLegalEntity>\n";
+    textXML += "<cbc:RegistrationName>"+str_razon+"</cbc:RegistrationName>\n";
+    textXML += "</cac:PartyLegalEntity>\n";
+    textXML += "</cac:Party>\n";
+    textXML += "</cac:AccountingSupplierParty>\n";
+    textXML += "<cac:AccountingCustomerParty>\n";
+    QString str_codigo, str_nombre, str_direccion;
+    str_codigo = ui->lineEdit_codigo->text();
+    str_nombre = ui->lineEdit_nombre->text();
+    str_nombre.replace("&", "&amp;");
+    str_direccion = ui->lineEdit_direccion->text();
+    textXML += "<cbc:CustomerAssignedAccountID>"+str_codigo+"</cbc:CustomerAssignedAccountID>\n";
+    if(ui->lineEdit_codigo->text().length() == 11){
+        textXML += "<cbc:AdditionalAccountID>6</cbc:AdditionalAccountID>\n";
+    }else{
+        return false;
+    }
+    //}else{
+        //textXML += "<cbc:AdditionalAccountID>0</cbc:AdditionalAccountID>\n";
+    //}
+    textXML += "<cac:Party>\n";/*
+    textXML += "<cac:PhysicalLocation>\n";
+    textXML += "<cbc:Description>"+str_direccion+"</cbc:Description>\n";
+    textXML += "</cac:PhysicalLocation>\n";
+    */
+    textXML += "<cac:PartyLegalEntity>\n";
+    textXML += "<cbc:RegistrationName>"+str_nombre+"</cbc:RegistrationName>\n";
+    textXML += "</cac:PartyLegalEntity>\n";
+    textXML += "</cac:Party>\n";
+    textXML += "</cac:AccountingCustomerParty>\n";
+    textXML += "<cac:TaxTotal>\n";
+    textXML += "<cbc:TaxAmount currencyID=\"PEN\">"+QString().setNum(ui->doubleSpinBox_total->value()/1.18*0.18, ' ', 2)+"</cbc:TaxAmount>\n";
+    textXML += "<cac:TaxSubtotal>\n";
+    textXML += "<cbc:TaxAmount currencyID=\"PEN\">"+QString().setNum(ui->doubleSpinBox_total->value()/1.18*0.18, ' ', 2)+"</cbc:TaxAmount>\n";
+    textXML += "<cac:TaxCategory>\n";
+    textXML += "<cac:TaxScheme>\n";
+    textXML += "<cbc:ID>1000</cbc:ID>\n";
+    textXML += "<cbc:Name>IGV</cbc:Name>\n";
+    textXML += "<cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>\n";
+    textXML += "</cac:TaxScheme>\n";
+    textXML += "</cac:TaxCategory>\n";
+    textXML += "</cac:TaxSubtotal>\n";
+    textXML += "</cac:TaxTotal>\n";
+    textXML += "<cac:LegalMonetaryTotal>\n";
+    textXML += "<cbc:PayableAmount currencyID=\"PEN\">"+QString().setNum(ui->doubleSpinBox_total->value(), ' ', 2)+"</cbc:PayableAmount>\n";
+    textXML += "</cac:LegalMonetaryTotal>\n";
+
+    for(int i=0; i < ui->tableWidget->rowCount(); i++){
+        textXML += "<cac:InvoiceLine>\n";
+        textXML += "<cbc:ID>"+QString().setNum(i+1)+"</cbc:ID>\n";
+        textXML += "<cbc:InvoicedQuantity unitCode=\"NIU\">"+ui->tableWidget->item(i, CANTIDAD)->text()+"</cbc:InvoicedQuantity>\n";
+        double p_precio = ui->tableWidget->item(i, PRECIO)->text().toDouble();
+        textXML += "<cbc:LineExtensionAmount currencyID=\"PEN\">"+QString().setNum(p_precio/1.18, ' ', 2)+"</cbc:LineExtensionAmount>\n";
+        textXML += "<cac:PricingReference>\n";
+        textXML += "<cac:AlternativeConditionPrice>\n";
+        double p_unit = ui->tableWidget->item(i, PRECIO)->text().toDouble()/ui->tableWidget->item(i, CANTIDAD)->text().toDouble();
+        textXML += "<cbc:PriceAmount currencyID=\"PEN\">"+QString().setNum(p_unit, ' ', 2)+"</cbc:PriceAmount>\n";
+        textXML += "<cbc:PriceTypeCode>01</cbc:PriceTypeCode>\n";
+        textXML += "</cac:AlternativeConditionPrice>\n";
+        textXML += "</cac:PricingReference>\n";
+        textXML += "<cac:TaxTotal>\n";
+        textXML += "<cbc:TaxAmount currencyID=\"PEN\">"+QString().setNum(p_precio/1.18*0.18, ' ', 2)+"</cbc:TaxAmount>\n";
+        textXML += "<cac:TaxSubtotal>\n";
+        textXML += "<cbc:TaxAmount currencyID=\"PEN\">"+QString().setNum(p_precio/1.18*0.18, ' ', 2)+"</cbc:TaxAmount>\n";
+        textXML += "<cac:TaxCategory>\n";
+        textXML += "<cbc:TaxExemptionReasonCode>10</cbc:TaxExemptionReasonCode>\n";
+        textXML += "<cac:TaxScheme>\n";
+        textXML += "<cbc:ID>1000</cbc:ID>\n";
+        textXML += "<cbc:Name>IGV</cbc:Name>\n";
+        textXML += "<cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>\n";
+        textXML += "</cac:TaxScheme>\n";
+        textXML += "</cac:TaxCategory>\n";
+        textXML += "</cac:TaxSubtotal>\n";
+        textXML += "</cac:TaxTotal>\n";
+        textXML += "<cac:Item>\n";
+        textXML += "<cbc:Description>"+ui->tableWidget->item(i, NOMBRE)->text()+"</cbc:Description>\n";
+        textXML += "<cac:SellersItemIdentification>\n";
+        textXML += "<cbc:ID>"+ui->tableWidget->item(i, ID)->text()+"</cbc:ID>\n";
+        textXML += "</cac:SellersItemIdentification>\n";
+        textXML += "</cac:Item>\n";
+        textXML += "<cac:Price>\n";
+        textXML += "<cbc:PriceAmount currencyID=\"PEN\">"+QString().setNum(p_unit/1.18, ' ', 2)+"</cbc:PriceAmount>\n";
+        textXML += "</cac:Price>\n";
+        textXML += "</cac:InvoiceLine>\n";
+    }
+    textXML += "</Invoice>\n";
+
+    QXmlStreamWriter xmlWriter(&file);
+    //xmlWriter.setAutoFormatting(true);
+    xmlWriter.setCodec("ISO 8859-1");
+    xmlWriter.writeStartDocument("1.0", false);
+
+
+    xmlWriter.writeCharacters("");
+    xmlWriter.device()->write(textXML.toStdString().c_str());
+    xmlWriter.device()->close();
+    //QTextStream out(&file);
+    //out << textXML;
+    //file.flush();
+    file.close();
+    return true;
+}
+
+void Comprobante::on_comboBox_documento_currentTextChanged(const QString &arg1)
+{
+    QSqlQuery query;
+    QString str_query;
+    QString tipo_operacion, tipo_documento;
+    if(ui->comboBox_operacion->currentText().compare("Venta") == 0){
+        tipo_operacion = VENTA;
+    }
+    if(ui->comboBox_operacion->currentText().compare("Compra") == 0){
+        tipo_operacion = COMPRA;
+    }
+    if(ui->comboBox_operacion->currentText().compare("Egresos") == 0){
+        tipo_operacion = EGRESOS;
+    }
+    if(ui->comboBox_documento->currentText().compare("Pre-Venta") == 0){
+        tipo_documento = TICKET;
+    }
+    if(ui->comboBox_documento->currentText().compare("Boleta") == 0){
+        tipo_documento = BOLETA;
+    }
+    if(ui->comboBox_documento->currentText().compare("Factura") == 0){
+        tipo_documento = FACTURA;
+    }
+    str_query += QString()+"SELECT serie, numero+1 FROM comprobante";
+    str_query += QString()+" WHERE operacion_item_nombre = '"+tipo_operacion+"' AND tipo_item_nombre = '"+tipo_documento+"'";
+    str_query += QString()+" ORDER BY numero DESC LIMIT 1";
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        if(query.next()){
+            ui->lineEdit_serie->setText(query.value(0).toString());
+            ui->lineEdit_numero->setText(query.value(1).toString());
+        }else{
+            ui->lineEdit_serie->setText("T004");
+            ui->lineEdit_numero->setText("1");
+        }
+    }
+}
+
+void Comprobante::on_lineEdit_numero_textChanged(const QString &arg1)
+{
+    QSqlQuery query;
+    QString str_query;
+    QString tipo_operacion, tipo_documento;
+    if(ui->comboBox_operacion->currentText().compare("Venta") == 0){
+        tipo_operacion = VENTA;
+    }
+    if(ui->comboBox_operacion->currentText().compare("Compra") == 0){
+        tipo_operacion = COMPRA;
+    }
+    if(ui->comboBox_operacion->currentText().compare("Egresos") == 0){
+        tipo_operacion = EGRESOS;
+    }
+    if(ui->comboBox_documento->currentText().compare("Pre-Venta") == 0){
+        tipo_documento = TICKET;
+    }
+    if(ui->comboBox_documento->currentText().compare("Boleta") == 0){
+        tipo_documento = BOLETA;
+    }
+    if(ui->comboBox_documento->currentText().compare("Factura") == 0){
+        tipo_documento = FACTURA;
+    }
+    str_query += QString()+"SELECT serie, numero+1 FROM comprobante";
+    str_query += QString()+" WHERE operacion_item_nombre = '"+tipo_operacion+"' AND tipo_item_nombre = '"+tipo_documento+"'";
+    str_query += QString()+" ORDER BY numero DESC LIMIT 1";
+    qDebug()<<str_query<<endl;
+    if(query.exec(str_query)){
+        if(query.next()){
+            int numero = query.value(1).toInt();
+            int num = arg1.toInt();
+            if(num > (numero+1)){
+                disconnect(ui->lineEdit_numero, SIGNAL(textChanged(QString)), this, SLOT(on_lineEdit_numero_textChanged(QString)));
+                ui->lineEdit_numero->setText(QString().setNum(numero));
+                connect(ui->lineEdit_numero, SIGNAL(textChanged(QString)), this, SLOT(on_lineEdit_numero_textChanged(QString)));
+            }
+        }else{
+
+        }
+    }
+}
+void Comprobante::clear_form()
+{
+    int numero = ui->lineEdit_numero->text().toInt();
+    ui->lineEdit_numero->setText(QString().setNum(numero+1));
+
+    ui->lineEdit_codigo->clear();
+    ui->lineEdit_direccion->clear();
+    ui->lineEdit_nombre->clear();
+    ui->tableWidget->clearContents();
+    ui->tableWidget->setRowCount(0);
+
+    ui->doubleSpinBox_pago->setValue(0.0);
+    ui->doubleSpinBox_total->setValue(0.0);
+    ui->doubleSpinBox_vuelto->setValue(0.0);
+    ui->radioButton_mesa->setChecked(true);
+
+    tipo_persona = Persona::cliente_dni;
 }

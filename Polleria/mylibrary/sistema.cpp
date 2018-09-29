@@ -749,6 +749,14 @@ QString Sistema::replace_quotes(const QString &str)
     //qDebug()<<s<<endl;
     return s;
 }
+QString Sistema::replace_quotes_simple(const QString &str)
+{
+    QString s= str;
+    s = s.replace(QString("\""), QString("\\\\\""));
+    s = s.replace(QString("'"), QString("\\\\\\'"));
+    //qDebug()<<s<<endl;
+    return s;
+}
 void Sistema::set_stylesheet(const QVector<QWidget*>& v, int pos)
 {
     for(int i= 0; i<v.size(); i++)
@@ -1475,4 +1483,252 @@ void Sistema::epson_paperCut(QDataStream& out)
 void Sistema::epson_drawer(QDataStream& out)
 {
     out << (qint64)0x1B700025FA;
+}
+QString Sistema::generate_cbc_value(double val)
+{
+    QString str_val = QString().setNum(val, ' ', 2);
+    int posDot = str_val.indexOf(".");
+    str_val = str_val.mid(0, posDot);
+
+    QString str_total;
+    qDebug()<<str_val<<endl;
+    if(str_val.length() == 1){
+        str_total = generate_unidades(QString(str_val[0]));
+    }
+    if(str_val.length() == 2){
+        str_total = generate_decenas(str_val);
+    }
+    if(str_val.length() == 3){
+        str_total = generate_centenas(str_val);
+    }
+    if(str_val.length() == 4){
+        QString str_uDMillar = "";
+        if(str_val[0] == "1"){
+            str_uDMillar = "UN";
+        }else{
+            str_uDMillar = generate_unidades(QString(str_val[0]));
+        }
+
+        if(generate_centenas(str_val.mid(1,3)).compare("") == 0){
+            str_total = str_uDMillar + " MIL";
+        }else{
+            str_total = str_uDMillar + " MIL "+generate_centenas(str_val.mid(1,3));
+        }
+    }
+    if(str_val.length() == 5){
+        if(generate_centenas(str_val.mid(2,3)).compare("") == 0){
+            str_total = generate_decenas(str_val.mid(0,2)) + " MIL";
+        }else{
+            str_total = generate_decenas(str_val.mid(0,2)) + " MIL "+generate_centenas(str_val.mid(2,3));
+        }
+    }
+    if(str_val.length() == 6){
+        if(generate_centenas(str_val.mid(3,3)).compare("") == 0){
+            str_total = generate_centenas(str_val.mid(0,3)) + " MIL";
+        }else{
+            str_total = generate_centenas(str_val.mid(0,3)) + " MIL "+generate_centenas(str_val.mid(3,3));
+        }
+    }
+    // TERMINAR
+    if(str_val.length() == 7){
+        QString str_uDMillon = "";
+        if(str_val[0] == "1"){
+            str_uDMillon = "UN";
+        }else{
+            str_uDMillon = generate_unidades(QString(str_val[0]));
+        }
+        if(generate_centenas(str_val.mid(1,3)).compare("") == 0){
+            str_total = str_uDMillon + " MIL";
+        }else{
+            str_total = str_uDMillon + " MIL "+generate_centenas(str_val.mid(1,3));
+        }
+    }
+    if(str_val.length() == 8){
+
+    }
+    if(str_val.length() == 9){
+
+    }
+    if(str_val.length() == 10){
+
+    }
+    return "SON "+str_total + " Y "+QString().setNum(val, ' ', 2).mid(str_val.length()+1, 2)+"/100 SOLES";
+}
+QString Sistema::generate_unidades(QString num)
+{
+    if(num == "0"){
+        return "CERO";
+    }
+    if(num == "1"){
+        return "UNO";
+    }
+    if(num == "2"){
+        return "DOS";
+    }
+    if(num == "3"){
+        return "TRES";
+    }
+    if(num == "4"){
+        return "CUATRO";
+    }
+    if(num == "5"){
+        return "CINCO";
+    }
+    if(num == "6"){
+        return "SEIS";
+    }
+    if(num == "7"){
+        return "SIETE";
+    }
+    if(num == "8"){
+        return "OCHO";
+    }
+    if(num == "9"){
+        return "NUEVE";
+    }
+    return "";
+}
+QString Sistema::generate_decenas(QString num)
+{
+    if(num.compare("10") == 0){
+        return "DIEZ";
+    }
+    if(num.compare("11") == 0){
+        return "ONCE";
+    }
+    if(num.compare("12") == 0){
+        return "DOCE";
+    }
+    if(num.compare("13") == 0){
+        return "TRECE";
+    }
+    if(num.compare("14") == 0){
+        return "CATORCE";
+    }
+    if(num.compare("15") == 0){
+        return "QUINCE";
+    }
+    if(num.compare("16") == 0){
+        return "DIECISEIS";
+    }
+    if(num.compare("17") == 0){
+        return "DIECISIETE";
+    }
+    if(num.compare("18") == 0){
+        return "DIECIOCHO";
+    }
+    if(num.compare("19") == 0){
+        return "DIECINUEVE";
+    }
+    if(num[0] == "2"){
+        if(num[1] == "0"){
+            return "VEINTE";
+
+        }else{
+            return "VEINTI"+generate_unidades(QString(num[1]));
+        }
+    }
+    if(num[0] == "3"){
+        if(num[1] == "0"){
+            return "TREINTA";
+        }else{
+            return "TREINTA Y "+generate_unidades(QString(num[1]));
+        }
+    }
+    if(num[0] == "4"){
+        if(num[1] == "0"){
+            return "CUARENTA";
+        }else{
+            return "CUARENTA Y "+generate_unidades(QString(num[1]));
+        }
+    }
+    if(num[0] == "5"){
+        if(num[1] == "0"){
+            return "CINCUENTA";
+        }else{
+            return "CINCUENTA Y "+generate_unidades(QString(num[1]));
+        }
+    }
+    if(num[0] == "6"){
+        if(num[1] == "0"){
+            return "SESENTA";
+        }else{
+            return "SESENTA Y "+generate_unidades(QString(num[1]));
+        }
+    }
+    if(num[0] == "7"){
+        if(num[1] == "0"){
+            return "SETENTA";
+        }else{
+            return "SETENTA Y "+generate_unidades(QString(num[1]));
+        }
+    }
+    if(num[0] == "8"){
+        if(num[1] == "0"){
+            return "OCHENTA";
+        }else{
+            return"OCHENTA Y "+generate_unidades(QString(num[1]));
+        }
+    }
+    if(num[0] == "9"){
+        if(num[1] == "0"){
+            return "NOVENTA";
+        }else{
+            return "NOVENTA Y "+generate_unidades(QString(num[1]));
+        }
+    }
+    if(num[0] == "0"){
+        if(num[1] == "0")
+            return "";
+        else
+            return generate_unidades(num.mid(1, 1));
+    }
+    return "";
+}
+QString Sistema::generate_centenas(QString num)
+{
+    if(num.compare("100") == 0){
+        return "CIEN";
+    }else{
+        if(num[0] == "0"){
+            if(num[1] == "0"){
+                if(num[2] == "0"){
+                    return "";
+                }
+                else
+                    return generate_unidades(num.mid(2, 1));
+            }else{
+                return generate_decenas(num.mid(1, 2));
+            }
+        }
+
+        if(num[0] == "1"){
+            return "CIENTO "+generate_decenas(num.mid(1, 2));
+        }
+        if(num[0] == "2"){
+            return "DOSCIENTOS "+generate_decenas(num.mid(1, 2));
+        }
+        if(num[0] == "3"){
+            return "TRESCIENTOS "+generate_decenas(num.mid(1, 2));
+        }
+        if(num[0] == "4"){
+            return "CUATROCIENTOS "+generate_decenas(num.mid(1, 2));
+        }
+        if(num[0] == "5"){
+            return "QUINIENTOS "+generate_decenas(num.mid(1, 2));
+        }
+        if(num[0] == "6"){
+            return "SEISCIENTOS "+generate_decenas(num.mid(1, 2));
+        }
+        if(num[0] == "7"){
+            return "SETECIENTOS "+generate_decenas(num.mid(1, 2));
+        }
+        if(num[0] == "8"){
+            return "OCHOCIENTOS "+generate_decenas(num.mid(1, 2));
+        }
+        if(num[0] == "9"){
+            return "NOVECIENTOS "+generate_decenas(num.mid(1, 2));
+        }
+    }
+    return "";
 }

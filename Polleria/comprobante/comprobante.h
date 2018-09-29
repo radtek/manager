@@ -138,6 +138,10 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_comboBox_documento_currentTextChanged(const QString &arg1);
+
+    void on_lineEdit_numero_textChanged(const QString &arg1);
+
 private:
     void print_caja();
 
@@ -153,6 +157,13 @@ private:
 
     void print_machelo();
 
+    bool create_boleta();
+
+    bool create_factura();
+
+    void print_epson();
+
+    void clear_form();
 protected:
     void showEvent(QShowEvent *event);
 
@@ -167,6 +178,8 @@ private:
     ReniecConsultaDNI reniec_consultDNI;
 
     QString clave;
+
+    QString digestValue;
 
     bool afterShow;
     bool firstShow;

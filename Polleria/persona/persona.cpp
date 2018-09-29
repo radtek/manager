@@ -53,6 +53,22 @@ Persona::Persona(QWidget *parent) :
     }else{
         QMessageBox::critical(this, "Error", "No se pudo realizar dicha acción", "Ok");
     }
+
+    //firstShow = true;
+
+    QLabel* label_captcha = new QLabel(this);
+
+    QLineEdit* lineEdit_captcha = new QLineEdit(this);
+
+
+    QTableWidget* tableWidget_establecimientos = new QTableWidget(this);
+
+
+    sunat_consultaRUC.set_data(label_captcha, ui->lineEdit_codigo
+                               , lineEdit_captcha, ui->lineEdit_nombre, 0, 0
+                               , ui->lineEdit_direccion, 0, 0
+                               , tableWidget_establecimientos);
+
 }
 
 Persona::~Persona()

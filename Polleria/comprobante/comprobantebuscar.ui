@@ -32,6 +32,21 @@ QPushButton{ background-color: rgb(255, 255, 255) }
 QDateTimeEdit{ background-color: rgb(255, 255, 255) }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>4</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -230,9 +245,14 @@ QDateTimeEdit{ background-color: rgb(255, 255, 255) }</string>
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="label_7">
+      <widget class="QCheckBox" name="checkBox_ticket">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string>Docs</string>
+        <string>Pre-Venta</string>
        </property>
       </widget>
      </item>
@@ -257,6 +277,18 @@ QDateTimeEdit{ background-color: rgb(255, 255, 255) }</string>
        </property>
        <property name="text">
         <string>Factura</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox_ncredito">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>N. de Credito</string>
        </property>
       </widget>
      </item>
@@ -369,6 +401,30 @@ QDateTimeEdit{ background-color: rgb(255, 255, 255) }</string>
          <width>24</width>
          <height>24</height>
         </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_imprimir">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Imprimir</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_enviarSUNAT">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Enviar</string>
        </property>
       </widget>
      </item>
@@ -565,7 +621,7 @@ QDateTimeEdit{ background-color: rgb(255, 255, 255) }</string>
      </column>
      <column>
       <property name="text">
-       <string>Numero</string>
+       <string>S-Nro</string>
       </property>
       <property name="font">
        <font>
@@ -633,6 +689,16 @@ QDateTimeEdit{ background-color: rgb(255, 255, 255) }</string>
         <weight>75</weight>
         <bold>true</bold>
        </font>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>operacion</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>documento</string>
       </property>
      </column>
     </widget>

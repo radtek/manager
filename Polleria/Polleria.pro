@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 CONFIG += c++11
-QT       += core gui opengl sql webengine webenginewidgets charts network networkauth
+QT       += core gui opengl sql webengine webenginewidgets charts network networkauth xml
 
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -12,8 +12,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Polleria
 TEMPLATE = app
 
-DEFINES += MYLIBRARY_LIBRARY
-
+DEFINES += MYLIBRARY_LIBRARY SOAPSUNATCALL_LIBRARY
+DEFINES += WITH_GZIP WITH_DOM WITH_OPENSSL XMLSEC_CRYPTO_OPENSSL _WINSOCKAPI_
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -69,7 +69,8 @@ SOURCES += \
     producto/productobuscar.cpp \
     comprobante/delivery.cpp \
     comprobante/pagar.cpp \
-    comprobante/datosmodifcables.cpp
+    comprobante/datosmodifcables.cpp \
+    comprobante/anularcpe.cpp
 
 HEADERS += \
     mylibrary/comboboxdelegate.h \
@@ -123,7 +124,8 @@ HEADERS += \
     producto/productobuscar.h \
     comprobante/delivery.h \
     comprobante/pagar.h \
-    comprobante/datosmodifcables.h
+    comprobante/datosmodifcables.h \
+    comprobante/anularcpe.h
 
 FORMS += \
     mylibrary/snackbarinfo.ui \
@@ -153,7 +155,8 @@ FORMS += \
     producto/productobuscar.ui \
     comprobante/delivery.ui \
     comprobante/pagar.ui \
-    comprobante/datosmodifcables.ui
+    comprobante/datosmodifcables.ui \
+    comprobante/anularcpe.ui
 
 RESOURCES += \
     iconos.qrc
@@ -315,5 +318,26 @@ win32:contains(QMAKE_HOST.arch, x86_64) {
     DEPENDPATH += $$PWD/../SmtpClient-for-Qt-1.1\src
 
     INCLUDEPATH += $$PWD/../SmtpClient-for-Qt-1.1\src
+    DEPENDPATH += $$PWD/../SmtpClient-for-Qt-1.1\src
 
+    INCLUDEPATH += C:\gsoap-2.8\gsoap\plugin
+    DEPENDPATH += C:\gsoap-2.8\gsoap\plugin
 
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/'../../../Documents/Visual Studio 2015/Projects/ServiceProject/x64/release/' -lServiceProject
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/'../../../Documents/Visual Studio 2015/Projects/ServiceProject/x64/debug/' -lServiceProject
+else:unix: LIBS += -L$$PWD/'../../../Documents/Visual Studio 2015/Projects/ServiceProject/x64/' -lServiceProject
+
+INCLUDEPATH += $$PWD/'../../../Documents/Visual Studio 2015/Projects/ServiceProject/ServiceProject'
+DEPENDPATH += $$PWD/'../../../Documents/Visual Studio 2015/Projects/ServiceProject/ServiceProject'
+
+INCLUDEPATH += C:\openssl-1.0.2j\inc32
+DEPENDPATH += C:\openssl-1.0.2j\inc32
+
+INCLUDEPATH += C:\openssl-1.0.2j\crypto
+DEPENDPATH += C:\openssl-1.0.2j\crypto
+
+INCLUDEPATH += C:\gsoap-2.8\gsoap\import
+DEPENDPATH += C:\gsoap-2.8\gsoap\import
+
+INCLUDEPATH += C:\gsoap-2.8\gsoap\plugin
+DEPENDPATH += C:\gsoap-2.8\gsoap\import

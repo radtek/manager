@@ -7,6 +7,7 @@
 #include "mylibrary/adminpass.h"
 #include "persona/persona.h"
 #include "comprobante/datosmodifcables.h"
+#include "comprobante/anularcpe.h"
 
 namespace Ui {
 class ComprobanteBuscar;
@@ -91,6 +92,14 @@ private slots:
     void on_pushButton_deliverys_clicked();
 
     void on_datosModificables_closing();
+
+    void on_checkBox_ticket_toggled(bool checked);
+
+    void on_checkBox_ncredito_toggled(bool checked);
+
+    void on_pushButton_enviarSUNAT_clicked();
+
+    void on_pushButton_imprimir_clicked();
 
 private:
     void editarItem(QTableWidgetItem* item);
