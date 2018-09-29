@@ -1,0 +1,24 @@
+﻿  Parsing WSDL and Schema definitions
+  soapcpp2: using both options -C and -S omits client/server code
+  
+  **  The gSOAP code generator for C and C++, soapcpp2 release 2.8.69
+  **  Copyright (C) 2000-2018, Robert van Engelen, Genivia Inc.
+  **  All Rights Reserved. This product is provided "as is", without any warranty.
+  **  The soapcpp2 tool and its generated software are released under the GPL.
+  **  ----------------------------------------------------------------------------
+  **  A commercial use license is available from Genivia Inc., contact@genivia.com
+  **  ----------------------------------------------------------------------------
+  
+  Saving wsdlStub.h annotated copy of the source interface file
+  Saving wsdlH.h serialization functions to #include in projects
+  Saving xmime.nsmap namespace mapping table
+  Saving wsdlC.cpp serialization functions
+  
+  Compilation successful 
+  
+  httpda.c
+c:\gsoap-2.8\gsoap\plugin\httpda.h(53): fatal error C1083: No se puede abrir el archivo incluir: 'stdsoap2.h': No such file or directory
+  smdevp.c
+c:\gsoap-2.8\gsoap\plugin\smdevp.h(52): fatal error C1083: No se puede abrir el archivo incluir: 'stdsoap2.h': No such file or directory
+  threads.c
+c:\gsoap-2.8\gsoap\plugin\threads.h(81): fatal error C1083: No se puede abrir el archivo incluir: 'stdsoap2.h': No such file or directory

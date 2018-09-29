@@ -1,0 +1,7 @@
+﻿  stdsoap2.cpp
+  soapClient.cpp
+  soapC.cpp
+  main.cpp
+c:\users\lorda\documents\visual studio 2015\projects\serviceproject\serviceproject\main.cpp(10): fatal error C1083: No se puede abrir el archivo incluir: 'wsseapi.h': No such file or directory
+  dom.cpp
+  Generando código...
