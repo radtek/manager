@@ -2869,7 +2869,7 @@ void ComprobanteBuscar::on_pushButton_imprimir_clicked()
             //SYSTEM->epson_lineFeed(out);
             SYSTEM->epson_lineFeed(out);
             //SYSTEM->epson_printText(out, SYSTEM->centerText(QString("")));
-            QDomDocument dom;
+            str_query = "SELECT xmlContent FROM comprobante WHERE serie='"+serie+"' AND numero='"+numero+"'";
             QString str_ruc = "20498590587";
             string fileName_xml;
             if(documento.compare(BOLETA) == 0){
@@ -2878,13 +2878,39 @@ void ComprobanteBuscar::on_pushButton_imprimir_clicked()
             if(documento.compare(FACTURA) == 0){
                 fileName_xml = QString(str_ruc+"-"+"01"+"-"+serie+"-"+numero+".XML").toStdString();
             }
+            qDebug()<<str_query<<endl;
+            if(query.exec(str_query)){
+                if(query.next()){
+                    QFile file(fileName_xml.c_str());
+                    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+                        return;
+                    }
+                    QXmlStreamWriter xmlWriter(&file);
+                    xmlWriter.setAutoFormatting(true);
+
+                    //xmlWriter.setCodec("UTF-8");
+                    //xmlWriter.writeStartDocument("1.0", false);
+
+                    xmlWriter.device()->write(query.value(0).toString().toStdString().c_str());
+                    xmlWriter.device()->close();
+                    //QTextStream out(&file);
+                    //out << textXML;
+                    //file.flush();
+                    file.close();
+                }
+            }
+            QDomDocument dom;
+
             QString str_digestValue;
             {
                 QFile file(QString(fileName_xml.c_str()));
-                if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+                if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+                    qDebug()<<"no fileName_xml"<<endl;
                     return;
+                }
                 if (!dom.setContent(&file)) {
                     file.close();
+                    qDebug()<<"no dom"<<endl;
                     return;
                 }
 
@@ -2963,7 +2989,7 @@ void ComprobanteBuscar::on_pushButton_imprimir_clicked()
             //WinExec(command.toStdString().c_str(), SW_HIDE);
             //ShellExecuteA(0, "open", "cmd.exe", command.toStdString().c_str(), 0, SW_HIDE);
 
-            QMessageBox::information(this, "informacion", command,"aceptar");
+            //QMessageBox::information(this, "informacion", command,"aceptar");
 
             {
                 QString app_dir = QCoreApplication::applicationDirPath();
@@ -2981,6 +3007,8 @@ void ComprobanteBuscar::on_pushButton_imprimir_clicked()
                 command = app_dir + command;
             }
 
+            file.setFileName(fileName_xml.c_str());
+            file.remove();
             QProcess::execute(command);
 
         }

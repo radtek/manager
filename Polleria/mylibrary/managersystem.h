@@ -3,6 +3,7 @@
 
 #include "mylibrary_global.h"
 #include "shares.h"
+#include <QTimer>
 
 namespace Ui {
 class ManagerSystem;
@@ -28,6 +29,8 @@ public slots:
 
     void on_application_state_changed(Qt::ApplicationState state);
 
+    void on_timer_timeout();
+
 protected:
     void focusInEvent(QFocusEvent *fe);
 
@@ -51,6 +54,7 @@ private:
 
     QShortcut* shortCut_salir;
 
+    QTimer* timer;
 };
 
 template class Q_DECL_EXPORT singleton<ManagerSystem>;

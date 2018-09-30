@@ -214,6 +214,16 @@ public:
     QString generate_decenas(QString num);
 
     QString generate_centenas(QString num);
+
+    bool create_boleta(QString serie, QString numero, double total
+                                , QString codigo, QString nombre, QString direccion
+                                , QVector<QString> v_cantidad, QVector<QString> v_precio
+                                , QVector<QString> v_nombre, QVector<QString> v_id);
+
+    bool create_factura(QString serie, QString numero, double total
+                                , QString codigo, QString nombre, QString direccion
+                                , QVector<QString> v_cantidad, QVector<QString> v_precio
+                                , QVector<QString> v_nombre, QVector<QString> v_id);
 };
 
 template class MYLIBRARYSHARED_EXPORT singleton<Sistema>;

@@ -155,11 +155,7 @@ private:
 
     void print_msg();
 
-    void print_machelo();
-
-    bool create_boleta();
-
-    bool create_factura();
+    void print_machelo();    
 
     void print_epson();
 
