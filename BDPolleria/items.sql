@@ -15,6 +15,8 @@ delete from direccion;
 delete from ingrediente;
 ALTER TABLE ingrediente AUTO_INCREMENT = 1;
 delete from datos;
+ALTER TABLE modificables AUTO_INCREMENT = 1;
+delete from modificables;
 
 
 INSERT INTO grupo(nombre)VALUES
@@ -52,6 +54,8 @@ INSERT INTO item(nombre, grupo_nombre)VALUES('Retencion', 'Regimen');
 INSERT INTO item(nombre, grupo_nombre)VALUES('Activo', 'Estado');
 INSERT INTO item(nombre, grupo_nombre)VALUES('Anulado', 'Estado');
 INSERT INTO item(nombre, grupo_nombre)VALUES('Suspendido', 'Estado');
+INSERT INTO item(nombre, grupo_nombre)VALUES('Pendiente', 'Estado');
+INSERT INTO item(nombre, grupo_nombre)VALUES('Observacion', 'Estado');
 INSERT INTO item(nombre, grupo_nombre)VALUES('Inactivo', 'Estado');
 
 INSERT INTO item(nombre, grupo_nombre)VALUES('Efectivo', 'Pago');
@@ -82,10 +86,14 @@ INSERT INTO item(nombre, grupo_nombre)VALUES('Servicio', 'persona_tipo');
 INSERT INTO item(nombre, grupo_nombre)VALUES('Compra', 'comprobante_operacion');
 INSERT INTO item(nombre, grupo_nombre)VALUES('Venta', 'comprobante_operacion');
 INSERT INTO item(nombre, grupo_nombre)VALUES('Egresos', 'comprobante_operacion');
+INSERT INTO item(nombre, grupo_nombre)VALUES('Ingreso', 'comprobante_operacion');
+INSERT INTO item(nombre, grupo_nombre)VALUES('Personal', 'comprobante_operacion');
+INSERT INTO item(nombre, grupo_nombre)VALUES('Baja', 'comprobante_operacion');
 
 INSERT INTO item(nombre, grupo_nombre)VALUES('Ticket', 'comprobante_tipo');
 INSERT INTO item(nombre, grupo_nombre)VALUES('Boleta', 'comprobante_tipo');
 INSERT INTO item(nombre, grupo_nombre)VALUES('Factura', 'comprobante_tipo');
+INSERT INTO item(nombre, grupo_nombre)VALUES('NCredito', 'comprobante_tipo');
 
 INSERT INTO usuario(nombre, pass)VALUES
 ('jorge'
