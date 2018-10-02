@@ -162,7 +162,8 @@ void ComprobanteBuscar::set_buscar()
     if(ui->checkBox_ncredito->isChecked()){
         check_ncredito = NCREDITO;
     }
-    QString str_query = "SELECT c.id, c.estado_item_nombre, CONCAT(c.serie,'-',c.numero), GROUP_CONCAT(concat(c_h_prod.cantidad, ' | ', prod.nombre) SEPARATOR '\\n'), SUM(c_h_prod.precio)";
+    QString str_query = "SELECT c.id, c.estado_item_nombre, CONCAT(c.serie,'-',c.numero)";
+    str_query += ", GROUP_CONCAT(concat(c_h_prod.cantidad, ' | ', prod.nombre) SEPARATOR '\\n'), SUM(c_h_prod.precio)";
     str_query += ", c.nombre, c.pago_item_nombre, c.fecha_emision, c.operacion_item_nombre, c.tipo_item_nombre";
     str_query += " FROM comprobante c";
     str_query += " LEFT JOIN comprobante_has_persona c_h_per ON c.id = c_h_per.comprobante_id";
@@ -2644,8 +2645,14 @@ void ComprobanteBuscar::on_pushButton_imprimir_clicked()
             SYSTEM->epson_lineFeed(out);
 
             QVector<QString> centerTexts;
+            centerTexts.push_back("RUC: 20498590587");
+            centerTexts.push_back("R. Social: POLLERIA EL POLLO LEAL E.I.R.L.");
+            centerTexts.push_back("Direccion: PZA.PLAZA UMACHIRI");
+            centerTexts.push_back(" NRO. 402 (PARQUE UMACHIRI)");
+            centerTexts.push_back(" AREQUIPA - AREQUIPA - MARIANO MELGAR");
+            centerTexts.push_back("                                          ");
+            centerTexts.push_back("                                          ");
 
-            qDebug()<<"LUNA"<<endl;
             if(documento.compare("Boleta") == 0){
                 centerTexts.push_back("BOLETA ELECTRONICA");
                 centerTexts.push_back("                                          ");

@@ -25,7 +25,7 @@ Comprobante::Comprobante(QWidget *parent) :
 
     QSqlQuery query;
     QString str_query = "";
-    QString tipo_operacion;
+    QString tipo_operacion, tipo_documento;
     if(ui->comboBox_operacion->currentText().compare("Venta") == 0){
         tipo_operacion = VENTA;
     }
@@ -34,6 +34,15 @@ Comprobante::Comprobante(QWidget *parent) :
     }
     if(ui->comboBox_operacion->currentText().compare("Egresos") == 0){
         tipo_operacion = EGRESOS;
+    }
+    if(ui->comboBox_documento->currentText().compare("Pre-Venta") == 0){
+        tipo_documento = TICKET;
+    }
+    if(ui->comboBox_documento->currentText().compare("Boleta") == 0){
+        tipo_documento = BOLETA;
+    }
+    if(ui->comboBox_documento->currentText().compare("Factura") == 0){
+        tipo_documento = FACTURA;
     }
     str_query += QString()+"SELECT serie, numero+1 FROM comprobante";
     str_query += QString()+" WHERE operacion_item_nombre = '"+tipo_operacion+"' AND tipo_item_nombre = '"+TICKET+"'";
@@ -44,8 +53,18 @@ Comprobante::Comprobante(QWidget *parent) :
             ui->lineEdit_serie->setText(query.value(0).toString());
             ui->lineEdit_numero->setText(query.value(1).toString());
         }else{
-            ui->lineEdit_serie->setText("T004");
-            ui->lineEdit_numero->setText("1");
+            if(tipo_documento.compare(BOLETA) == 0){
+                ui->lineEdit_serie->setText("B004");
+                ui->lineEdit_numero->setText("1");
+            }
+            if(tipo_documento.compare(TICKET) == 0){
+                ui->lineEdit_serie->setText("T004");
+                ui->lineEdit_numero->setText("1");
+            }
+            if(tipo_documento.compare(FACTURA) == 0){
+                ui->lineEdit_serie->setText("F004");
+                ui->lineEdit_numero->setText("1");
+            }
         }
     }
     ui->pushButton_send_msg->hide();
@@ -799,24 +818,28 @@ void Comprobante::insert_venta()
         qDebug()<<"query ok"<<endl;        
         if(ui->comboBox_operacion->currentText().compare(EGRESOS) == 0){
             clear_form();
+            int numero = ui->lineEdit_numero->text().toInt();
+            ui->lineEdit_numero->setText(QString().setNum(numero+1));
         }
         if(ui->comboBox_operacion->currentText().compare(COMPRA) == 0){
             clear_form();
+            int numero = ui->lineEdit_numero->text().toInt();
+            ui->lineEdit_numero->setText(QString().setNum(numero+1));
         }
         if(ui->comboBox_operacion->currentText().compare(VENTA) == 0){
             if(ui->comboBox_documento->currentText().compare("Pre-Venta") == 0){
-                SYSTEM->commit();
-                int numero = ui->lineEdit_numero->text().toInt();
-                ui->lineEdit_numero->setText(QString().setNum(numero+1));
+                SYSTEM->commit();                
                 print_machelo();
                 clear_form();
+                int numero = ui->lineEdit_numero->text().toInt();
+                ui->lineEdit_numero->setText(QString().setNum(numero+1));
             }
             if(ui->comboBox_documento->currentText().compare(BOLETA) == 0){
                 SYSTEM->commit();
                 double total = 0.0;
                 QVector<QString> v_cantidad, v_precio, v_nombre, v_id;
                 for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                    QString cantidad = ui->tableWidget->item(i, CANTIDAD)->text();
+                    QString cantidad = QString().setNum(ui->tableWidget->item(i, CANTIDAD)->text().toDouble(), ' ', 0);
                     QString precio = ui->tableWidget->item(i, PRECIO)->text();
                     QString nombre = ui->tableWidget->item(i, NOMBRE)->text();
                     QString id = ui->tableWidget->item(i, ID)->text();
@@ -827,11 +850,13 @@ void Comprobante::insert_venta()
                     total += precio.toDouble();
                 }
                 if(!SYSTEM->create_boleta(ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-                                          , total, ui->lineEdit_codigo->text()
+                                          , total, QDateTime::currentDateTime(), ui->lineEdit_codigo->text()
                                           , ui->lineEdit_nombre->text(), ui->lineEdit_direccion->text()
                                           , v_cantidad, v_precio
                                           , v_nombre, v_id)){
                     clear_form();
+                    int numero = ui->lineEdit_numero->text().toInt();
+                    ui->lineEdit_numero->setText(QString().setNum(numero+1));
                     return;
                 }
 
@@ -862,6 +887,8 @@ void Comprobante::insert_venta()
                 if(obj.xmlDSig() < 0){
                     //QMessageBox::information(this, "Informacion", "No se puede firmar el documento","Aceptar");
                     clear_form();
+                    int numero = ui->lineEdit_numero->text().toInt();
+                    ui->lineEdit_numero->setText(QString().setNum(numero+1));
                     return;
                 }else{
                     qDebug() << "Se firmo el doc" << endl;
@@ -901,6 +928,8 @@ void Comprobante::insert_venta()
                 QFile file(QString(fileName_xml.c_str()));
                 if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
                     clear_form();
+                    int numero = ui->lineEdit_numero->text().toInt();
+                    ui->lineEdit_numero->setText(QString().setNum(numero+1));
                     return;
                 }
 
@@ -926,11 +955,15 @@ void Comprobante::insert_venta()
                     QFile file(QString(fileName_xml.c_str()));
                     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
                         clear_form();
+                        int numero = ui->lineEdit_numero->text().toInt();
+                        ui->lineEdit_numero->setText(QString().setNum(numero+1));
                         return;
                     }
                     if (!dom.setContent(&file)) {
                         file.close();
                         clear_form();
+                        int numero = ui->lineEdit_numero->text().toInt();
+                        ui->lineEdit_numero->setText(QString().setNum(numero+1));
                         return;
                     }
 
@@ -961,6 +994,8 @@ void Comprobante::insert_venta()
                     file.setFileName(fileName_zip.c_str());
                     file.remove();
                     clear_form();
+                    int numero = ui->lineEdit_numero->text().toInt();
+                    ui->lineEdit_numero->setText(QString().setNum(numero+1));
                 }
                 return;
 
@@ -972,7 +1007,7 @@ void Comprobante::insert_venta()
                 double total = 0.0;
                 QVector<QString> v_cantidad, v_precio, v_nombre, v_id;
                 for(int i=0; i<ui->tableWidget->rowCount(); i++){
-                    QString cantidad = ui->tableWidget->item(i, CANTIDAD)->text();
+                    QString cantidad = QString().setNum(ui->tableWidget->item(i, CANTIDAD)->text().toDouble(), ' ', 0);
                     QString precio = ui->tableWidget->item(i, PRECIO)->text();
                     QString nombre = ui->tableWidget->item(i, NOMBRE)->text();
                     QString id = ui->tableWidget->item(i, ID)->text();
@@ -983,19 +1018,15 @@ void Comprobante::insert_venta()
                     total += precio.toDouble();
                 }
                 if(!SYSTEM->create_factura(ui->lineEdit_serie->text(), ui->lineEdit_numero->text()
-                                          , total, ui->lineEdit_codigo->text()
+                                          , total, QDateTime::currentDateTime(), ui->lineEdit_codigo->text()
                                           , ui->lineEdit_nombre->text(), ui->lineEdit_direccion->text()
                                           , v_cantidad, v_precio
                                           , v_nombre, v_id)){
                     clear_form();
+                    int numero = ui->lineEdit_numero->text().toInt();
+                    ui->lineEdit_numero->setText(QString().setNum(numero+1));
                     return;
                 }
-                /*
-                print_machelo();
-                print_epson();
-                if(true){
-                    return;
-                }*/
 
                 SoapSunatCall obj;
                 obj.set_str_certificatekeyfile((char *)"mycertificate.pem");
@@ -1023,6 +1054,8 @@ void Comprobante::insert_venta()
                 if(obj.xmlDSig() < 0){
                     //QMessageBox::information(this, "Informacion", "No se puede firmar el documento","Aceptar");
                     clear_form();
+                    int numero = ui->lineEdit_numero->text().toInt();
+                    ui->lineEdit_numero->setText(QString().setNum(numero+1));
                     return;
                 }else{
                     qDebug() << "Se firmo el doc" << endl;
@@ -1061,6 +1094,8 @@ void Comprobante::insert_venta()
                 QFile file(QString(fileName_xml.c_str()));
                 if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
                     clear_form();
+                    int numero = ui->lineEdit_numero->text().toInt();
+                    ui->lineEdit_numero->setText(QString().setNum(numero+1));
                     return;
                 }
 
@@ -1086,11 +1121,15 @@ void Comprobante::insert_venta()
                     QFile file(QString(fileName_xml.c_str()));
                     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
                         clear_form();
+                        int numero = ui->lineEdit_numero->text().toInt();
+                        ui->lineEdit_numero->setText(QString().setNum(numero+1));
                         return;
                     }
                     if (!dom.setContent(&file)) {
                         file.close();
                         clear_form();
+                        int numero = ui->lineEdit_numero->text().toInt();
+                        ui->lineEdit_numero->setText(QString().setNum(numero+1));
                         return;
                     }
 
@@ -1121,7 +1160,10 @@ void Comprobante::insert_venta()
                     file.remove();
                     file.setFileName(fileName_zip.c_str());
                     file.remove();
+
                     clear_form();
+                    int numero = ui->lineEdit_numero->text().toInt();
+                    ui->lineEdit_numero->setText(QString().setNum(numero+1));
                 }
                 return;
             }
@@ -3083,7 +3125,6 @@ void Comprobante::print_machelo()
 }
 void Comprobante::print_epson()
 {
-    qDebug()<<"print epson"<<endl;
     /*
     if(ui->lineEdit_serie->text().length() != 4) {
         QMessageBox::warning(this, "Advertencia", "Ingrese serie de 4 dígitos.", "Aceptar");
@@ -3119,9 +3160,6 @@ void Comprobante::print_epson()
     //qDebug()<<getchar()<<endl;
     SYSTEM->epson_lineFeed(out);
 
-
-
-    qDebug()<<"print epson 2"<<endl;
     QVector<QString> centerTexts;
 
     centerTexts.push_back("RUC: 20498590587");
@@ -3231,7 +3269,6 @@ void Comprobante::print_epson()
         }
     }
 
-    qDebug()<<"print epson 3"<<endl;
     QString direccion = "Direccion: " + ui->lineEdit_direccion->text();
     direccion.replace("\t", " ");
     direccion.replace("\n", " ");
@@ -3269,7 +3306,6 @@ void Comprobante::print_epson()
         centerTexts.push_back(direccion);
     }
 
-    qDebug()<<"print epson 4"<<endl;
     centerTexts.push_back("                                          ");
     centerTexts.push_back("Fecha: " + ui->dateTimeEdit_fecha_emision->date().toString("dd/MM/yyyy"));
     centerTexts.push_back("Hora: " + QTime::currentTime().toString("hh:mm:ss"));
@@ -3360,7 +3396,6 @@ void Comprobante::print_epson()
 
     //SYSTEM->insertImage(out, "footer.png");
 
-    qDebug()<<"print epson 5"<<endl;
     SYSTEM->epson_lineFeed(out);
     //SYSTEM->epson_printText(out, SYSTEM->centerText(QString("PAGOS LLAMAR A: CRISS: 967252119")));
     //SYSTEM->epson_lineFeed(out);
@@ -3384,7 +3419,6 @@ void Comprobante::print_epson()
         SYSTEM->epson_drawer(out);
     }*/
 
-    qDebug()<<"print epson 6"<<endl;
     {
         bool hay_bebidas = false;
         for(int i = 0; i < ui->tableWidget->rowCount(); i++){
@@ -3470,7 +3504,6 @@ void Comprobante::print_epson()
         }
     }
 
-qDebug()<<"print epson 7"<<endl;
     file.close();
 
     QString app_dir = QCoreApplication::applicationDirPath();
@@ -3847,6 +3880,25 @@ void Comprobante::on_comboBox_operacion_currentTextChanged(const QString &arg1)
         ui->comboBox_documento->addItem("Factura");
         ui->comboBox_documento->addItem("Pre-Venta");
         ui->comboBox_documento->setCurrentText("Pre-Venta");
+        QString tipo_operacion, tipo_documento;
+        if(ui->comboBox_operacion->currentText().compare("Venta") == 0){
+            tipo_operacion = VENTA;
+        }
+        if(ui->comboBox_operacion->currentText().compare("Compra") == 0){
+            tipo_operacion = COMPRA;
+        }
+        if(ui->comboBox_operacion->currentText().compare("Egresos") == 0){
+            tipo_operacion = EGRESOS;
+        }
+        if(ui->comboBox_documento->currentText().compare("Pre-Venta") == 0){
+            tipo_documento = TICKET;
+        }
+        if(ui->comboBox_documento->currentText().compare("Boleta") == 0){
+            tipo_documento = BOLETA;
+        }
+        if(ui->comboBox_documento->currentText().compare("Factura") == 0){
+            tipo_documento = FACTURA;
+        }
         QSqlQuery query;
         QString str_query = "";
         str_query += QString()+"SELECT serie, numero+1 FROM comprobante";
@@ -3858,8 +3910,18 @@ void Comprobante::on_comboBox_operacion_currentTextChanged(const QString &arg1)
                 ui->lineEdit_serie->setText(query.value(0).toString());
                 ui->lineEdit_numero->setText(query.value(1).toString());
             }else{
-                ui->lineEdit_serie->setText("T004");
-                ui->lineEdit_numero->setText("1");
+                if(tipo_documento.compare(BOLETA) == 0){
+                    ui->lineEdit_serie->setText("B004");
+                    ui->lineEdit_numero->setText("1");
+                }
+                if(tipo_documento.compare(TICKET) == 0){
+                    ui->lineEdit_serie->setText("T004");
+                    ui->lineEdit_numero->setText("1");
+                }
+                if(tipo_documento.compare(FACTURA) == 0){
+                    ui->lineEdit_serie->setText("F004");
+                    ui->lineEdit_numero->setText("1");
+                }
             }
         }
     }
@@ -4054,8 +4116,18 @@ void Comprobante::on_comboBox_documento_currentTextChanged(const QString &arg1)
             ui->lineEdit_serie->setText(query.value(0).toString());
             ui->lineEdit_numero->setText(query.value(1).toString());
         }else{
-            ui->lineEdit_serie->setText("T004");
-            ui->lineEdit_numero->setText("1");
+            if(tipo_documento.compare(BOLETA) == 0){
+                ui->lineEdit_serie->setText("B004");
+                ui->lineEdit_numero->setText("1");
+            }
+            if(tipo_documento.compare(TICKET) == 0){
+                ui->lineEdit_serie->setText("T004");
+                ui->lineEdit_numero->setText("1");
+            }
+            if(tipo_documento.compare(FACTURA) == 0){
+                ui->lineEdit_serie->setText("F004");
+                ui->lineEdit_numero->setText("1");
+            }
         }
     }
 }
@@ -4103,9 +4175,6 @@ void Comprobante::on_lineEdit_numero_textChanged(const QString &arg1)
 }
 void Comprobante::clear_form()
 {
-    int numero = ui->lineEdit_numero->text().toInt();
-    ui->lineEdit_numero->setText(QString().setNum(numero+1));
-
     ui->lineEdit_codigo->clear();
     ui->lineEdit_direccion->clear();
     ui->lineEdit_nombre->clear();

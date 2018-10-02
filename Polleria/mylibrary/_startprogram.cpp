@@ -67,10 +67,11 @@ void _StartProgram::run()
     // GETMAC DE BILL MAC QUACK de ASA: 00-21-5A-65-88-B2
     // GETMAC DE MACHELO: 94-DE-80-BB-CB-5E
     // GETMAC DE LEAL: 70-85-C2-18-5C-9B
-    if(text.indexOf("60-45-CB-1D-7E-EF") != -1){
+    if(text.indexOf("70-85-C2-18-5C-9B") != -1){
             //&& QDate::currentDate() >= QDate(2018,7,25) && QDate::currentDate() <= QDate(2019,9,1)){
 
     }else{
+
         QWidget* w = new QWidget();
         w->setAttribute(Qt::WA_DeleteOnClose);
         w->show();
@@ -79,6 +80,4 @@ void _StartProgram::run()
 
     APP_LOGIN->setAttribute(Qt::WA_DeleteOnClose);
     APP_LOGIN->show();
-
-
 }

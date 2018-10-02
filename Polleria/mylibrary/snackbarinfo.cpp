@@ -24,11 +24,11 @@ void SnackBarInfo::set_data(QString msg, QString urlIcon)
     ui->label_msg->setText(msg);
     ui->label_icon->setPixmap(QPixmap::fromImage(QImage(urlIcon)));
     timer = new QTimer;
-    connect(timer, SIGNAL(timeout()), this, SLOT(on_timer_timeout()));
-    timer->start(2400);
+    //connect(timer, SIGNAL(timeout()), this, SLOT(on_timer_timeout()));
+    //timer->start(2400);
 }
 
 void SnackBarInfo::on_timer_timeout()
 {
-    this->close();
+    //this->close();
 }

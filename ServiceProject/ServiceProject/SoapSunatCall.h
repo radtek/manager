@@ -38,7 +38,7 @@
 #include "openssl\evp.h"
 #include <openssl/pem.h>
 
-
+#define BACKLOG (100)	// Max. request backlog 
 
 #include <iostream>
 using namespace std;

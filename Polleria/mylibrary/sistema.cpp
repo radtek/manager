@@ -1733,7 +1733,7 @@ QString Sistema::generate_centenas(QString num)
     return "";
 }
 
-bool Sistema::create_boleta(QString serie, QString numero, double total
+bool Sistema::create_boleta(QString serie, QString numero, double total, QDateTime fecha_emision
                             , QString codigo, QString nombre, QString direccion
                             , QVector<QString> v_cantidad, QVector<QString> v_precio
                             , QVector<QString> v_nombre, QVector<QString> v_id)
@@ -1785,8 +1785,8 @@ bool Sistema::create_boleta(QString serie, QString numero, double total
     textXML += "<cbc:UBLVersionID>2.0</cbc:UBLVersionID>\n";
     textXML += "<cbc:CustomizationID>1.0</cbc:CustomizationID>\n";
     textXML += "<cbc:ID>"+serie+"-"+numero+"</cbc:ID>\n";
-    textXML += "<cbc:IssueDate>"+QDate::currentDate().toString("yyyy-MM-dd")+"</cbc:IssueDate>\n";
-    textXML += "<cbc:IssueTime>"+QTime::currentTime().toString("hh:mm:ss")+"</cbc:IssueTime>\n";
+    textXML += "<cbc:IssueDate>"+fecha_emision.date().toString("yyyy-MM-dd")+"</cbc:IssueDate>\n";
+    textXML += "<cbc:IssueTime>"+fecha_emision.time().toString("hh:mm:ss")+"</cbc:IssueTime>\n";
     textXML += "<cbc:InvoiceTypeCode>03</cbc:InvoiceTypeCode>\n";
     textXML += "<cbc:DocumentCurrencyCode>PEN</cbc:DocumentCurrencyCode>\n";
     textXML += "<cac:Signature>\n";
@@ -1930,7 +1930,7 @@ bool Sistema::create_boleta(QString serie, QString numero, double total
     file.close();
     return true;
 }
-bool Sistema::create_factura(QString serie, QString numero, double total
+bool Sistema::create_factura(QString serie, QString numero, double total, QDateTime fecha_emision
                             , QString codigo, QString nombre, QString direccion
                             , QVector<QString> v_cantidad, QVector<QString> v_precio
                             , QVector<QString> v_nombre, QVector<QString> v_id)
@@ -1983,8 +1983,8 @@ bool Sistema::create_factura(QString serie, QString numero, double total
     textXML += "<cbc:UBLVersionID>2.0</cbc:UBLVersionID>\n";
     textXML += "<cbc:CustomizationID>1.0</cbc:CustomizationID>\n";
     textXML += "<cbc:ID>"+serie+"-"+numero+"</cbc:ID>\n";
-    textXML += "<cbc:IssueDate>"+QDate::currentDate().toString("yyyy-MM-dd")+"</cbc:IssueDate>\n";
-    textXML += "<cbc:IssueTime>"+QTime::currentTime().toString("hh:mm:ss")+"</cbc:IssueTime>\n";
+    textXML += "<cbc:IssueDate>"+fecha_emision.date().toString("yyyy-MM-dd")+"</cbc:IssueDate>\n";
+    textXML += "<cbc:IssueTime>"+fecha_emision.time().toString("hh:mm:ss")+"</cbc:IssueTime>\n";
     textXML += "<cbc:InvoiceTypeCode>01</cbc:InvoiceTypeCode>\n";
     textXML += "<cbc:DocumentCurrencyCode>PEN</cbc:DocumentCurrencyCode>\n";
     textXML += "<cac:Signature>\n";

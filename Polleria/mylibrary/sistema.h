@@ -215,12 +215,12 @@ public:
 
     QString generate_centenas(QString num);
 
-    bool create_boleta(QString serie, QString numero, double total
+    bool create_boleta(QString serie, QString numero, double total, QDateTime fecha_emision
                                 , QString codigo, QString nombre, QString direccion
                                 , QVector<QString> v_cantidad, QVector<QString> v_precio
                                 , QVector<QString> v_nombre, QVector<QString> v_id);
 
-    bool create_factura(QString serie, QString numero, double total
+    bool create_factura(QString serie, QString numero, double total, QDateTime fecha_emision
                                 , QString codigo, QString nombre, QString direccion
                                 , QVector<QString> v_cantidad, QVector<QString> v_precio
                                 , QVector<QString> v_nombre, QVector<QString> v_id);

@@ -31,6 +31,10 @@ public slots:
 
     void on_timer_timeout();
 
+    void on_thread_started();
+
+    void on_thread_finished();
+
 protected:
     void focusInEvent(QFocusEvent *fe);
 
@@ -55,6 +59,8 @@ private:
     QShortcut* shortCut_salir;
 
     QTimer* timer;
+
+    SnackBarInfo* snackBar;
 };
 
 template class Q_DECL_EXPORT singleton<ManagerSystem>;

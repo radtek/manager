@@ -202,7 +202,7 @@ QMenu{ background-color: rgb(255, 255, 255) }</string>
             <string>B004</string>
            </property>
            <property name="readOnly">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
           </widget>
          </item>

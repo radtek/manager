@@ -2,6 +2,21 @@
 
 #include "BillServicePortBinding.nsmap"
 
+//#include <unistd.h>		/* defines _POSIX_THREADS if pthreads are available */
+#if defined(_POSIX_THREADS) || defined(_SC_THREADS)
+#include <pthread.h>
+#endif
+
+#include <process.h>
+
+#include <signal.h>		/* defines SIGPIPE */
+
+int CRYPTO_thread_setup();
+void CRYPTO_thread_cleanup();
+void sigpipe_handle(int);
+
+DWORD WINAPI process_request(void *soap);
+
 SoapSunatCall::SoapSunatCall()
 {
 	cert = NULL;
@@ -38,14 +53,22 @@ SoapSunatCall::~SoapSunatCall()
 
 int SoapSunatCall::sendXML()
 {
-	struct soap *soap = soap_new1(SOAP_XML_CANONICAL | SOAP_XML_INDENT | SOAP_ZLIB_GZIP);
+	struct soap *soap = soap_new1(SOAP_XML_CANONICAL | SOAP_XML_INDENT);
 	char *user, texto;
+
+	soap_clr_imode(soap, SOAP_IO_KEEPALIVE);
+	soap_clr_imode(soap, SOAP_IO_KEEPALIVE);
 
 	soap_init(soap);
 
 	//soap_register_plugin_arg(soap, soap_wsse, (void*)token_handler);
 
 	soap_ssl_init();
+	if (CRYPTO_thread_setup())
+	{
+		fprintf(stderr, "Cannot setup thread mutex for OpenSSL\n");
+		return -1;
+	}
 
 	if (soap_ssl_client_context(soap,
 		SOAP_SSLv3_TLSv1,
@@ -109,10 +132,8 @@ int SoapSunatCall::sendXML()
 
 	soap_wsse_add_Security(soap);
 
-	//soap_wsse_add_Timestamp(soap, "Time", 10);
+	soap_wsse_add_Timestamp(soap, "Time", 10);
 	soap_wsse_add_UsernameTokenDigest(soap, "Id", str_sec_username, str_sec_password);
-
-
 	
 	soap_wsse_add_KeyInfo_X509Certificate(soap, cert);
 	soap_wsse_add_BinarySecurityTokenX509(soap, "X509Token", cert);
@@ -124,11 +145,7 @@ int SoapSunatCall::sendXML()
 	soap_wsse_sign_body(soap, SOAP_SMD_SIGN_RSA_SHA1, rsa_privk, 0);
 	soap_wsse_add_KeyInfo(soap);
 	soap_wsse_add_SignatureValue(soap, SOAP_SMD_SIGN_RSA_SHA1, rsa_privk, 0);
-	
-	//unsigned char digest[64];
-	//soap_wsse_verify_digest(soap, SOAP_SMD_SIGN_RSA_SHA1, SOAP_XML_CANONICAL, "Id", digest);
-	//cout << "digest: " << digest << endl;
-	//soap_wsse_add_UsernameTokenDigest(soap, "Id", "20498590587MODDATO1", "lealcito20587");
+
 
 
 	_wsse__Security *security = soap_wsse_Security(soap);
@@ -167,43 +184,6 @@ int SoapSunatCall::sendXML()
 		//cout << "add signature" << security->ds__Signature->Id << endl;
 
 	}
-	/*
-	{
-	unsigned char * buffer;
-	int fileLen;
-	FILE *file;
-
-	size_t* size = new size_t;
-	FILE *f = fopen(str_xml_file, "rb");
-	if (f == NULL)
-	{
-		printf("Error opening file!\n");
-		return -1;
-	}
-
-	fseek(f, 0, SEEK_END);
-	fileLen = ftell(f);
-	fseek(f, 0, SEEK_SET);
-
-	//ALLOCATE MEMORY
-	buffer = (unsigned char *)malloc(fileLen + 1);
-	if (!buffer)
-	{
-		fprintf(stderr, "Memory error! :( ");
-		fclose(f);
-		return -1;
-	}
-
-	//READ FILE CONTENTS INTO BUFFER AND CLOSE FILE
-	fread(buffer, fileLen, 1, f);
-	//string str_mod_xml_file_zip(str_xml_file);
-	//str_mod_xml_file_zip += ".zip";
-	gzFile outfile = gzopen(str_zip_xml_filename, "wb");
-	
-	gzwrite(outfile, buffer, fileLen);
-	gzclose(outfile);
-	fclose(f);
-}*/
 
 	//cout << "Termino de crear el zip" << endl;
 	ns1__sendBill sb;
@@ -250,88 +230,71 @@ int SoapSunatCall::sendXML()
 	xsd->__size = fileLen;
 	sb.contentFile = xsd;
 
-	soap->connect_timeout = 30;
-	soap->send_timeout = soap->recv_timeout = 60;
+	soap->connect_timeout = 10;
+	soap->send_timeout = 5;
+	soap->recv_timeout = 5;
+	//soap->accept_timeout = 3600; // server stops after 1 hour of inactivity 
+	//soap->max_keep_alive = 100; // max keep-alive sequence 
+	int ret = -1;
+	//soap->accept_timeout = 5;
+	//soap->transfer_timeout = 15;
+	//soap_force_closesock(soap);
 	cout << "call___sunat__sendBill" << endl;
+			
+	try {
+		if (soap_call___sunat__sendBill(soap, str_server, NULL, &sb, sbr) == SOAP_OK) {
 
-	//cout << "digest hash: " << soap_wsse_digest().hash << endl;
-	//sbr.soap = soap;
-	//soap_wsse_add_BinarySecurityTokenPEM(soap, NULL, "mycertificate.pem");
-	//soap_wsse_decrypt_auto(soap, SOAP_SMD_SIGN_RSA_SHA1, rsa_privk, 0);
+			size_t* size = new size_t;
 
-	if (soap_call___sunat__sendBill(soap, str_server, NULL, &sb, sbr) == SOAP_OK) {
+			gzFile outfile = gzopen(str_zip_xml_out_filename, "wb");
 
-		size_t* size = new size_t;
-		//FILE *f = fopen(str_zip_xml_out_filename, "wb");
-		//if (f == NULL)
-		//{
-			//printf("Error opening file!\n");
-			//return -1;
-		//}
+			gzwrite(outfile, sbr.applicationResponse->__ptr, sbr.applicationResponse->__size);
+			gzclose(outfile);
+
+			str_error = "";
+
+			ret = 0;
+		}
+		else {
+			ret = -1;
+		}
+	}
+	catch (std::runtime_error& e) {
+		strcpy(str_error, e.what());
 		
-		//char *str_res = sbr.soap->buf;
-		//char *str_res = (char* )sbr.applicationResponse->__ptr;
-		
-		gzFile outfile = gzopen(str_zip_xml_out_filename, "wb");
-		
-		gzwrite(outfile, sbr.applicationResponse->__ptr, sbr.applicationResponse->__size);
-		gzclose(outfile);
+		return -1;
+	}
+	
 
-		str_error = "";
-		free(buffer);
+	if (ret != -1) {
+		//free(buffer);
+
 		soap_wsse_delete_Security(soap);
 
 		soap_destroy(soap);
 		soap_end(soap);
 		soap_done(soap);
-
-		return 0;
-		//fprintf(f, "%s", str_res);
-
-		//cout << "response: " << sbr.soap->buf << endl;
-		//fclose(f);
-		//string str_deco;
-		//str_deco += " x -o+";
-		//str_deco += str_zip_xml_out_filename;
-		//system();
-		//ShellExecute(0, "open", "c:\\Program Files\\WinRAR\\WinRAR.exe", str_deco.c_str(), 0, SW_HIDE);
+		CRYPTO_thread_cleanup();
+		return ret;
 	}
 	else {
 		cout << "error" << endl;
-		//soap_print_fault(soap, stderr);
-		/*
-		if (soap_check_state(soap))
-		{
-			fprintf(stderr, "Error: soap struct state not initialized with soap_init\n");
-		}
-		else if (soap->error)
-		{
-			const char **c, *v = NULL, *s, *d;
-			c = soap_faultcode(soap);
-			if (!*c)
-			{
-				soap_set_fault(soap);
-				c = soap_faultcode(soap);
-			}
-			if (soap->version == 2)
-				v = soap_check_faultsubcode(soap);
-			s = *soap_faultstring(soap);
-			d = soap_check_faultdetail(soap);			
-
-			sprintf(str_error, "%s%d fault %s [%s]\n\"%s\"\nDetail: %s\n", soap->version ? "SOAP 1." : "Error ", soap->version ? (int)soap->version : soap->error, *c, v ? v : "no subcode", s ? s : "[no reason]", d ? d : "[no detail]");
+		FILE* f = fopen("error.txt", "w");
+		if (f != NULL) {
+			soap_print_fault(soap, f);
+			fclose(f);
 		}
 
-		*/		
-		str_error = soap->fault->faultstring;
-		//sprintf(str_error, )
-		free(buffer);
+		//free(buffer);
+
 		soap_wsse_delete_Security(soap);
 
 		soap_destroy(soap);
 		soap_end(soap);
 		soap_done(soap);
-		return -1;
-	}	
+		CRYPTO_thread_cleanup();
+		return ret;
+	}
 }
 
 int SoapSunatCall::xmlDSig()
@@ -451,6 +414,7 @@ int SoapSunatCall::sign_file(const char* xml_file, const char* key_file, const c
 
 	/* load doc file */
 	doc = xmlParseFile(xml_file);
+	
 	if ((doc == NULL) || (xmlDocGetRootElement(doc) == NULL)) {
 		fprintf(stderr, "Error: unable to parse file \"%s\"\n", xml_file);
 		return -1;
@@ -543,7 +507,8 @@ int SoapSunatCall::sign_file(const char* xml_file, const char* key_file, const c
 		return -1;
 	}
 
-	FILE *f = fopen(str_xml_file, "wb");
+	//setlocale(LC_ALL, "en_US.UTF-8");
+	FILE *f = fopen(str_xml_file, "w");
 	if (f == NULL)
 	{
 		printf("Error opening file!\n");
@@ -566,4 +531,139 @@ done:
 		xmlFreeDoc(doc);
 	}
 	return(res);
+}
+
+#ifdef WITH_OPENSSL
+
+#if defined(WIN32)
+# define MUTEX_TYPE		HANDLE
+# define MUTEX_SETUP(x)		(x) = CreateMutex(NULL, FALSE, NULL)
+# define MUTEX_CLEANUP(x)	CloseHandle(x)
+# define MUTEX_LOCK(x)		WaitForSingleObject((x), INFINITE)
+# define MUTEX_UNLOCK(x)	ReleaseMutex(x)
+# define THREAD_ID		GetCurrentThreadId()
+#elif defined(_POSIX_THREADS) || defined(_SC_THREADS)
+# define MUTEX_TYPE		pthread_mutex_t
+# define MUTEX_SETUP(x)		pthread_mutex_init(&(x), NULL)
+# define MUTEX_CLEANUP(x)	pthread_mutex_destroy(&(x))
+# define MUTEX_LOCK(x)		pthread_mutex_lock(&(x))
+# define MUTEX_UNLOCK(x)	pthread_mutex_unlock(&(x))
+# define THREAD_ID		pthread_self()
+#else
+# error "You must define mutex operations appropriate for your platform"
+# error	"See OpenSSL /threads/th-lock.c on how to implement mutex on your platform"
+#endif
+
+struct CRYPTO_dynlock_value
+{
+	MUTEX_TYPE mutex;
+};
+
+static MUTEX_TYPE *mutex_buf;
+
+static struct CRYPTO_dynlock_value *dyn_create_function(const char *file, int line)
+{
+	struct CRYPTO_dynlock_value *value;
+	value = (struct CRYPTO_dynlock_value*)malloc(sizeof(struct CRYPTO_dynlock_value));
+	if (value)
+		MUTEX_SETUP(value->mutex);
+	return value;
+}
+
+static void dyn_lock_function(int mode, struct CRYPTO_dynlock_value *l, const char *file, int line)
+{
+	if (mode & CRYPTO_LOCK)
+		MUTEX_LOCK(l->mutex);
+	else
+		MUTEX_UNLOCK(l->mutex);
+}
+
+static void dyn_destroy_function(struct CRYPTO_dynlock_value *l, const char *file, int line)
+{
+	MUTEX_CLEANUP(l->mutex);
+	free(l);
+}
+
+void locking_function(int mode, int n, const char *file, int line)
+{
+	if (mode & CRYPTO_LOCK)
+		MUTEX_LOCK(mutex_buf[n]);
+	else
+		MUTEX_UNLOCK(mutex_buf[n]);
+}
+
+unsigned long id_function()
+{
+	return (unsigned long)THREAD_ID;
+}
+
+int CRYPTO_thread_setup()
+{
+	int i;
+	mutex_buf = (MUTEX_TYPE*)malloc(CRYPTO_num_locks() * sizeof(pthread_mutex_t));
+	if (!mutex_buf)
+		return SOAP_EOM;
+	for (i = 0; i < CRYPTO_num_locks(); i++)
+		MUTEX_SETUP(mutex_buf[i]);
+	CRYPTO_set_id_callback(id_function);
+	CRYPTO_set_locking_callback(locking_function);
+	CRYPTO_set_dynlock_create_callback(dyn_create_function);
+	CRYPTO_set_dynlock_lock_callback(dyn_lock_function);
+	CRYPTO_set_dynlock_destroy_callback(dyn_destroy_function);
+	return SOAP_OK;
+}
+
+void CRYPTO_thread_cleanup()
+{
+	int i;
+	if (!mutex_buf)
+		return;
+	CRYPTO_set_id_callback(NULL);
+	CRYPTO_set_locking_callback(NULL);
+	CRYPTO_set_dynlock_create_callback(NULL);
+	CRYPTO_set_dynlock_lock_callback(NULL);
+	CRYPTO_set_dynlock_destroy_callback(NULL);
+	for (i = 0; i < CRYPTO_num_locks(); i++)
+		MUTEX_CLEANUP(mutex_buf[i]);
+	free(mutex_buf);
+	mutex_buf = NULL;
+}
+
+#else
+
+/* OpenSSL not used, e.g. GNUTLS is used */
+
+int CRYPTO_thread_setup()
+{
+	return SOAP_OK;
+}
+
+void CRYPTO_thread_cleanup()
+{ }
+
+#endif
+
+/******************************************************************************\
+*
+*	SIGPIPE
+*
+\******************************************************************************/
+
+void sigpipe_handle(int x) { }
+
+DWORD WINAPI process_request(void *soap)
+{	
+	cout << "empezo el hilo" << endl;
+	//_endthread();
+	if (soap) {
+		//soap_serve((struct soap*)soap);
+		soap_wsse_delete_Security((struct soap*)soap);
+		soap_destroy((struct soap*)soap); // dealloc C++ data 
+		soap_end((struct soap*)soap); // dealloc data and clean up 
+		soap_done((struct soap*)soap); // detach soap struct 
+		CRYPTO_thread_cleanup();
+		free(soap);
+	}
+	cout << "ya sali del hilo" << endl;
+	return 0;
 }
